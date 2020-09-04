@@ -13,7 +13,7 @@ public class UserController {
      */
     PageResult<UserDataDTO> getDustList(
             @RequestParam(value = "page") int page
-    ){
+    ) {
         // TODO
         return null;
     }
@@ -21,11 +21,17 @@ public class UserController {
     /**
      * 【管理端】修改用户的尘数
      *
-     * @param userName 用户名
-     * @param dustCount 新尘数
+     * @param targetUser 用户名
+     * @param dustCount  新尘数
+     * @param name       操作用户名称
+     * @param password   操作用户密码
      * @return 是否修改成功
      */
-    boolean updateDust(String userName, int dustCount){
+    boolean updateDust(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "count") int dustCount,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) {
         // TODO
         return false;
     }
@@ -33,12 +39,14 @@ public class UserController {
     /**
      * 【玩家端】直接将尘转换为卡片
      *
-     * @param userName 用户名
-     * @param password 密码
      * @param cardName 卡片名
+     * @param name     操作用户名称
+     * @param password 操作用户密码
      * @return 是否转换成功
      */
-    boolean dustToCard(String userName, String password, String cardName){
+    boolean dustToCard(@RequestParam(value = "card") String cardName,
+                       @RequestParam(value = "name") String name,
+                       @RequestParam(value = "password") String password) {
         // TODO
         return false;
     }
@@ -46,11 +54,16 @@ public class UserController {
     /**
      * 【管理端】修改用户不出货数量
      *
-     * @param userName 用户名
+     * @param targetUser 用户名
      * @param awardCount 不出货数量
+     * @param name       操作用户名称
+     * @param password   操作用户密码
      * @return 是否修改成功
      */
-    boolean updateCount(String userName, int awardCount){
+    boolean updateCount(@RequestParam(value = "target") String targetUser,
+                        @RequestParam(value = "award") int awardCount,
+                        @RequestParam(value = "name") String name,
+                        @RequestParam(value = "password") String password) {
         // TODO
         return false;
     }

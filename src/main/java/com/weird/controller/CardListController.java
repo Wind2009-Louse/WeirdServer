@@ -12,13 +12,17 @@ public class CardListController {
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param userName    用户名
+     * @param targetUser  用户名
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 搜索结果
      */
     PageResult<PackageCardDTO> searchCardListAdmin(
             @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "user", required = false) String userName,
-            @RequestParam(value = "card", required = false) String cardName) {
+            @RequestParam(value = "target", required = false) String targetUser,
+            @RequestParam(value = "card", required = false) String cardName,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) {
         // TODO
         return null;
     }
@@ -27,14 +31,18 @@ public class CardListController {
      * 【玩家端】卡片搜索
      *
      * @param packageName 卡包名
+     * @param targetUser  用户名
      * @param cardName    卡片名
-     * @param userName    用户名
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 搜索结果
      */
     PageResult<PackageCardDTO> searchCardList(
             @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "user", required = false) String userName,
-            @RequestParam(value = "card", required = false) String cardName) {
+            @RequestParam(value = "target", required = false) String targetUser,
+            @RequestParam(value = "card", required = false) String cardName,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) {
         // TODO
         return null;
     }
@@ -42,15 +50,19 @@ public class CardListController {
     /**
      * 【管理端】修改用户持有的卡片数量
      *
-     * @param userName 用户名
-     * @param cardName 卡片名
-     * @param newCount 新持有量
+     * @param targetUser 用户名
+     * @param cardName   卡片名
+     * @param newCount   新持有量
+     * @param name       操作用户名称
+     * @param password   操作用户密码
      * @return 是否修改成功
      */
     boolean updateUserCardCount(
-            @RequestParam(value = "user") String userName,
+            @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "card") String cardName,
-            @RequestParam(value = "count") int newCount
+            @RequestParam(value = "count") int newCount,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password
     ) {
         return false;
     }
@@ -61,12 +73,16 @@ public class CardListController {
      * @param packageName 卡包名
      * @param oldCardName 旧卡片名
      * @param newCardName 新卡片名
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 是否修改成功
      */
     boolean updateCardName(
             @RequestParam(value = "package", required = false) String packageName,
             @RequestParam(value = "oldname") String oldCardName,
-            @RequestParam(value = "newname") String newCardName
+            @RequestParam(value = "newname") String newCardName,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password
     ) {
         // TODO
         return false;
@@ -78,12 +94,16 @@ public class CardListController {
      * @param packageName 卡包名
      * @param cardName    卡片名
      * @param rare        稀有度
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 是否添加成功
      */
-    boolean addCardInfo(
+    boolean addCardDetail(
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "cardname") String cardName,
-            @RequestParam(value = "rare") String rare
+            @RequestParam(value = "rare") String rare,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password
     ) {
         // TODO
         return false;
@@ -94,10 +114,14 @@ public class CardListController {
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 是否删除成功
      */
-    boolean deleteCardInfo(@RequestParam(value = "package") String packageName,
-                           @RequestParam(value = "cardname") String cardName) {
+    boolean deleteCardDetail(@RequestParam(value = "package") String packageName,
+                             @RequestParam(value = "cardname") String cardName,
+                             @RequestParam(value = "name") String name,
+                             @RequestParam(value = "password") String password) {
         // TODO
         return false;
     }

@@ -18,19 +18,23 @@ public class RollController {
     /**
      * 【管理端】发送抽卡信息（诡异UI用）
      *
-     * @param user        用户名
+     * @param targetUser  用户名
      * @param packageName 卡包名
      * @param cardId1     卡片ID1
      * @param cardId2     卡片ID2
      * @param cardId3     卡片ID3
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 抽卡是否成功
      */
     @RequestMapping("weirdUI/roll")
-    String roll(@RequestParam(value = "user") String user,
+    String roll(@RequestParam(value = "target") String targetUser,
                 @RequestParam(value = "package") String packageName,
                 @RequestParam(value = "card1") long cardId1,
                 @RequestParam(value = "card2") long cardId2,
-                @RequestParam(value = "card3") long cardId3) {
+                @RequestParam(value = "card3") long cardId3,
+                @RequestParam(value = "name") String name,
+                @RequestParam(value = "password") String password) {
         // TODO
         String wrongMessage = "";
 
@@ -46,7 +50,7 @@ public class RollController {
     /**
      * 【管理端/ALL?】查询抽卡结果
      *
-     * @param page 当前页码
+     * @param page     当前页码
      * @param userName 抽卡用户名
      * @return 抽卡结果
      */
@@ -60,12 +64,16 @@ public class RollController {
     /**
      * 【管理端】设置某个抽卡结果是否适用
      *
-     * @param rollId 抽卡结果ID
-     * @param status 要设置的状态
+     * @param rollId   抽卡结果ID
+     * @param status   要设置的状态
+     * @param name     操作用户名称
+     * @param password 操作用户密码
      * @return 是否成功
      */
     boolean setRollStatus(@RequestParam(value = "id") long rollId,
-                          @RequestParam(value = "status") int status) {
+                          @RequestParam(value = "status") int status,
+                          @RequestParam(value = "name") String name,
+                          @RequestParam(value = "password") String password) {
         // TODO
         return false;
     }

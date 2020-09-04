@@ -2,6 +2,7 @@ package com.weird.model.dto;
 
 /**
  * 卡片持有信息DTO
+ * @author Nidhogg
  */
 public class PackageCardDTO {
     /**

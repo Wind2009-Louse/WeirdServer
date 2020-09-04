@@ -9,7 +9,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class RollInfoModel {
+public class RollDetailModel {
     /**
      * 抽卡记录ID
      */

@@ -4,6 +4,7 @@ import lombok.Data;
 
 /**
  * 抽卡记录DTO
+ * @author Nidhogg
  */
 @Data
 public class RollListDTO {

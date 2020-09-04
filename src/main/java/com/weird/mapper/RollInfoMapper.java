@@ -1,9 +1,9 @@
 package com.weird.mapper;
 
-import com.weird.model.RollInfoModel;
+import com.weird.model.RollDetailModel;
 
-public interface RollInfoMapper {
-    int insert(RollInfoModel record);
+public interface RollDetailMapper {
+    int insert(RollDetailModel record);
 
-    int insertSelective(RollInfoModel record);
+    int insertSelective(RollDetailModel record);
 }
