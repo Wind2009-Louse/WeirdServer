@@ -2,13 +2,23 @@ package com.weird.controller;
 
 import com.weird.model.PageResult;
 import com.weird.model.dto.PackageCardDTO;
+import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.stream.Collectors;
+
 @RestController
 public class CardListController {
+    @Autowired
+    UserService userService;
+
     /**
-     * 【管理端】卡片搜索
+     * 【管理端/ALL】卡片搜索
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -23,28 +33,16 @@ public class CardListController {
             @RequestParam(value = "card", required = false) String cardName,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
-        // TODO
-        return null;
-    }
-
-    /**
-     * 【玩家端】卡片搜索
-     *
-     * @param packageName 卡包名
-     * @param targetUser  用户名
-     * @param cardName    卡片名
-     * @param name        操作用户名称
-     * @param password    操作用户密码
-     * @return 搜索结果
-     */
-    PageResult<PackageCardDTO> searchCardList(
-            @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "target", required = false) String targetUser,
-            @RequestParam(value = "card", required = false) String cardName,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
-        // TODO
-        return null;
+        // 管理权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+            // TODO
+            // 搜索全卡
+            return null;
+        } else {
+            // TODO
+            // 搜索现存卡
+            return null;
+        }
     }
 
     /**
@@ -62,8 +60,13 @@ public class CardListController {
             @RequestParam(value = "card") String cardName,
             @RequestParam(value = "count") int newCount,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password
-    ) {
+            @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+            return false;
+        }
+
+        // TODO
         return false;
     }
 
@@ -82,8 +85,12 @@ public class CardListController {
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password
-    ) {
+            @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }
@@ -103,8 +110,12 @@ public class CardListController {
             @RequestParam(value = "cardname") String cardName,
             @RequestParam(value = "rare") String rare,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password
-    ) {
+            @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }
@@ -122,6 +133,11 @@ public class CardListController {
                              @RequestParam(value = "cardname") String cardName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }

@@ -3,7 +3,9 @@ package com.weird.controller;
 import com.weird.model.PageResult;
 import com.weird.model.RollListModel;
 import com.weird.model.dto.RollListDTO;
+import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.RollService;
+import com.weird.service.UserService;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class RollController {
     @Autowired
     RollService rollService;
+
+    @Autowired
+    UserService userService;
 
     /**
      * 【管理端】发送抽卡信息（诡异UI用）
@@ -35,6 +40,11 @@ public class RollController {
                 @RequestParam(value = "card3") long cardId3,
                 @RequestParam(value = "name") String name,
                 @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            return "登录信息错误！";
+        }
+
         // TODO
         String wrongMessage = "";
 
@@ -48,7 +58,7 @@ public class RollController {
     }
 
     /**
-     * 【管理端/ALL?】查询抽卡结果
+     * 【ALL】查询抽卡结果
      *
      * @param page     当前页码
      * @param userName 抽卡用户名
@@ -74,6 +84,11 @@ public class RollController {
                           @RequestParam(value = "status") int status,
                           @RequestParam(value = "name") String name,
                           @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }

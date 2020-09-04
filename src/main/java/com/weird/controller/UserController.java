@@ -2,9 +2,15 @@ package com.weird.controller;
 
 import com.weird.model.PageResult;
 import com.weird.model.dto.UserDataDTO;
+import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.UserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 
 public class UserController {
+    @Autowired
+    UserService userService;
+
     /**
      * 【ALL】查询用户信息
      *
@@ -32,6 +38,11 @@ public class UserController {
             @RequestParam(value = "count") int dustCount,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }
@@ -47,6 +58,11 @@ public class UserController {
     boolean dustToCard(@RequestParam(value = "card") String cardName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) {
+        // 玩家权限验证
+        if (userService.checkLogin(name, password) == LoginTypeEnum.UNLOGIN){
+            return false;
+        }
+
         // TODO
         return false;
     }
@@ -64,6 +80,11 @@ public class UserController {
                         @RequestParam(value = "award") int awardCount,
                         @RequestParam(value = "name") String name,
                         @RequestParam(value = "password") String password) {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            return false;
+        }
+
         // TODO
         return false;
     }
