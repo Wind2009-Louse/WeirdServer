@@ -47,16 +47,19 @@ public class RollController {
      * 查询抽卡结果
      *
      * @param page 当前页码
+     * @param userName 抽卡用户名
      * @return 抽卡结果
      */
     PageResult<RollListDTO> getRollList(
-            @RequestParam(value = "page") int page) {
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "user", required = false) String userName) {
         // TODO
         return null;
     }
 
     /**
      * 设置某个抽卡结果是否适用
+     *
      * @param rollId 抽卡结果ID
      * @param status 要设置的状态
      * @return 是否成功
