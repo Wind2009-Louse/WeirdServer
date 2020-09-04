@@ -90,4 +90,40 @@ public class UserController {
         // TODO
         return false;
     }
+
+    /**
+     * 【管理端】添加新用户
+     *
+     * @param target 用户名
+     * @param name       操作用户名称
+     * @param password   操作用户密码
+     * @return 是否修改成功
+     */
+    boolean addUser(@RequestParam(value = "target") String target,
+                    @RequestParam(value = "name") String name,
+                    @RequestParam(value = "password") String password){
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            return false;
+        }
+
+        // TODO
+        return false;
+    }
+
+    /**
+     * 【ALL】修改用户密码
+     *
+     * @param name 用户名
+     * @param oldPassword   旧密码
+     * @param newPassword   新密码
+     * @return 是否修改成功
+     */
+    boolean updatePassword(@RequestParam(value = "name") String name,
+                    @RequestParam(value = "old") String oldPassword,
+                    @RequestParam(value = "new") String newPassword){
+
+        // TODO
+        return false;
+    }
 }

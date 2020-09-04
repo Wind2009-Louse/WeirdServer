@@ -32,7 +32,7 @@ public class RollController {
      * @param password    操作用户密码
      * @return 抽卡是否成功
      */
-    @RequestMapping("weirdUI/roll")
+    @RequestMapping("/weirdUI/roll")
     String roll(@RequestParam(value = "target") String targetUser,
                 @RequestParam(value = "package") String packageName,
                 @RequestParam(value = "card1") long cardId1,

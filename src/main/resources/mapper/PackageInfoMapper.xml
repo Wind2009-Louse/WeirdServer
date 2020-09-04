@@ -11,15 +11,15 @@
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from package_detail
+        from package_info
         where package_id = #{packageId,jdbcType=INTEGER}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-        delete from package_detail
+        delete from package_info
         where package_id = #{packageId,jdbcType=INTEGER}
     </delete>
     <insert id="insertSelective" parameterType="com.weird.model.PackageInfoModel">
-        insert into package_detail
+        insert into package_info
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="packageId != null">
                 package_id,
@@ -38,7 +38,7 @@
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.PackageInfoModel">
-        update package_detail
+        update package_info
         <set>
             <if test="packageName != null">
                 package_name = #{packageName,jdbcType=VARCHAR},
@@ -47,7 +47,7 @@
         where package_id = #{packageId,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.weird.model.PackageInfoModel">
-        update package_detail
+        update package_info
         set package_name = #{packageName,jdbcType=VARCHAR}
         where package_id = #{packageId,jdbcType=INTEGER}
     </update>
@@ -55,14 +55,14 @@
     <!-- 自定义 -->
     <insert id="insert" parameterType="com.weird.model.PackageInfoModel"
             useGeneratedKeys="true" keyProperty="packageId">
-        insert into package_detail (package_name)
+        insert into package_info (package_name)
         values (#{packageName})
     </insert>
 
-    <select id="selectByName" resultType="com.weird.model.PackageInfoModel">
+    <select id="selectByName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
-        from package_detail
+        from package_info
         where package_name = #{packageName}
     </select>
 </mapper>

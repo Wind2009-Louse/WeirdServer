@@ -7,11 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtherController {
     @RequestMapping({"/index.html", "/"})
     String Homepage_html(){
-        return "Hello!";
-    }
-
-    @RequestMapping("/error")
-    String errorHandler(){
-        return "Error";
+        return "Hello!\n你好！\nこんにちは";
     }
 }

@@ -105,14 +105,14 @@
     </update>
 
     <!-- 自定义 -->
-    <select id="selectByNamePassword" resultType="com.weird.model.UserDataModel">
+    <select id="selectByNamePassword" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user_data
         where user_name = #{name} and password = #{password}
     </select>
 
-    <select id="selectByName" resultType="com.weird.model.UserDataModel">
+    <select id="selectByName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user_data
