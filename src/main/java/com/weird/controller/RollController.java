@@ -16,7 +16,7 @@ public class RollController {
     RollService rollService;
 
     /**
-     * 发送抽卡信息（诡异UI用）
+     * 【管理端】发送抽卡信息（诡异UI用）
      *
      * @param user        用户名
      * @param packageName 卡包名
@@ -44,7 +44,7 @@ public class RollController {
     }
 
     /**
-     * 查询抽卡结果
+     * 【管理端/ALL?】查询抽卡结果
      *
      * @param page 当前页码
      * @param userName 抽卡用户名
@@ -58,7 +58,7 @@ public class RollController {
     }
 
     /**
-     * 设置某个抽卡结果是否适用
+     * 【管理端】设置某个抽卡结果是否适用
      *
      * @param rollId 抽卡结果ID
      * @param status 要设置的状态

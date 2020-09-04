@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class CardListController {
     /**
-     * 管理端使用的卡片搜索
+     * 【管理端】卡片搜索
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -24,7 +24,7 @@ public class CardListController {
     }
 
     /**
-     * 普通用户使用的卡片搜索
+     * 【玩家端】卡片搜索
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -40,7 +40,7 @@ public class CardListController {
     }
 
     /**
-     * 修改用户持有的卡片数量
+     * 【管理端】修改用户持有的卡片数量
      *
      * @param userName 用户名
      * @param cardName 卡片名
@@ -56,7 +56,7 @@ public class CardListController {
     }
 
     /**
-     * 修改卡包中的卡片名称
+     * 【管理端】修改卡包中的卡片名称
      *
      * @param packageName 卡包名
      * @param oldCardName 旧卡片名
@@ -73,7 +73,7 @@ public class CardListController {
     }
 
     /**
-     * 添加卡片信息
+     * 【管理端】添加卡片信息
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -90,7 +90,8 @@ public class CardListController {
     }
 
     /**
-     * 删除卡片信息
+     * 【管理端】删除卡片信息
+     *
      * @param packageName 卡包名
      * @param cardName    卡片名
      * @return 是否删除成功
