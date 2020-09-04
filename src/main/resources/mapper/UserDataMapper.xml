@@ -1,106 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weird.mapper.UserDataMapper">
-  <resultMap id="BaseResultMap" type="com.weird.model.UserDataModel">
-    <id column="user_id" jdbcType="INTEGER" property="userId" />
-    <result column="user_name" jdbcType="VARCHAR" property="userName" />
-    <result column="password" jdbcType="VARCHAR" property="password" />
-    <result column="is_admin" jdbcType="TINYINT" property="isAdmin" />
-    <result column="nonaward_count" jdbcType="INTEGER" property="nonawardCount" />
-    <result column="dust_count" jdbcType="INTEGER" property="dustCount" />
-  </resultMap>
-  <sql id="Base_Column_List">
-    user_id, user_name, password, is_admin, nonaward_count, dust_count
-  </sql>
-  <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
-    select 
-    <include refid="Base_Column_List" />
-    from user_data
-    where user_id = #{userId,jdbcType=INTEGER}
-  </select>
-  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
-    delete from user_data
-    where user_id = #{userId,jdbcType=INTEGER}
-  </delete>
-  <insert id="insert" parameterType="com.weird.model.UserDataModel">
-    insert into user_data (user_id, user_name, password, 
-      is_admin, nonaward_count, dust_count
-      )
-    values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
-      #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER}
-      )
-  </insert>
-  <insert id="insertSelective" parameterType="com.weird.model.UserDataModel">
-    insert into user_data
-    <trim prefix="(" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        user_id,
-      </if>
-      <if test="userName != null">
-        user_name,
-      </if>
-      <if test="password != null">
-        password,
-      </if>
-      <if test="isAdmin != null">
-        is_admin,
-      </if>
-      <if test="nonawardCount != null">
-        nonaward_count,
-      </if>
-      <if test="dustCount != null">
-        dust_count,
-      </if>
-    </trim>
-    <trim prefix="values (" suffix=")" suffixOverrides=",">
-      <if test="userId != null">
-        #{userId,jdbcType=INTEGER},
-      </if>
-      <if test="userName != null">
-        #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
-        #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="isAdmin != null">
-        #{isAdmin,jdbcType=TINYINT},
-      </if>
-      <if test="nonawardCount != null">
-        #{nonawardCount,jdbcType=INTEGER},
-      </if>
-      <if test="dustCount != null">
-        #{dustCount,jdbcType=INTEGER},
-      </if>
-    </trim>
-  </insert>
-  <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.UserDataModel">
-    update user_data
-    <set>
-      <if test="userName != null">
-        user_name = #{userName,jdbcType=VARCHAR},
-      </if>
-      <if test="password != null">
+    <resultMap id="BaseResultMap" type="com.weird.model.UserDataModel">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="is_admin" jdbcType="TINYINT" property="isAdmin"/>
+        <result column="nonaward_count" jdbcType="INTEGER" property="nonawardCount"/>
+        <result column="dust_count" jdbcType="INTEGER" property="dustCount"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, user_name, password, is_admin, nonaward_count, dust_count
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_id = #{userId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from user_data
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.weird.model.UserDataModel">
+        insert into user_data (user_id, user_name, password,
+        is_admin, nonaward_count, dust_count
+        )
+        values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.UserDataModel">
+        insert into user_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="isAdmin != null">
+                is_admin,
+            </if>
+            <if test="nonawardCount != null">
+                nonaward_count,
+            </if>
+            <if test="dustCount != null">
+                dust_count,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="isAdmin != null">
+                #{isAdmin,jdbcType=TINYINT},
+            </if>
+            <if test="nonawardCount != null">
+                #{nonawardCount,jdbcType=INTEGER},
+            </if>
+            <if test="dustCount != null">
+                #{dustCount,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.UserDataModel">
+        update user_data
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="isAdmin != null">
+                is_admin = #{isAdmin,jdbcType=TINYINT},
+            </if>
+            <if test="nonawardCount != null">
+                nonaward_count = #{nonawardCount,jdbcType=INTEGER},
+            </if>
+            <if test="dustCount != null">
+                dust_count = #{dustCount,jdbcType=INTEGER},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.weird.model.UserDataModel">
+        update user_data
+        set user_name = #{userName,jdbcType=VARCHAR},
         password = #{password,jdbcType=VARCHAR},
-      </if>
-      <if test="isAdmin != null">
         is_admin = #{isAdmin,jdbcType=TINYINT},
-      </if>
-      <if test="nonawardCount != null">
         nonaward_count = #{nonawardCount,jdbcType=INTEGER},
-      </if>
-      <if test="dustCount != null">
-        dust_count = #{dustCount,jdbcType=INTEGER},
-      </if>
-    </set>
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
-  <update id="updateByPrimaryKey" parameterType="com.weird.model.UserDataModel">
-    update user_data
-    set user_name = #{userName,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      is_admin = #{isAdmin,jdbcType=TINYINT},
-      nonaward_count = #{nonawardCount,jdbcType=INTEGER},
-      dust_count = #{dustCount,jdbcType=INTEGER}
-    where user_id = #{userId,jdbcType=INTEGER}
-  </update>
+        dust_count = #{dustCount,jdbcType=INTEGER}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+
+    <!-- 自定义 -->
+    <select id="selectByNamePassword" resultType="com.weird.model.UserDataModel">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name} and password = #{password}
+    </select>
+
+    <select id="selectByName" resultType="com.weird.model.UserDataModel">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name}
+    </select>
 </mapper>
