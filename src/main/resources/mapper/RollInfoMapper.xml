@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.RollInfoMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.RollInfoModel">
+        <result column="roll_id" jdbcType="BIGINT" property="rollId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="is_dust" jdbcType="TINYINT" property="isDust"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.weird.model.RollInfoModel">
+        insert into roll_info (roll_id, card_pk, is_dust
+        )
+        values (#{rollId,jdbcType=BIGINT}, #{cardPk,jdbcType=INTEGER}, #{isDust,jdbcType=TINYINT}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.RollInfoModel">
+        insert into roll_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                roll_id,
+            </if>
+            <if test="cardPk != null">
+                card_pk,
+            </if>
+            <if test="isDust != null">
+                is_dust,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                #{rollId,jdbcType=BIGINT},
+            </if>
+            <if test="cardPk != null">
+                #{cardPk,jdbcType=INTEGER},
+            </if>
+            <if test="isDust != null">
+                #{isDust,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+</mapper>

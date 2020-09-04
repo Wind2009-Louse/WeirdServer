@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.PackageCardMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.PackageCardModel">
+        <id column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="card_id" jdbcType="BIGINT" property="cardId"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="package_id" jdbcType="INTEGER" property="packageId"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        card_pk, card_id, card_name, package_id, rare
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_card
+        where card_pk = #{card_pk,jdbcType=BIGINT}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from package_card
+        where card_pk = #{card_pk,jdbcType=BIGINT}
+    </delete>
+    <insert id="insert" parameterType="com.weird.model.PackageCardModel">
+        insert into package_card (card_pk, card_id, card_name,
+        package_id, rare)
+        values (#{card_pk,jdbcType=BIGINT}, #{cardId,jdbcType=BIGINT}, #{cardName,jdbcType=VARCHAR},
+        #{packageId,jdbcType=INTEGER}, #{rare,jdbcType=VARCHAR})
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.PackageCardModel">
+        insert into package_card
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="card_pk != null">
+                card_pk,
+            </if>
+            <if test="cardId != null">
+                card_id,
+            </if>
+            <if test="cardName != null">
+                card_name,
+            </if>
+            <if test="packageId != null">
+                package_id,
+            </if>
+            <if test="rare != null">
+                rare,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="card_pk != null">
+                #{card_pk,jdbcType=BIGINT},
+            </if>
+            <if test="cardId != null">
+                #{cardId,jdbcType=BIGINT},
+            </if>
+            <if test="cardName != null">
+                #{cardName,jdbcType=VARCHAR},
+            </if>
+            <if test="packageId != null">
+                #{packageId,jdbcType=INTEGER},
+            </if>
+            <if test="rare != null">
+                #{rare,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.PackageCardModel">
+        update package_card
+        <set>
+            <if test="cardId != null">
+                card_id = #{cardId,jdbcType=BIGINT},
+            </if>
+            <if test="cardName != null">
+                card_name = #{cardName,jdbcType=VARCHAR},
+            </if>
+            <if test="packageId != null">
+                package_id = #{packageId,jdbcType=INTEGER},
+            </if>
+            <if test="rare != null">
+                rare = #{rare,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where card_pk = #{card_pk,jdbcType=BIGINT}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.weird.model.PackageCardModel">
+        update package_card
+        set card_id = #{cardId,jdbcType=BIGINT},
+        card_name = #{cardName,jdbcType=VARCHAR},
+        package_id = #{packageId,jdbcType=INTEGER},
+        rare = #{rare,jdbcType=VARCHAR}
+        where card_pk = #{card_pk,jdbcType=BIGINT}
+    </update>
+</mapper>

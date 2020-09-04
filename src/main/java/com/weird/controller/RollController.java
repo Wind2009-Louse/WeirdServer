@@ -1,0 +1,69 @@
+package com.weird.controller;
+
+import com.weird.model.PageResult;
+import com.weird.model.RollListModel;
+import com.weird.model.dto.RollListDTO;
+import com.weird.service.RollService;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class RollController {
+    @Autowired
+    RollService rollService;
+
+    /**
+     * 发送抽卡信息（诡异UI用）
+     *
+     * @param user        用户名
+     * @param packageName 卡包名
+     * @param cardId1     卡片ID1
+     * @param cardId2     卡片ID2
+     * @param cardId3     卡片ID3
+     * @return 抽卡是否成功
+     */
+    @RequestMapping("weirdUI/roll")
+    String roll(@RequestParam(value = "user") String user,
+                @RequestParam(value = "package") String packageName,
+                @RequestParam(value = "card1") long cardId1,
+                @RequestParam(value = "card2") long cardId2,
+                @RequestParam(value = "card3") long cardId3) {
+        // TODO
+        String wrongMessage = "";
+
+        // 错误处理
+
+        if (wrongMessage.length() > 0) {
+            return wrongMessage;
+        }
+
+        return "记录成功!";
+    }
+
+    /**
+     * 查询抽卡结果
+     *
+     * @param page 当前页码
+     * @return 抽卡结果
+     */
+    PageResult<RollListDTO> getRollList(
+            @RequestParam(value = "page") int page) {
+        // TODO
+        return null;
+    }
+
+    /**
+     * 设置某个抽卡结果是否适用
+     * @param rollId 抽卡结果ID
+     * @param status 要设置的状态
+     * @return 是否成功
+     */
+    boolean setRollStatus(@RequestParam(value = "id") long rollId,
+                          @RequestParam(value = "status") int status) {
+        // TODO
+        return false;
+    }
+}

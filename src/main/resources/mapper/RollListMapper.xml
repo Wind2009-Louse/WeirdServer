@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.RollListMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.RollListModel">
+        <id column="roll_id" jdbcType="BIGINT" property="rollId"/>
+        <result column="roll_user_id" jdbcType="INTEGER" property="rollUserId"/>
+        <result column="roll_package_id" jdbcType="INTEGER" property="rollPackageId"/>
+        <result column="is_disabled" jdbcType="TINYINT" property="isDisabled"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        roll_id, roll_user_id, roll_package_id, is_disabled
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from roll_list
+        where roll_id = #{rollId,jdbcType=INTEGER}
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from roll_list
+        where roll_id = #{rollId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insert" parameterType="com.weird.model.RollListModel">
+        insert into roll_list (roll_id, roll_user_id, roll_package_id,
+        is_disabled)
+        values (#{rollId,jdbcType=INTEGER}, #{rollUserId,jdbcType=INTEGER}, #{rollPackageId,jdbcType=INTEGER},
+        #{isDisabled,jdbcType=TINYINT})
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.RollListModel">
+        insert into roll_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                roll_id,
+            </if>
+            <if test="rollUserId != null">
+                roll_user_id,
+            </if>
+            <if test="rollPackageId != null">
+                roll_package_id,
+            </if>
+            <if test="isDisabled != null">
+                is_disabled,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                #{rollId,jdbcType=INTEGER},
+            </if>
+            <if test="rollUserId != null">
+                #{rollUserId,jdbcType=INTEGER},
+            </if>
+            <if test="rollPackageId != null">
+                #{rollPackageId,jdbcType=INTEGER},
+            </if>
+            <if test="isDisabled != null">
+                #{isDisabled,jdbcType=TINYINT},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.RollListModel">
+        update roll_list
+        <set>
+            <if test="rollUserId != null">
+                roll_user_id = #{rollUserId,jdbcType=INTEGER},
+            </if>
+            <if test="rollPackageId != null">
+                roll_package_id = #{rollPackageId,jdbcType=INTEGER},
+            </if>
+            <if test="isDisabled != null">
+                is_disabled = #{isDisabled,jdbcType=TINYINT},
+            </if>
+        </set>
+        where roll_id = #{rollId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.weird.model.RollListModel">
+        update roll_list
+        set roll_user_id = #{rollUserId,jdbcType=INTEGER},
+        roll_package_id = #{rollPackageId,jdbcType=INTEGER},
+        is_disabled = #{isDisabled,jdbcType=TINYINT}
+        where roll_id = #{rollId,jdbcType=INTEGER}
+    </update>
+</mapper>

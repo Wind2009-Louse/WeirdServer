@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.UserCardListMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.UserCardListModel">
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.weird.model.UserCardListModel">
+        insert into user_card_list (user_id, card_pk, count
+        )
+        values (#{userId,jdbcType=INTEGER}, #{cardPk,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.UserCardListModel">
+        insert into user_card_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="cardPk != null">
+                card_pk,
+            </if>
+            <if test="count != null">
+                count,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="cardPk != null">
+                #{cardPk,jdbcType=INTEGER},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+</mapper>
