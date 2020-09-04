@@ -34,7 +34,7 @@ public class CardListController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
             // TODO
             // 搜索全卡
             return null;
@@ -62,7 +62,7 @@ public class CardListController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
             return false;
         }
 
@@ -87,7 +87,7 @@ public class CardListController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
             return false;
         }
 
@@ -112,7 +112,7 @@ public class CardListController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
             return false;
         }
 
@@ -134,7 +134,7 @@ public class CardListController {
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN){
+        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
             return false;
         }
 
