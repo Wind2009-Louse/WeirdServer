@@ -18,10 +18,6 @@
         delete from package_detail
         where package_id = #{packageId,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.weird.model.PackageInfoModel">
-        insert into package_detail (package_id, package_name)
-        values (#{packageId,jdbcType=INTEGER}, #{packageName,jdbcType=VARCHAR})
-    </insert>
     <insert id="insertSelective" parameterType="com.weird.model.PackageInfoModel">
         insert into package_detail
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -55,4 +51,18 @@
         set package_name = #{packageName,jdbcType=VARCHAR}
         where package_id = #{packageId,jdbcType=INTEGER}
     </update>
+
+    <!-- 自定义 -->
+    <insert id="insert" parameterType="com.weird.model.PackageInfoModel"
+            useGeneratedKeys="true" keyProperty="packageId">
+        insert into package_detail (package_name)
+        values (#{packageName})
+    </insert>
+
+    <select id="selectByName" resultType="com.weird.model.PackageInfoModel">
+        select
+        <include refid="Base_Column_List"/>
+        from package_detail
+        where package_name = #{packageName}
+    </select>
 </mapper>

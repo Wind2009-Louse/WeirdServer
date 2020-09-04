@@ -14,4 +14,12 @@ public interface PackageInfoMapper {
     int updateByPrimaryKeySelective(PackageInfoModel record);
 
     int updateByPrimaryKey(PackageInfoModel record);
+
+    /**
+     * 根据卡包名搜索卡包信息
+     *
+     * @param packageName 卡包名
+     * @return 卡包信息
+     */
+    PackageInfoModel selectByName(String packageName);
 }

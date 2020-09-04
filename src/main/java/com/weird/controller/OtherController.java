@@ -9,4 +9,9 @@ public class OtherController {
     String Homepage_html(){
         return "Hello!";
     }
+
+    @RequestMapping("/error")
+    String errorHandler(){
+        return "Error";
+    }
 }

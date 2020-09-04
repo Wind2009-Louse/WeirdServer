@@ -51,12 +51,12 @@ DROP TABLE IF EXISTS `package_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `package_info` (
-  `package_id` int NOT NULL COMMENT '卡包ID',
+  `package_id` int NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
   `package_name` varchar(45) NOT NULL DEFAULT '' COMMENT '卡包名称',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`package_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='卡包信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='卡包信息'
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --

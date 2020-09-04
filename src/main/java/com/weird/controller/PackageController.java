@@ -1,13 +1,20 @@
 package com.weird.controller;
 
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.PackageService;
 import com.weird.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
 public class PackageController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    PackageService packageService;
 
     /**
      * 【管理端】新增卡包
@@ -17,6 +24,7 @@ public class PackageController {
      * @param password    操作用户密码
      * @return 是否修改成功
      */
+    @RequestMapping("package/add")
     boolean addPackage(@RequestParam(value = "package") String packageName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) {
@@ -25,8 +33,7 @@ public class PackageController {
             return false;
         }
 
-        // TODO
-        return false;
+        return packageService.addPackage(packageName);
     }
 
     /**
@@ -38,6 +45,7 @@ public class PackageController {
      * @param password       操作用户密码
      * @return 是否修改成功
      */
+    @RequestMapping("package/update")
     boolean updatePackageName(@RequestParam(value = "oldname") String oldPackageName,
                               @RequestParam(value = "newname") String newPackageName,
                               @RequestParam(value = "name") String name,
@@ -47,7 +55,6 @@ public class PackageController {
             return false;
         }
 
-        // TODO
-        return false;
+        return packageService.updatePackageName(oldPackageName, newPackageName);
     }
 }

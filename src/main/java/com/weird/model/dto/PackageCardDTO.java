@@ -1,9 +1,12 @@
 package com.weird.model.dto;
 
+import lombok.Data;
+
 /**
  * 卡片持有信息DTO
  * @author Nidhogg
  */
+@Data
 public class PackageCardDTO {
     /**
      * 卡密
