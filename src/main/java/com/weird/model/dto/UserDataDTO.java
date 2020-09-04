@@ -1,4 +1,4 @@
-package com.weird.model;
+package com.weird.model.dto;
 
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class UserDataModel {
+public class UserDataDTO {
     /**
      * 用户ID
      */
@@ -19,16 +19,6 @@ public class UserDataModel {
      * 用户名
      */
     private String userName;
-
-    /**
-     * 用户密码
-     */
-    private String password;
-
-    /**
-     * 是否管理员
-     */
-    private Byte isAdmin;
 
     /**
      * 未出货的计数

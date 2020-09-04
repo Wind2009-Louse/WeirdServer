@@ -17,7 +17,7 @@ public class PackageCardDTO {
     /**
      * 所在卡包
      */
-    private int packageId;
+    private String packageName;
 
     /**
      * 稀有度

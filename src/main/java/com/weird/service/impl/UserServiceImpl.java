@@ -15,7 +15,8 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public List<Integer> getNameById(String name) {
-        return userDataMapper.selectByName(name);
+        // TODO
+        return null;
     }
 
     @Override
@@ -29,6 +30,7 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public boolean checkLogin(String name, String encryptedPassword) {
-        return (userDataMapper.selectByLogin(name, encryptedPassword) != null);
+        // TODO
+        return false;
     }
 }
