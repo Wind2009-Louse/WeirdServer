@@ -17,6 +17,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserDataMapper userDataMapper;
 
+    final String DEFAULT_PASSWORD = "123456";
+    final String DEFAULT_PASSWORD_MD5 = "E10ADC3949BA59ABBE56E057F20F883E";
+
     /**
      * 根据用户名查找用户列表
      *
@@ -65,5 +68,50 @@ public class UserServiceImpl implements UserService {
         } else {
             return LoginTypeEnum.NORMAL;
         }
+    }
+
+    /**
+     * 添加新用户（默认密码为123456）
+     *
+     * @param name 用户名
+     * @return 是否添加成功
+     */
+    @Override
+    public boolean addUser(String name) {
+        List<UserDataModel> modelList = userDataMapper.selectByName(name);
+        if (modelList != null){
+            for (UserDataModel model : modelList){
+                if (model.getUserName().equals(name)){
+                    return false;
+                }
+            }
+        }
+
+        UserDataModel newModel = new UserDataModel();
+        newModel.setUserName(name);
+        newModel.setPassword(DEFAULT_PASSWORD);
+        newModel.setIsAdmin((byte) 0);
+        newModel.setDustCount(0);
+        newModel.setNonawardCount(0);
+        userDataMapper.insert(newModel);
+        return newModel.getUserId() > 0;
+    }
+
+    /**
+     * 修改用户密码
+     *
+     * @param name 用户名
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否更改成功
+     */
+    @Override
+    public boolean updatePassword(String name, String oldPassword, String newPassword) {
+        UserDataModel model = userDataMapper.selectByNamePassword(name, oldPassword);
+        if (model == null){
+            return false;
+        }
+        model.setPassword(newPassword);
+        return userDataMapper.updateByPrimaryKey(model) > 0;
     }
 }

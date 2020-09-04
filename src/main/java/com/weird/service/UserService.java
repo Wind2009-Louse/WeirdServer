@@ -31,4 +31,22 @@ public interface UserService {
      * @return 登录类型
      */
     LoginTypeEnum checkLogin(String name, String encryptedPassword);
+
+    /**
+     * 添加新用户（默认密码为123456）
+     *
+     * @param name 用户名
+     * @return 是否添加成功
+     */
+    boolean addUser(String name);
+
+    /**
+     * 修改用户密码
+     *
+     * @param name 用户名
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
+     * @return 是否更改成功
+     */
+    boolean updatePassword(String name, String oldPassword, String newPassword);
 }

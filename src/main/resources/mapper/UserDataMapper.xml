@@ -22,14 +22,6 @@
         delete from user_data
         where user_id = #{userId,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.weird.model.UserDataModel">
-        insert into user_data (user_id, user_name, password,
-        is_admin, nonaward_count, dust_count
-        )
-        values (#{userId,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
-        #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER}
-        )
-    </insert>
     <insert id="insertSelective" parameterType="com.weird.model.UserDataModel">
         insert into user_data
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -118,4 +110,14 @@
         from user_data
         where user_name = #{name}
     </select>
+
+    <insert id="insert" parameterType="com.weird.model.UserDataModel"
+            useGeneratedKeys="true" keyProperty="userId">
+        insert into user_data (user_name, password,
+        is_admin, nonaward_count, dust_count
+        )
+        values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER}
+        )
+    </insert>
 </mapper>
