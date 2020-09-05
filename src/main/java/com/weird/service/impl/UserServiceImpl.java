@@ -117,4 +117,46 @@ public class UserServiceImpl implements UserService {
         model.setPassword(newPassword);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
+
+    /**
+     * 修改用户尘数
+     *
+     * @param name 用户名
+     * @param newCount 新尘数
+     * @return 是否更改成功
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updateDust(String name, int newCount) throws Exception {
+        List<UserDataModel> modelList = userDataMapper.selectByName(name);
+        if (modelList == null || modelList.size() != 1){
+            throw new Exception("找不到用户！");
+        }
+        UserDataModel model = modelList.get(0);
+
+        model.setDustCount(newCount);
+        userDataMapper.updateByPrimaryKey(model);
+        return true;
+    }
+
+    /**
+     * 修改不出货数量
+     *
+     * @param name     用户名
+     * @param newCount 新结果
+     * @return 是否更改成功
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updateAward(String name, int newCount) throws Exception {
+        List<UserDataModel> modelList = userDataMapper.selectByName(name);
+        if (modelList == null || modelList.size() != 1){
+            throw new Exception("找不到用户！");
+        }
+        UserDataModel model = modelList.get(0);
+
+        model.setNonawardCount(newCount);
+        userDataMapper.updateByPrimaryKey(model);
+        return true;
+    }
 }

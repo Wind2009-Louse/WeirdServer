@@ -48,4 +48,22 @@ public interface UserService {
      * @return 是否更改成功
      */
     boolean updatePassword(String name, String oldPassword, String newPassword) throws Exception;
+
+    /**
+     * 修改用户尘数
+     *
+     * @param name 用户名
+     * @param newCount 新尘数
+     * @return 是否更改成功
+     */
+    boolean updateDust(String name, int newCount) throws Exception;
+
+    /**
+     * 修改不出货数量
+     *
+     * @param name     用户名
+     * @param newCount 新结果
+     * @return 是否更改成功
+     */
+    boolean updateAward(String name, int newCount) throws Exception;
 }

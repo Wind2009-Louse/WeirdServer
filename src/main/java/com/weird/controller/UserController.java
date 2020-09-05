@@ -1,6 +1,5 @@
 package com.weird.controller;
 
-import com.weird.model.ResultModel;
 import com.weird.utils.PageResult;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -43,7 +42,8 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    boolean updateDust(
+    @RequestMapping("/user/dust")
+    String updateDust(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "count") int dustCount,
             @RequestParam(value = "name") String name,
@@ -53,8 +53,11 @@ public class UserController {
             throw new Exception("权限不足！");
         }
 
-        // TODO
-        return false;
+        if (userService.updateDust(targetUser, dustCount)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 
     /**
@@ -65,7 +68,8 @@ public class UserController {
      * @param password 操作用户密码
      * @return 是否转换成功
      */
-    boolean dustToCard(@RequestParam(value = "card") String cardName,
+    @RequestMapping("/user/change")
+    String dustToCard(@RequestParam(value = "card") String cardName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) throws Exception {
         // 玩家权限验证
@@ -74,7 +78,7 @@ public class UserController {
         }
 
         // TODO
-        return false;
+        return "";
     }
 
     /**
@@ -86,7 +90,8 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    boolean updateCount(@RequestParam(value = "target") String targetUser,
+    @RequestMapping("/user/award")
+    String updateCount(@RequestParam(value = "target") String targetUser,
                         @RequestParam(value = "award") int awardCount,
                         @RequestParam(value = "name") String name,
                         @RequestParam(value = "password") String password) throws Exception {
@@ -95,8 +100,11 @@ public class UserController {
             throw new Exception("权限不足！");
         }
 
-        // TODO
-        return false;
+        if (userService.updateAward(targetUser, awardCount)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 
     /**
