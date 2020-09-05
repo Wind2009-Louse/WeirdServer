@@ -1,17 +1,32 @@
 package com.weird.controller;
 
+import com.weird.service.CardService;
+import com.weird.service.PackageService;
 import com.weird.utils.PageResult;
 import com.weird.model.dto.PackageCardDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Arrays;
+import java.util.List;
 
 @RestController
 public class CardListController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    PackageService packageService;
+
+    @Autowired
+    CardService cardService;
+
+    final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
     /**
      * 【管理端/ALL】卡片搜索
@@ -51,8 +66,10 @@ public class CardListController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    boolean updateUserCardCount(
+    @RequestMapping("/user/card/update")
+    String updateUserCardCount(
             @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card") String cardName,
             @RequestParam(value = "count") int newCount,
             @RequestParam(value = "name") String name,
@@ -62,8 +79,11 @@ public class CardListController {
             throw new Exception("权限不足！");
         }
 
-        // TODO
-        return false;
+        if (cardService.updateCardCount(targetUser, packageName, cardName, newCount)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 
     /**
@@ -76,7 +96,8 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否修改成功
      */
-    boolean updateCardName(
+    @RequestMapping("/package/card/update")
+    String updateCardName(
             @RequestParam(value = "package", required = false) String packageName,
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
@@ -86,9 +107,18 @@ public class CardListController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new Exception("权限不足！");
         }
+        if (newCardName == null || newCardName.length() == 0){
+            throw new Exception("卡片名为空！");
+        }
+        if (newCardName.equals(oldCardName)){
+            throw new Exception("名字未修改！");
+        }
 
-        // TODO
-        return false;
+        if (packageService.updateCardName(packageName, oldCardName, newCardName)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 
     /**
@@ -101,7 +131,8 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否添加成功
      */
-    boolean addCardDetail(
+    @RequestMapping("/package/card/add")
+    String addCardDetail(
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "cardname") String cardName,
             @RequestParam(value = "rare") String rare,
@@ -111,13 +142,25 @@ public class CardListController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new Exception("权限不足！");
         }
+        if (cardName == null || cardName.length() == 0){
+            throw new Exception("卡片名为空！");
+        }
 
-        // TODO
-        return false;
+        // 稀有度验证
+        if (!RARE_LIST.contains(rare)){
+            throw new Exception("稀有度设置错误！");
+        }
+
+        if (packageService.addCard(packageName, cardName, rare)){
+            return "添加成功！";
+        } else {
+            throw new Exception("添加失败！");
+        }
     }
 
     /**
      * 【管理端】删除卡片信息
+     * 需求较低，暂时鸽置
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -125,7 +168,9 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否删除成功
      */
-    boolean deleteCardDetail(@RequestParam(value = "package") String packageName,
+    @RequestMapping("/package/card/delete")
+    @Deprecated
+    String deleteCardDetail(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "cardname") String cardName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {
@@ -134,7 +179,6 @@ public class CardListController {
             throw new Exception("权限不足！");
         }
 
-        // TODO
-        return false;
+        throw new Exception("删除失败！");
     }
 }

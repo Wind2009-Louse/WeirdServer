@@ -128,11 +128,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDust(String name, int newCount) throws Exception {
-        List<UserDataModel> modelList = userDataMapper.selectByName(name);
-        if (modelList == null || modelList.size() != 1){
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null){
             throw new Exception("找不到用户！");
         }
-        UserDataModel model = modelList.get(0);
 
         model.setDustCount(newCount);
         userDataMapper.updateByPrimaryKey(model);
@@ -149,11 +148,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateAward(String name, int newCount) throws Exception {
-        List<UserDataModel> modelList = userDataMapper.selectByName(name);
-        if (modelList == null || modelList.size() != 1){
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null){
             throw new Exception("找不到用户！");
         }
-        UserDataModel model = modelList.get(0);
 
         model.setNonawardCount(newCount);
         userDataMapper.updateByPrimaryKey(model);

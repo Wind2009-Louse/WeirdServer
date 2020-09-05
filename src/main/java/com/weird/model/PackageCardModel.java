@@ -18,11 +18,6 @@ public class PackageCardModel implements Serializable {
     private int cardPk;
 
     /**
-     * 卡密
-     */
-    private long cardId;
-
-    /**
      * 卡名
      */
     private String cardName;

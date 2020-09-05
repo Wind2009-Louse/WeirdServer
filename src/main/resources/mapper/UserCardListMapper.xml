@@ -37,4 +37,17 @@
             </if>
         </trim>
     </insert>
+
+    <!-- 自定义 -->
+    <select id="selectByUserCard" resultMap="BaseResultMap">
+        select user_id, card_pk, count
+        from user_card_list
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </select>
+
+    <update id="update" parameterType="com.weird.model.UserCardListModel">
+        update user_card_list
+        set count = #{count}
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </update>
 </mapper>

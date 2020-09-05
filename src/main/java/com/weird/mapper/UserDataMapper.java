@@ -36,4 +36,12 @@ public interface UserDataMapper {
      * @return 用户列表
      */
     List<UserDataModel> selectByName(@Param("name") String name);
+
+    /**
+     * 根据用户名查找用户列表
+     *
+     * @param name 用户名
+     * @return 用户
+     */
+    UserDataModel selectByNameDistinct(@Param("name") String name);
 }

@@ -21,4 +21,24 @@ public interface PackageService {
      * @return 是否更新成功
      */
     boolean updatePackageName(String oldName, String newName) throws Exception;
+
+    /**
+     * 在卡包中添加卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName 卡片名
+     * @param rare 稀有度
+     * @return 是否添加成功
+     */
+    boolean addCard(String packageName, String cardName, String rare) throws Exception;
+
+    /**
+     * 修改卡包中的卡片名字
+     *
+     * @param packageName 卡包名
+     * @param oldName 旧卡名
+     * @param newName 新卡名
+     * @return 是否修改成功
+     */
+    boolean updateCardName(String packageName, String oldName, String newName) throws Exception;
 }

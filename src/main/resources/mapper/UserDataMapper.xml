@@ -111,6 +111,13 @@
         where user_name like concat('%', #{name}, '%') and is_admin = 0
     </select>
 
+    <select id="selectByNameDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name} and is_admin = 0
+    </select>
+
     <insert id="insert" parameterType="com.weird.model.UserDataModel"
             useGeneratedKeys="true" keyProperty="userId">
         insert into user_data (user_name, password,
