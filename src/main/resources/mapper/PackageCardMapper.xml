@@ -83,6 +83,13 @@
         where package_id = #{packageId} and card_name = #{name}
     </select>
 
+    <select id="selectByNameDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_card
+        where card_name = #{name}
+    </select>
+
     <insert id="insert" parameterType="com.weird.model.PackageCardModel"
             useGeneratedKeys="true" keyProperty="packageId">
         insert into package_card (card_pk, card_name,

@@ -37,4 +37,12 @@ public interface PackageCardMapper {
      */
     PackageCardModel selectInPackageDistinct(@Param("packageId") int packageId,
                                              @Param("name") String name);
+
+    /**
+     * 根据卡名搜索卡片信息
+     *
+     * @param name 卡片名
+     * @return 查找结果
+     */
+    PackageCardModel selectByNameDistinct(@Param("name") String name);
 }

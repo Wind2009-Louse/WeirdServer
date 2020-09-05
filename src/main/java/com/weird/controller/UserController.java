@@ -72,13 +72,11 @@ public class UserController {
     String dustToCard(@RequestParam(value = "card") String cardName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) throws Exception {
-        // 玩家权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.UNLOGIN){
-            throw new Exception("登录信息错误！");
+        if (userService.dustToCard(cardName, name, password)){
+            return "转换成功！";
+        } else {
+            throw new Exception("转换失败！");
         }
-
-        // TODO
-        return "";
     }
 
     /**
@@ -101,6 +99,32 @@ public class UserController {
         }
 
         if (userService.updateAward(targetUser, awardCount)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
+    }
+
+    /**
+     * 【管理端】修改用户DP
+     *
+     * @param targetUser 用户名
+     * @param dp         新DP
+     * @param name       操作用户名称
+     * @param password   操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/user/dp")
+    String updateDuelPoint(@RequestParam(value = "target") String targetUser,
+                           @RequestParam(value = "dp") int dpCount,
+                           @RequestParam(value = "name") String name,
+                           @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
+            throw new Exception("权限不足！");
+        }
+
+        if (userService.updateDuelPoint(targetUser, dpCount)){
             return "修改成功！";
         } else {
             throw new Exception("修改失败！");

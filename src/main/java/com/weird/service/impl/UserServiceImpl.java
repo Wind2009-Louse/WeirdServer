@@ -1,15 +1,20 @@
 package com.weird.service.impl;
 
+import com.weird.mapper.PackageCardMapper;
 import com.weird.mapper.UserDataMapper;
+import com.weird.model.PackageCardModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
+import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,8 +23,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     UserDataMapper userDataMapper;
 
+    @Autowired
+    PackageCardMapper packageCardMapper;
+
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "E10ADC3949BA59ABBE56E057F20F883E";
+    final List<String> NR_RARE = Arrays.asList("N","R");
 
     /**
      * 根据用户名查找用户列表
@@ -139,6 +148,33 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 暂时不做
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    @Deprecated
+    public boolean dustToCard(String cardName, String userName, String password) throws Exception {
+        // 玩家权限验证
+        UserDataModel model = userDataMapper.selectByNamePassword(userName, password);
+        if (model == null) {
+            throw new Exception("登录失败！");
+        }
+
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
+        if (cardModel == null){
+            throw new Exception(String.format("找不到卡片：[%s]！", cardName));
+        }
+        int needDust = 0;
+        if (NR_RARE.contains(cardModel.getRare())){
+            needDust = 5;
+        } else {
+            needDust = 150;
+        }
+
+        return false;
+    }
+
+    /**
      * 修改不出货数量
      *
      * @param name     用户名
@@ -154,6 +190,19 @@ public class UserServiceImpl implements UserService {
         }
 
         model.setNonawardCount(newCount);
+        userDataMapper.updateByPrimaryKey(model);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updateDuelPoint(String name, int newCount) throws Exception {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null){
+            throw new Exception(String.format("找不到用户：[%s]！", name));
+        }
+
+        model.setDuelPoint(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
     }

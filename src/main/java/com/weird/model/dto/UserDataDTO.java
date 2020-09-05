@@ -31,4 +31,9 @@ public class UserDataDTO implements Serializable {
      * 尘数
      */
     private Integer dustCount;
+
+    /**
+     * DP
+     */
+    private Integer duelPoint;
 }

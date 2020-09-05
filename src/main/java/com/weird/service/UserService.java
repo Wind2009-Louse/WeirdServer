@@ -59,6 +59,16 @@ public interface UserService {
     boolean updateDust(String name, int newCount) throws Exception;
 
     /**
+     * 将尘转换成卡片
+     *
+     * @param cardName 卡片名称
+     * @param userName 用户名
+     * @param password 密码
+     * @return 是否转换成功
+     */
+    boolean dustToCard(String cardName, String userName, String password) throws Exception;
+
+    /**
      * 修改不出货数量
      *
      * @param name     用户名
@@ -66,4 +76,13 @@ public interface UserService {
      * @return 是否更改成功
      */
     boolean updateAward(String name, int newCount) throws Exception;
+
+    /**
+     * 修改DP
+     *
+     * @param name 用户名
+     * @param newCount 新DP
+     * @return 是否更改成功
+     */
+    boolean updateDuelPoint(String name, int newCount) throws Exception;
 }
