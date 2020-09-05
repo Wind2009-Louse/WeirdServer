@@ -3,6 +3,7 @@ package com.weird.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 抽卡列表
@@ -35,5 +36,5 @@ public class RollListModel implements Serializable {
     /**
      * 抽卡时间
      */
-    private long time;
+    private Date time;
 }

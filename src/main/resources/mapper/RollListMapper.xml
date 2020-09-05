@@ -6,6 +6,7 @@
         <result column="roll_user_id" jdbcType="INTEGER" property="rollUserId"/>
         <result column="roll_package_id" jdbcType="INTEGER" property="rollPackageId"/>
         <result column="is_disabled" jdbcType="TINYINT" property="isDisabled"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="time"/>
     </resultMap>
     <sql id="Base_Column_List">
         roll_id, roll_user_id, roll_package_id, is_disabled

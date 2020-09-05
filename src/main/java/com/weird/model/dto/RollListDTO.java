@@ -1,8 +1,10 @@
 package com.weird.model.dto;
 
+import com.weird.model.RollDetailModel;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * 抽卡记录DTO
@@ -28,7 +30,7 @@ public class RollListDTO implements Serializable {
     /**
      * 抽卡结果
      */
-    private String rollResult;
+    private List<RollDetailModel> rollResult;
 
     /**
      * 是否被禁用（滚回）

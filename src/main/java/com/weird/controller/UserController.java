@@ -109,6 +109,7 @@ public class UserController {
 
     /**
      * 【管理端】添加新用户
+     * 新用户密码默认为123456
      *
      * @param target 用户名
      * @param name       操作用户名称
