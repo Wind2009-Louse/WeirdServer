@@ -18,11 +18,11 @@ public class PackageServiceImpl implements PackageService {
      * @return 是否添加成功
      */
     @Override
-    public boolean addPackage(String name) {
+    public boolean addPackage(String name) throws Exception {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(name);
         if (oldPackage != null){
-            return false;
+            throw new Exception("卡包已存在！");
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
@@ -37,10 +37,13 @@ public class PackageServiceImpl implements PackageService {
      * @return 是否更新成功
      */
     @Override
-    public boolean updatePackageName(String oldName, String newName) {
+    public boolean updatePackageName(String oldName, String newName) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(oldName);
         if (oldPackage == null){
-            return false;
+            throw new Exception("找不到该卡包！");
+        }
+        if (oldPackage.getPackageName().equals(newName)){
+            throw new Exception("卡包名字未改动！");
         }
         oldPackage.setPackageName(newName);
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;

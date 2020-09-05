@@ -11,7 +11,7 @@ public interface PackageService {
      * @param name 卡包名称
      * @return 是否添加成功
      */
-    boolean addPackage(String name);
+    boolean addPackage(String name) throws Exception;
 
     /**
      * 更新卡包名称
@@ -20,5 +20,5 @@ public interface PackageService {
      * @param newName 新卡包名称
      * @return 是否更新成功
      */
-    boolean updatePackageName(String oldName, String newName);
+    boolean updatePackageName(String oldName, String newName) throws Exception;
 }

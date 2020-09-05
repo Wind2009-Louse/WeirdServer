@@ -25,7 +25,7 @@ public class PackageController {
      * @return 是否修改成功
      */
     @RequestMapping("/package/add")
-    boolean addPackage(@RequestParam(value = "package") String packageName,
+    String addPackage(@RequestParam(value = "package") String packageName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
@@ -33,7 +33,11 @@ public class PackageController {
             throw new Exception("权限不足！");
         }
 
-        return packageService.addPackage(packageName);
+        if (packageService.addPackage(packageName)){
+            return "新增成功！";
+        } else {
+            throw new Exception("新增失败！");
+        }
     }
 
     /**
@@ -46,7 +50,7 @@ public class PackageController {
      * @return 是否修改成功
      */
     @RequestMapping("/package/update")
-    boolean updatePackageName(@RequestParam(value = "oldname") String oldPackageName,
+    String updatePackageName(@RequestParam(value = "oldname") String oldPackageName,
                               @RequestParam(value = "newname") String newPackageName,
                               @RequestParam(value = "name") String name,
                               @RequestParam(value = "password") String password) throws Exception {
@@ -55,6 +59,10 @@ public class PackageController {
             throw new Exception("权限不足！");
         }
 
-        return packageService.updatePackageName(oldPackageName, newPackageName);
+        if (packageService.updatePackageName(oldPackageName, newPackageName)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 }
