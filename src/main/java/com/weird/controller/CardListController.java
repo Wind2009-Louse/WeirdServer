@@ -1,5 +1,7 @@
 package com.weird.controller;
 
+import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
 import com.weird.service.PackageService;
 import com.weird.utils.PageResult;
@@ -29,31 +31,55 @@ public class CardListController {
     final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
     /**
-     * 【管理端/ALL】卡片搜索
+     * 【管理端】全卡片搜索
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param targetUser  用户名
+     * @param rare        稀有度
+     * @param page        页码
      * @param name        操作用户名称
      * @param password    操作用户密码
      * @return 搜索结果
      */
-    PageResult<PackageCardDTO> searchCardListAdmin(
-            @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "target", required = false) String targetUser,
-            @RequestParam(value = "card", required = false) String cardName,
+    @RequestMapping("/card/list/admin")
+    PageResult<CardListDTO> searchCardList(
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
+            @RequestParam(value = "page") int page,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) == LoginTypeEnum.ADMIN) {
-            // TODO
-            // 搜索全卡
-            return null;
-        } else {
-            // TODO
-            // 搜索现存卡
-            return null;
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new Exception("权限不足！");
         }
+        List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
+        PageResult<CardListDTO> result = new PageResult<>();
+        result.addPageInfo(dtoList, page);
+        return result;
+    }
+
+    /**
+     * 【ALL】全卡片拥有情况搜索
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @param targetUser  用户名
+     * @param page        页码
+     * @return 搜索结果
+     */
+    @RequestMapping("/card/list")
+    PageResult<CardOwnListDTO> searchCardOwnList(
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
+            @RequestParam(value = "target", required = false, defaultValue = "") String targetUser,
+            @RequestParam(value = "page") int page) throws Exception {
+        List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
+        PageResult<CardOwnListDTO> result = new PageResult<>();
+        result.addPageInfo(dtoList, page);
+        return result;
     }
 
     /**

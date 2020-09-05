@@ -8,6 +8,8 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
+import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,5 +88,23 @@ public class CardServiceImpl implements CardService {
             model.setCount(count);
             return userCardListMapper.insert(model) > 0;
         }
+    }
+
+    /**
+     * 管理端根据条件筛选所有卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName 卡片名
+     * @param rare 稀有度
+     * @return 查询结果
+     */
+    @Override
+    public List<CardListDTO> selectListAdmin(String packageName, String cardName, String rare) {
+        return userCardListMapper.selectCardList(packageName, cardName, rare);
+    }
+
+    @Override
+    public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
+        return userCardListMapper.selectCardOwnList(packageName, cardName, rare, userName);
     }
 }

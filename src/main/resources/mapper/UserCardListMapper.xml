@@ -6,6 +6,7 @@
         <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
         <result column="count" jdbcType="INTEGER" property="count"/>
     </resultMap>
+
     <insert id="insert" parameterType="com.weird.model.UserCardListModel">
         insert into user_card_list (user_id, card_pk, count
         )
@@ -50,4 +51,51 @@
         set count = #{count}
         where user_id = #{userId} and card_pk = #{cardPk}
     </update>
+
+
+    <resultMap id="CardListDTO" type="com.weird.model.dto.CardListDTO">
+        <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+    </resultMap>
+
+    <select id="selectCardList" resultMap="CardListDTO">
+        select package_info.package_name,
+            package_card.card_name,
+            package_card.rare
+        from package_info inner join package_card on package_info.package_id = package_card.package_id
+        where package_name like concat("%", #{packageName} ,"%")
+            and card_name like concat("%", #{cardName} ,"%")
+        <if test="rare != ''">
+            and rare = #{rare}
+        </if>
+        order by package_card.package_id, package_card.rare, package_card.card_name
+    </select>
+
+
+    <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">
+        <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+    </resultMap>
+
+    <select id="selectCardOwnList" resultMap="CardOwnListDTO">
+        select package_info.package_name,
+            package_card.card_name,
+            package_card.rare,
+            user_data.user_name,
+            user_card_list.count
+        from package_info inner join package_card on package_info.package_id = package_card.package_id
+            inner join user_card_list on package_card.card_pk = user_card_list.card_pk
+            inner join user_data on user_data.user_id = user_card_list.user_id
+        where package_name like concat("%", #{packageName} ,"%")
+            and card_name like concat("%", #{cardName} ,"%")
+        <if test="rare != ''">
+            and rare = #{rare}
+        </if>
+            and user_name like concat("%", #{userName} ,"%")
+        order by package_card.package_id, package_card.rare, package_card.card_name, user_data.user_name
+    </select>
 </mapper>

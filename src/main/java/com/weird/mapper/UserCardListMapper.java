@@ -1,7 +1,11 @@
 package com.weird.mapper;
 
 import com.weird.model.UserCardListModel;
+import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface UserCardListMapper {
     int insert(UserCardListModel record);
@@ -25,4 +29,30 @@ public interface UserCardListMapper {
      * @return 更新数量
      */
     int update(UserCardListModel model);
+
+    /**
+     * 管理端查找卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName 卡片名
+     * @param rare 稀有度
+     * @return 查询结果
+     */
+    List<CardListDTO> selectCardList(@Param("packageName") String packageName,
+                                     @Param("cardName") String cardName,
+                                     @Param("rare") String rare);
+
+    /**
+     * 客户端查找卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName 卡片名
+     * @param rare 稀有度
+     * @param userName 用户名
+     * @return 查询结果
+     */
+    List<CardOwnListDTO> selectCardOwnList(@Param("packageName") String packageName,
+                                           @Param("cardName") String cardName,
+                                           @Param("rare") String rare,
+                                           @Param("userName") String userName);
 }
