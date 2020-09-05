@@ -27,10 +27,10 @@ public class PackageController {
     @RequestMapping("/package/add")
     boolean addPackage(@RequestParam(value = "package") String packageName,
                        @RequestParam(value = "name") String name,
-                       @RequestParam(value = "password") String password) {
+                       @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         return packageService.addPackage(packageName);
@@ -49,10 +49,10 @@ public class PackageController {
     boolean updatePackageName(@RequestParam(value = "oldname") String oldPackageName,
                               @RequestParam(value = "newname") String newPackageName,
                               @RequestParam(value = "name") String name,
-                              @RequestParam(value = "password") String password) {
+                              @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         return packageService.updatePackageName(oldPackageName, newPackageName);

@@ -56,10 +56,10 @@ public class CardListController {
             @RequestParam(value = "card") String cardName,
             @RequestParam(value = "count") int newCount,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO
@@ -81,10 +81,10 @@ public class CardListController {
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO
@@ -106,10 +106,10 @@ public class CardListController {
             @RequestParam(value = "cardname") String cardName,
             @RequestParam(value = "rare") String rare,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO
@@ -128,10 +128,10 @@ public class CardListController {
     boolean deleteCardDetail(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "cardname") String cardName,
                              @RequestParam(value = "name") String name,
-                             @RequestParam(value = "password") String password) {
+                             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO

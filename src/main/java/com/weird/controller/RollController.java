@@ -37,10 +37,10 @@ public class RollController {
                 @RequestParam(value = "card2") long cardId2,
                 @RequestParam(value = "card3") long cardId3,
                 @RequestParam(value = "name") String name,
-                @RequestParam(value = "password") String password) {
+                @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            return "登录信息错误！";
+            throw new Exception("用户信息错误！");
         }
 
         // TODO
@@ -81,10 +81,10 @@ public class RollController {
     boolean setRollStatus(@RequestParam(value = "id") long rollId,
                           @RequestParam(value = "status") int status,
                           @RequestParam(value = "name") String name,
-                          @RequestParam(value = "password") String password) {
+                          @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO

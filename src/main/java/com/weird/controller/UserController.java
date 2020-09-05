@@ -47,10 +47,10 @@ public class UserController {
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "count") int dustCount,
             @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) {
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO
@@ -67,10 +67,10 @@ public class UserController {
      */
     boolean dustToCard(@RequestParam(value = "card") String cardName,
                        @RequestParam(value = "name") String name,
-                       @RequestParam(value = "password") String password) {
+                       @RequestParam(value = "password") String password) throws Exception {
         // 玩家权限验证
         if (userService.checkLogin(name, password) == LoginTypeEnum.UNLOGIN){
-            return false;
+            throw new Exception("登录信息错误！");
         }
 
         // TODO
@@ -89,10 +89,10 @@ public class UserController {
     boolean updateCount(@RequestParam(value = "target") String targetUser,
                         @RequestParam(value = "award") int awardCount,
                         @RequestParam(value = "name") String name,
-                        @RequestParam(value = "password") String password) {
+                        @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            return false;
+            throw new Exception("权限不足！");
         }
 
         // TODO
@@ -113,7 +113,7 @@ public class UserController {
                     @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            return false;
+            throw new Exception("权限不足！");
         }
         return userService.addUser(target);
     }
