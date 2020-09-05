@@ -1,6 +1,7 @@
 package com.weird.controller;
 
-import com.weird.model.PageResult;
+import com.weird.model.ResultModel;
+import com.weird.utils.PageResult;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class UserController {
@@ -18,13 +21,17 @@ public class UserController {
      * 【ALL】查询用户信息
      *
      * @param page 页号
+     * @param userName 用户名
      * @return 查询结果
      */
+    @RequestMapping("/user/list")
     PageResult<UserDataDTO> getDustList(
-            @RequestParam(value = "page") int page
-    ) {
-        // TODO
-        return null;
+            @RequestParam(value = "page") int page,
+            @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
+        List<UserDataDTO> dtoList = userService.getListByName(userName);
+        PageResult<UserDataDTO> result = new PageResult<>();
+        result.addPageInfo(dtoList, page);
+        return result;
     }
 
     /**
@@ -103,7 +110,7 @@ public class UserController {
     @RequestMapping("/user/add")
     boolean addUser(@RequestParam(value = "target") String target,
                     @RequestParam(value = "name") String name,
-                    @RequestParam(value = "password") String password){
+                    @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             return false;
@@ -120,9 +127,13 @@ public class UserController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/pw")
-    boolean updatePassword(@RequestParam(value = "name") String name,
+    String updatePassword(@RequestParam(value = "name") String name,
                     @RequestParam(value = "old") String oldPassword,
-                    @RequestParam(value = "new") String newPassword){
-        return userService.updatePassword(name, oldPassword, newPassword);
+                    @RequestParam(value = "new") String newPassword) throws Exception{
+        if (userService.updatePassword(name, oldPassword, newPassword)){
+            return "修改成功！";
+        } else {
+            return "修改失败！";
+        }
     }
 }

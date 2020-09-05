@@ -2,6 +2,8 @@ package com.weird.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 抽卡详细记录
  *
@@ -9,7 +11,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class RollDetailModel {
+public class RollDetailModel implements Serializable {
     /**
      * 抽卡记录ID
      */

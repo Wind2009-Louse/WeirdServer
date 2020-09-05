@@ -2,6 +2,8 @@ package com.weird.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户持有的卡片
  *
@@ -9,7 +11,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class UserCardListModel {
+public class UserCardListModel implements Serializable {
     /**
      * 用户ID
      */

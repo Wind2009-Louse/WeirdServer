@@ -1,16 +1,12 @@
 package com.weird.controller;
 
-import com.weird.model.PageResult;
+import com.weird.utils.PageResult;
 import com.weird.model.dto.PackageCardDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 @RestController
 public class CardListController {

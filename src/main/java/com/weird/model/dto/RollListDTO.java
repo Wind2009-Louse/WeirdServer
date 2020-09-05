@@ -2,12 +2,14 @@ package com.weird.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 抽卡记录DTO
  * @author Nidhogg
  */
 @Data
-public class RollListDTO {
+public class RollListDTO implements Serializable {
     /**
      * 抽卡记录ID
      */

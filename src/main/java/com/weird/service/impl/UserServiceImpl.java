@@ -8,6 +8,7 @@ import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
@@ -77,7 +78,8 @@ public class UserServiceImpl implements UserService {
      * @return 是否添加成功
      */
     @Override
-    public boolean addUser(String name) {
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean addUser(String name) throws Exception {
         List<UserDataModel> modelList = userDataMapper.selectByName(name);
         if (modelList != null){
             for (UserDataModel model : modelList){
@@ -106,10 +108,11 @@ public class UserServiceImpl implements UserService {
      * @return 是否更改成功
      */
     @Override
-    public boolean updatePassword(String name, String oldPassword, String newPassword) {
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updatePassword(String name, String oldPassword, String newPassword) throws Exception {
         UserDataModel model = userDataMapper.selectByNamePassword(name, oldPassword);
         if (model == null){
-            return false;
+            throw new Exception("用户名或密码错误！");
         }
         model.setPassword(newPassword);
         return userDataMapper.updateByPrimaryKey(model) > 0;

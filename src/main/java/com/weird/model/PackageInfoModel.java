@@ -2,6 +2,8 @@ package com.weird.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 卡包信息
  *
@@ -9,7 +11,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class PackageInfoModel {
+public class PackageInfoModel implements Serializable {
     /**
      * 卡包ID
      */

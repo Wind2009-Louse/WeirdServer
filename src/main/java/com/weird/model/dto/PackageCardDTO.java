@@ -2,12 +2,14 @@ package com.weird.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 卡片持有信息DTO
  * @author Nidhogg
  */
 @Data
-public class PackageCardDTO {
+public class PackageCardDTO implements Serializable {
     /**
      * 卡密
      */

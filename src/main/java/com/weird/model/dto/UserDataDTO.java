@@ -2,6 +2,8 @@ package com.weird.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 用户信息
  *
@@ -9,7 +11,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class UserDataDTO {
+public class UserDataDTO implements Serializable {
     /**
      * 用户ID
      */

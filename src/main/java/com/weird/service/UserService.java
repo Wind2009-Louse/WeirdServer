@@ -1,6 +1,5 @@
 package com.weird.service;
 
-import com.weird.model.UserDataModel;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 
@@ -38,7 +37,7 @@ public interface UserService {
      * @param name 用户名
      * @return 是否添加成功
      */
-    boolean addUser(String name);
+    boolean addUser(String name) throws Exception;
 
     /**
      * 修改用户密码
@@ -48,5 +47,5 @@ public interface UserService {
      * @param newPassword 新密码
      * @return 是否更改成功
      */
-    boolean updatePassword(String name, String oldPassword, String newPassword);
+    boolean updatePassword(String name, String oldPassword, String newPassword) throws Exception;
 }

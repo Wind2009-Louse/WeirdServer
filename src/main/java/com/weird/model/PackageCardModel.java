@@ -2,6 +2,8 @@ package com.weird.model;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 卡包中的卡片信息
  *
@@ -9,7 +11,7 @@ import lombok.Data;
  * @date   2020/09/04
  */
 @Data
-public class PackageCardModel {
+public class PackageCardModel implements Serializable {
     /**
      * 卡片主键
      */
