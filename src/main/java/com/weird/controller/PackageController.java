@@ -32,6 +32,9 @@ public class PackageController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new Exception("权限不足！");
         }
+        if (packageName == null || packageName.length() == 0){
+            throw new Exception("卡包名为空！");
+        }
 
         if (packageService.addPackage(packageName)){
             return "新增成功！";
@@ -57,6 +60,9 @@ public class PackageController {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new Exception("权限不足！");
+        }
+        if (newPackageName == null || newPackageName.length() == 0){
+            throw new Exception("卡包名为空！");
         }
 
         if (packageService.updatePackageName(oldPackageName, newPackageName)){

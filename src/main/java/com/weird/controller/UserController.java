@@ -123,6 +123,9 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             throw new Exception("权限不足！");
         }
+        if (name == null || name.length() == 0){
+            throw new Exception("用户名为空！");
+        }
         return userService.addUser(target);
     }
 
