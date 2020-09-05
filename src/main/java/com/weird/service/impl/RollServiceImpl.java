@@ -255,6 +255,10 @@ public class RollServiceImpl implements RollService {
             cardModels.add(card);
         }
 
+        rollListModel.setIsDisabled((byte) newStatus);
+        if (rollListMapper.updateByPrimaryKey(rollListModel) <= 0){
+            throw new Exception("修改抽卡记录状态失败！");
+        }
         if (newStatus == 0){
             addCards(userModel, cardModels, 0);
             return true;
@@ -292,7 +296,7 @@ public class RollServiceImpl implements RollService {
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0){
             throw new Exception("更新用户信息失败！");
         }
-        
+
         return true;
     }
 }
