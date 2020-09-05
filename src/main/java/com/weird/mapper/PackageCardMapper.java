@@ -12,7 +12,7 @@ public interface PackageCardMapper {
 
     int insertSelective(PackageCardModel record);
 
-    PackageCardModel selectByPrimaryKey(Long pk);
+    PackageCardModel selectByPrimaryKey(int pk);
 
     int updateByPrimaryKeySelective(PackageCardModel record);
 

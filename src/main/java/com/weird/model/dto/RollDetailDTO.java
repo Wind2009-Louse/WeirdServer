@@ -5,17 +5,10 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 显示所有卡片（管理端）
- *
- * @author Nidhogg
+ * 抽卡结果的显示
  */
 @Data
-public class CardListDTO implements Serializable {
-    /**
-     * 卡包名
-     */
-    String packageName;
-
+public class RollDetailDTO implements Serializable {
     /**
      * 卡片名
      */

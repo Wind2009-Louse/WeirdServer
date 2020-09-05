@@ -21,12 +21,6 @@
         delete from roll_list
         where roll_id = #{rollId,jdbcType=INTEGER}
     </delete>
-    <insert id="insert" parameterType="com.weird.model.RollListModel">
-        insert into roll_list (roll_id, roll_user_id, roll_package_id,
-        is_disabled)
-        values (#{rollId,jdbcType=INTEGER}, #{rollUserId,jdbcType=INTEGER}, #{rollPackageId,jdbcType=INTEGER},
-        #{isDisabled,jdbcType=TINYINT})
-    </insert>
     <insert id="insertSelective" parameterType="com.weird.model.RollListModel">
         insert into roll_list
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -80,4 +74,37 @@
         is_disabled = #{isDisabled,jdbcType=TINYINT}
         where roll_id = #{rollId,jdbcType=INTEGER}
     </update>
+
+    <!-- 自定义 -->
+    <resultMap id="listDTO" type="com.weird.model.dto.RollListDTO">
+        <id column="roll_id" jdbcType="BIGINT" property="rollId"/>
+        <result column="user_name" jdbcType="INTEGER" property="rollUserName"/>
+        <result column="package_name" jdbcType="INTEGER" property="rollPackageName"/>
+        <result column="is_disabled" jdbcType="TINYINT" property="isDisabled"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="time"/>
+    </resultMap>
+
+    <select id="selectByParam" resultMap="listDTO">
+        select
+            roll_list.roll_id,
+            user_data.user_name,
+            package_info.package_name,
+            roll_list.is_disabled,
+            roll_list.db_created_time
+        from
+            roll_list inner join user_data    on roll_list.roll_user_id = user_data.user_id
+                      inner join package_info on roll_list.roll_package_id = package_info.package_id
+        where
+            package_info.package_name like concat("%", #{packageName}, "%")
+            and user_data.user_name like concat("%", #{userName}, "%")
+        order by roll_list.db_created_time desc
+    </select>
+
+    <insert id="insert" parameterType="com.weird.model.RollListModel"
+            useGeneratedKeys="true" keyProperty="rollId">
+        insert into roll_list (roll_user_id, roll_package_id,
+        is_disabled)
+        values (#{rollUserId,jdbcType=INTEGER}, #{rollPackageId,jdbcType=INTEGER},
+        #{isDisabled,jdbcType=TINYINT})
+    </insert>
 </mapper>

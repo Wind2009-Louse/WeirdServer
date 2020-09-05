@@ -10,12 +10,6 @@
     <sql id="Base_Column_List">
         card_pk, card_name, package_id, rare
     </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from package_card
-        where card_pk = #{cardPk,jdbcType=BIGINT}
-    </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from package_card
         where card_pk = #{cardPk,jdbcType=BIGINT}
@@ -96,4 +90,11 @@
         values (#{cardPk,jdbcType=BIGINT}, #{cardName,jdbcType=VARCHAR},
         #{packageId,jdbcType=INTEGER}, #{rare,jdbcType=VARCHAR})
     </insert>
+
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_card
+        where card_pk = #{cardPk,jdbcType=BIGINT}
+    </select>
 </mapper>

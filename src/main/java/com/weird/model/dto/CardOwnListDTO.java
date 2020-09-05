@@ -2,13 +2,15 @@ package com.weird.model.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * 显示所有卡片拥有情况的列表
  *
  * @author Nidhogg
  */
 @Data
-public class CardOwnListDTO {
+public class CardOwnListDTO implements Serializable {
     /**
      * 卡包名
      */

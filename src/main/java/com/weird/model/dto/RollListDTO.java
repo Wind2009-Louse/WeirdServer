@@ -4,6 +4,7 @@ import com.weird.model.RollDetailModel;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -30,7 +31,7 @@ public class RollListDTO implements Serializable {
     /**
      * 抽卡结果
      */
-    private List<RollDetailModel> rollResult;
+    private List<RollDetailDTO> rollResult;
 
     /**
      * 是否被禁用（滚回）
@@ -40,5 +41,5 @@ public class RollListDTO implements Serializable {
     /**
      * 抽卡时间
      */
-    private long time;
+    private Date time;
 }

@@ -37,4 +37,9 @@
             </if>
         </trim>
     </insert>
+
+    <!-- 自定义 -->
+    <select id="selectCardPkById" resultType="java.lang.Integer">
+        select card_pk from roll_detail where roll_id = #{roll_id}
+    </select>
 </mapper>
