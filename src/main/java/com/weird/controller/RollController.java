@@ -97,6 +97,9 @@ public class RollController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             throw new Exception("权限不足！");
         }
+        if (status != 0 && status != 1){
+            throw new Exception("状态设置错误！");
+        }
 
         if (rollService.setStatus(rollId, status)){
             return "修改成功！";
