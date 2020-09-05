@@ -17,6 +17,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 卡片列表相关
+ *
+ * @author Nidhogg
+ */
 @RestController
 public class CardListController {
     @Autowired
@@ -42,7 +47,7 @@ public class CardListController {
      * @return 搜索结果
      */
     @RequestMapping("/card/list/admin")
-    PageResult<CardListDTO> searchCardList(
+    public PageResult<CardListDTO> searchCardList(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
@@ -70,7 +75,7 @@ public class CardListController {
      * @return 搜索结果
      */
     @RequestMapping("/card/list")
-    PageResult<CardOwnListDTO> searchCardOwnList(
+    public PageResult<CardOwnListDTO> searchCardOwnList(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
@@ -94,7 +99,7 @@ public class CardListController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/card/update")
-    String updateUserCardCount(
+    public String updateUserCardCount(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card") String cardName,
@@ -114,41 +119,6 @@ public class CardListController {
     }
 
     /**
-     * 【管理端】修改卡包中的卡片名称
-     *
-     * @param packageName 卡包名
-     * @param oldCardName 旧卡片名
-     * @param newCardName 新卡片名
-     * @param name        操作用户名称
-     * @param password    操作用户密码
-     * @return 是否修改成功
-     */
-    @RequestMapping("/package/card/update")
-    String updateCardName(
-            @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "oldname") String oldCardName,
-            @RequestParam(value = "newname") String newCardName,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) throws Exception {
-        // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
-        }
-        if (newCardName == null || newCardName.length() == 0){
-            throw new Exception("卡片名为空！");
-        }
-        if (newCardName.equals(oldCardName)){
-            throw new Exception("名字未修改！");
-        }
-
-        if (packageService.updateCardName(packageName, oldCardName, newCardName)){
-            return "修改成功！";
-        } else {
-            throw new Exception("修改失败！");
-        }
-    }
-
-    /**
      * 【管理端】添加卡片信息
      *
      * @param packageName 卡包名
@@ -159,7 +129,7 @@ public class CardListController {
      * @return 是否添加成功
      */
     @RequestMapping("/package/card/add")
-    String addCardDetail(
+    public String addCardDetail(
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "cardname") String cardName,
             @RequestParam(value = "rare") String rare,
@@ -197,10 +167,10 @@ public class CardListController {
      */
     @RequestMapping("/package/card/delete")
     @Deprecated
-    String deleteCardDetail(@RequestParam(value = "package") String packageName,
-                             @RequestParam(value = "cardname") String cardName,
-                             @RequestParam(value = "name") String name,
-                             @RequestParam(value = "password") String password) throws Exception {
+    public String deleteCardDetail(@RequestParam(value = "package") String packageName,
+                                   @RequestParam(value = "cardname") String cardName,
+                                   @RequestParam(value = "name") String name,
+                                   @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new Exception("权限不足！");

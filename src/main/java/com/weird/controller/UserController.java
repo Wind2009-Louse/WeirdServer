@@ -11,6 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * 用户信息相关
+ *
+ * @author Nidhogg
+ */
 @RestController
 public class UserController {
     @Autowired
@@ -24,7 +29,7 @@ public class UserController {
      * @return 查询结果
      */
     @RequestMapping("/user/list")
-    PageResult<UserDataDTO> getDustList(
+    public PageResult<UserDataDTO> getDustList(
             @RequestParam(value = "page") int page,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
         List<UserDataDTO> dtoList = userService.getListByName(userName);
@@ -43,7 +48,7 @@ public class UserController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/dust")
-    String updateDust(
+    public String updateDust(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "count") int dustCount,
             @RequestParam(value = "name") String name,
@@ -69,7 +74,7 @@ public class UserController {
      * @return 是否转换成功
      */
     @RequestMapping("/user/change")
-    String dustToCard(@RequestParam(value = "card") String cardName,
+    public String dustToCard(@RequestParam(value = "card") String cardName,
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) throws Exception {
         if (userService.dustToCard(cardName, name, password)){
@@ -89,7 +94,7 @@ public class UserController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/award")
-    String updateCount(@RequestParam(value = "target") String targetUser,
+    public String updateCount(@RequestParam(value = "target") String targetUser,
                         @RequestParam(value = "award") int awardCount,
                         @RequestParam(value = "name") String name,
                         @RequestParam(value = "password") String password) throws Exception {
@@ -109,16 +114,17 @@ public class UserController {
      * 【管理端】修改用户DP
      *
      * @param targetUser 用户名
-     * @param dp         新DP
+     * @param dpCount    新DP
      * @param name       操作用户名称
      * @param password   操作用户密码
      * @return 是否修改成功
      */
     @RequestMapping("/user/dp")
-    String updateDuelPoint(@RequestParam(value = "target") String targetUser,
-                           @RequestParam(value = "dp") int dpCount,
-                           @RequestParam(value = "name") String name,
-                           @RequestParam(value = "password") String password) throws Exception {
+    public String updateDuelPoint(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "dp") int dpCount,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             throw new Exception("权限不足！");
@@ -141,9 +147,9 @@ public class UserController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/add")
-    boolean addUser(@RequestParam(value = "target") String target,
-                    @RequestParam(value = "name") String name,
-                    @RequestParam(value = "password") String password) throws Exception {
+    public boolean addUser(@RequestParam(value = "target") String target,
+                           @RequestParam(value = "name") String name,
+                           @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             throw new Exception("权限不足！");
@@ -163,9 +169,9 @@ public class UserController {
      * @return 是否修改成功
      */
     @RequestMapping("/user/pw")
-    String updatePassword(@RequestParam(value = "name") String name,
-                    @RequestParam(value = "old") String oldPassword,
-                    @RequestParam(value = "new") String newPassword) throws Exception{
+    public String updatePassword(@RequestParam(value = "name") String name,
+                                 @RequestParam(value = "old") String oldPassword,
+                                 @RequestParam(value = "new") String newPassword) throws Exception{
         if (userService.updatePassword(name, oldPassword, newPassword)){
             return "修改成功！";
         } else {

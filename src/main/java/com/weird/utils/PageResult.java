@@ -9,6 +9,8 @@ import java.util.List;
 /**
  * 分页查询结果
  * 使用泛型声明类，便于编码的时候可以在编译阶段发现类型不匹配的问题。
+ *
+ * @author Sue Sobim
  */
 @Data
 public class PageResult<T> implements Serializable {
@@ -21,18 +23,22 @@ public class PageResult<T> implements Serializable {
      * 总条数
      */
     private int totalCount;
+
     /**
      * 总页数
      */
     private int totalPage;
+
     /**
      * 每页条数
      */
     private int pageSize = 20;
+
     /**
      * 当前页
      */
     private int currPage;
+
     /**
      * 查询结果
      */
@@ -67,7 +73,6 @@ public class PageResult<T> implements Serializable {
                 dataList.add(item);
             }
         }
-
         build();
     }
 }

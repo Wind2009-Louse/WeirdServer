@@ -15,6 +15,11 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * 抽卡相关
+ *
+ * @author Nidhogg
+ */
 @RestController
 public class RollController {
     @Autowired
@@ -36,13 +41,13 @@ public class RollController {
      * @return 抽卡是否成功
      */
     @RequestMapping("/weirdUI/roll")
-    String roll(@RequestParam(value = "target") String targetUser,
-                @RequestParam(value = "package") String packageName,
-                @RequestParam(value = "card1") String cardName1,
-                @RequestParam(value = "card2") String cardName2,
-                @RequestParam(value = "card3") String cardName3,
-                @RequestParam(value = "name") String name,
-                @RequestParam(value = "password") String password) throws Exception {
+    public String roll(@RequestParam(value = "target") String targetUser,
+                       @RequestParam(value = "package") String packageName,
+                       @RequestParam(value = "card1") String cardName1,
+                       @RequestParam(value = "card2") String cardName2,
+                       @RequestParam(value = "card3") String cardName3,
+                       @RequestParam(value = "name") String name,
+                       @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
             throw new Exception("用户信息错误！");
@@ -64,7 +69,7 @@ public class RollController {
      * @return 抽卡结果
      */
     @RequestMapping("/roll/list")
-    PageResult<RollListDTO> getRollList(
+    public PageResult<RollListDTO> getRollList(
             @RequestParam(value = "page") int page,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
@@ -89,7 +94,7 @@ public class RollController {
      * @return 是否成功
      */
     @RequestMapping("/roll/set")
-    String setRollStatus(@RequestParam(value = "id") long rollId,
+    public String setRollStatus(@RequestParam(value = "id") long rollId,
                           @RequestParam(value = "status") int status,
                           @RequestParam(value = "name") String name,
                           @RequestParam(value = "password") String password) throws Exception {
