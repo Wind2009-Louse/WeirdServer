@@ -43,16 +43,16 @@ public class CardServiceImpl implements CardService {
     private List<Integer> getUserIdAndCardPk(String userName, String packageName, String cardName) throws Exception{
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null){
-            throw new Exception("找不到该用户！");
+            throw new Exception(String.format("找不到该用户:[%s]！", userName));
         }
 
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
         if (packageModel == null){
-            throw new Exception("找不到该卡包！");
+            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
         }
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageModel.getPackageId(), cardName);
         if (cardModel == null){
-            throw new Exception("找不到该卡片！");
+            throw new Exception(String.format("找不到该卡片：[%s]！", cardName));
         }
 
         return Arrays.asList(userModel.getUserId(), cardModel.getCardPk());

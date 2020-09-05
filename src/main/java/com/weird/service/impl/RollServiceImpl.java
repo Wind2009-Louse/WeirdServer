@@ -155,7 +155,7 @@ public class RollServiceImpl implements RollService {
                 int cardPk = rollCardModel.getCardPk();
                 PackageCardModel cardModel = packageCardMapper.selectByPrimaryKey(cardPk);
                 if (cardModel == null){
-                    throw new Exception(String.format("卡片%d查询失败！", cardPk));
+                    throw new Exception(String.format("卡片[%d]查询失败！", cardPk));
                 }
                 RollDetailDTO detailDTO = new RollDetailDTO();
                 detailDTO.setCardName(cardModel.getCardName());
@@ -250,7 +250,7 @@ public class RollServiceImpl implements RollService {
         for (RollDetailModel cardDetail : rollDetailModelList){
             PackageCardModel card = packageCardMapper.selectByPrimaryKey(cardDetail.getCardPk());
             if (card == null){
-                throw new Exception(String.format("找不到该卡片：%s！", cardDetail.getCardPk()));
+                throw new Exception(String.format("找不到该卡片：[%s]！", cardDetail.getCardPk()));
             }
             cardModels.add(card);
         }
@@ -280,7 +280,7 @@ public class RollServiceImpl implements RollService {
                 // 减少对应的卡片数量
                 UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userId, cardModel.getCardPk());
                 if (cardListModel == null || cardListModel.getCount() == 0){
-                    throw new Exception(String.format("[%s]不拥有[%s]！", userModel.getUserName(), cardModel.getCardName()));
+                    throw new Exception(String.format("用户[%s]不拥有卡片[%s]！", userModel.getUserName(), cardModel.getCardName()));
                 }
                 cardListModel.setCount(cardListModel.getCount() - 1);
                 if (userCardListMapper.update(cardListModel) <= 0){

@@ -85,11 +85,12 @@ public class CardListController {
     /**
      * 【管理端】修改用户持有的卡片数量
      *
-     * @param targetUser 用户名
-     * @param cardName   卡片名
-     * @param newCount   新持有量
-     * @param name       操作用户名称
-     * @param password   操作用户密码
+     * @param targetUser  用户名
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param newCount    新持有量
+     * @param name        操作用户名称
+     * @param password    操作用户密码
      * @return 是否修改成功
      */
     @RequestMapping("/user/card/update")

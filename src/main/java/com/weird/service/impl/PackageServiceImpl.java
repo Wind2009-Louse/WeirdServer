@@ -28,7 +28,7 @@ public class PackageServiceImpl implements PackageService {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(name);
         if (oldPackage != null){
-            throw new Exception("卡包已存在！");
+            throw new Exception(String.format("卡包[%s]已存在！", name));
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
@@ -46,7 +46,7 @@ public class PackageServiceImpl implements PackageService {
     public boolean updatePackageName(String oldName, String newName) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(oldName);
         if (oldPackage == null){
-            throw new Exception("找不到该卡包！");
+            throw new Exception(String.format("找不到该卡包：[%s]！", oldName));
         }
         if (oldPackage.getPackageName().equals(newName)){
             throw new Exception("卡包名字未改动！");
@@ -69,14 +69,14 @@ public class PackageServiceImpl implements PackageService {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
         if (packageModel == null){
-            throw new Exception("找不到该卡包！");
+            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
         }
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, cardName);
         if (cardModel != null){
-            throw new Exception("卡片已存在！");
+            throw new Exception(String.format("卡片[%s]已存在！", cardName));
         }
 
         // 添加
@@ -101,14 +101,14 @@ public class PackageServiceImpl implements PackageService {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
         if (packageModel == null){
-            throw new Exception("找不到该卡包！");
+            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
         }
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, oldName);
         if (cardModel == null){
-            throw new Exception("卡片不存在！");
+            throw new Exception(String.format("卡片[%s]不存在！", oldName));
         }
 
         // 修改

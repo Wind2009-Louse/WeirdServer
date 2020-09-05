@@ -130,7 +130,7 @@ public class UserServiceImpl implements UserService {
     public boolean updateDust(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null){
-            throw new Exception("找不到用户！");
+            throw new Exception(String.format("找不到用户：[%s]！", name));
         }
 
         model.setDustCount(newCount);
@@ -150,7 +150,7 @@ public class UserServiceImpl implements UserService {
     public boolean updateAward(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null){
-            throw new Exception("找不到用户！");
+            throw new Exception(String.format("找不到用户：[%s]！", name));
         }
 
         model.setNonawardCount(newCount);
