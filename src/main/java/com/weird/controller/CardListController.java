@@ -131,7 +131,7 @@ public class CardListController {
     @RequestMapping("/package/card/add")
     public String addCardDetail(
             @RequestParam(value = "package") String packageName,
-            @RequestParam(value = "cardname") String cardName,
+            @RequestParam(value = "card") String cardName,
             @RequestParam(value = "rare") String rare,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
@@ -168,7 +168,7 @@ public class CardListController {
     @RequestMapping("/package/card/delete")
     @Deprecated
     public String deleteCardDetail(@RequestParam(value = "package") String packageName,
-                                   @RequestParam(value = "cardname") String cardName,
+                                   @RequestParam(value = "card") String cardName,
                                    @RequestParam(value = "name") String name,
                                    @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
