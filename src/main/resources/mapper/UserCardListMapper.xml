@@ -90,7 +90,9 @@
         from package_info inner join package_card on package_info.package_id = package_card.package_id
             inner join user_card_list on package_card.card_pk = user_card_list.card_pk
             inner join user_data on user_data.user_id = user_card_list.user_id
-        where package_name like concat("%", #{packageName} ,"%")
+        where
+            user_data.is_admin = 0
+            and package_name like concat("%", #{packageName} ,"%")
             and card_name like concat("%", #{cardName} ,"%")
         <if test="rare != ''">
             and rare = #{rare}

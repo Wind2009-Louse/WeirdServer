@@ -83,13 +83,13 @@ public class RollController {
      * 【管理端】设置某个抽卡结果是否适用
      *
      * @param rollId   抽卡结果ID
-     * @param status   要设置的状态
+     * @param status   要设置的状态（0=使用，1=禁用）
      * @param name     操作用户名称
      * @param password 操作用户密码
      * @return 是否成功
      */
     @RequestMapping("/roll/set")
-    boolean setRollStatus(@RequestParam(value = "id") long rollId,
+    String setRollStatus(@RequestParam(value = "id") long rollId,
                           @RequestParam(value = "status") int status,
                           @RequestParam(value = "name") String name,
                           @RequestParam(value = "password") String password) throws Exception {
@@ -98,7 +98,10 @@ public class RollController {
             throw new Exception("权限不足！");
         }
 
-        // TODO
-        return false;
+        if (rollService.setStatus(rollId, status)){
+            return "修改成功！";
+        } else {
+            throw new Exception("修改失败！");
+        }
     }
 }

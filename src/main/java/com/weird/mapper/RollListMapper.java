@@ -13,7 +13,7 @@ public interface RollListMapper {
 
     int insertSelective(RollListModel record);
 
-    RollListModel selectByPrimaryKey(Integer rollId);
+    RollListModel selectByPrimaryKey(long rollId);
 
     int updateByPrimaryKeySelective(RollListModel record);
 

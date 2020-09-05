@@ -15,5 +15,5 @@ public interface RollDetailMapper {
      * @param resultId
      * @return
      */
-    List<Integer> selectCardPkById(long resultId);
+    List<RollDetailModel> selectCardPkById(long resultId);
 }
