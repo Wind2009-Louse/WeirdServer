@@ -62,9 +62,11 @@ public class RollController {
      * @param userName 抽卡用户名
      * @return 抽卡结果
      */
+    @RequestMapping("/roll/list")
     PageResult<RollListDTO> getRollList(
             @RequestParam(value = "page") int page,
-            @RequestParam(value = "user", required = false) String userName) {
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "user", required = false, defaultValue = "") String userName) {
         // TODO
         return null;
     }
@@ -78,6 +80,7 @@ public class RollController {
      * @param password 操作用户密码
      * @return 是否成功
      */
+    @RequestMapping("/roll/set")
     boolean setRollStatus(@RequestParam(value = "id") long rollId,
                           @RequestParam(value = "status") int status,
                           @RequestParam(value = "name") String name,
