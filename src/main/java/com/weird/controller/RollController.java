@@ -68,7 +68,6 @@ public class RollController {
             @RequestParam(value = "page") int page,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
-        // TODO
         List<RollListDTO> modelList = rollService.selectRollList(packageName, userName);
 
         // 通过分页截取需要查询详细内容的部分
