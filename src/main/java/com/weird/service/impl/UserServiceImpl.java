@@ -9,6 +9,7 @@ import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
+import com.weird.utils.OperationException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class UserServiceImpl implements UserService {
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "E10ADC3949BA59ABBE56E057F20F883E";
-    final List<String> NR_RARE = Arrays.asList("N","R");
+    final List<String> NR_RARE = Arrays.asList("N", "R");
 
     /**
      * 根据用户名查找用户列表
@@ -92,10 +93,10 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addUser(String name) throws Exception {
         List<UserDataModel> modelList = userDataMapper.selectByName(name);
-        if (modelList != null){
-            for (UserDataModel model : modelList){
-                if (model.getUserName().equals(name)){
-                    return false;
+        if (modelList != null) {
+            for (UserDataModel model : modelList) {
+                if (model.getUserName().equals(name)) {
+                    throw new OperationException("该用户已存在！");
                 }
             }
         }
@@ -105,16 +106,17 @@ public class UserServiceImpl implements UserService {
         newModel.setPassword(DEFAULT_PASSWORD);
         newModel.setIsAdmin((byte) 0);
         newModel.setDustCount(0);
+        newModel.setDuelPoint(0);
         newModel.setNonawardCount(0);
         userDataMapper.insert(newModel);
-        log.info("添加新用户：[{}]", name);
+        log.warn("添加新用户：[{}]", name);
         return newModel.getUserId() > 0;
     }
 
     /**
      * 修改用户密码
      *
-     * @param name 用户名
+     * @param name        用户名
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      * @return 是否更改成功
@@ -123,18 +125,18 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updatePassword(String name, String oldPassword, String newPassword) throws Exception {
         UserDataModel model = userDataMapper.selectByNamePassword(name, oldPassword);
-        if (model == null){
-            throw new Exception("用户名或密码错误！");
+        if (model == null) {
+            throw new OperationException("用户名或密码错误！");
         }
         model.setPassword(newPassword);
-        log.info("[{}]的密码发生修改", name);
+        log.warn("[{}]的密码发生修改", name);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
 
     /**
      * 修改用户尘数
      *
-     * @param name 用户名
+     * @param name     用户名
      * @param newCount 新尘数
      * @return 是否更改成功
      */
@@ -142,11 +144,12 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDust(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
-        if (model == null){
-            throw new Exception(String.format("找不到用户：[%s]！", name));
+        if (model == null) {
+            throw new OperationException(String.format("找不到用户：[%s]！", name));
         }
 
-        log.info("[{}]的尘被修改：（{}->{}）", name, model.getDustCount(), newCount);
+
+        log.warn("[{}]的尘被修改：（{}->{}）", name, model.getDustCount(), newCount);
         model.setDustCount(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
@@ -162,15 +165,15 @@ public class UserServiceImpl implements UserService {
         // 玩家权限验证
         UserDataModel model = userDataMapper.selectByNamePassword(userName, password);
         if (model == null) {
-            throw new Exception("登录失败！");
+            throw new OperationException("登录失败！");
         }
 
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
-        if (cardModel == null){
-            throw new Exception(String.format("找不到卡片：[%s]！", cardName));
+        if (cardModel == null) {
+            throw new OperationException(String.format("找不到卡片：[%s]！", cardName));
         }
         int needDust = 0;
-        if (NR_RARE.contains(cardModel.getRare())){
+        if (NR_RARE.contains(cardModel.getRare())) {
             needDust = 5;
         } else {
             needDust = 150;
@@ -190,11 +193,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateAward(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
-        if (model == null){
-            throw new Exception(String.format("找不到用户：[%s]！", name));
+        if (model == null) {
+            throw new OperationException(String.format("找不到用户：[%s]！", name));
         }
 
-        log.info("[{}]的月见黑被修改：（{}->{}）", name, model.getNonawardCount(), newCount);
+        log.warn("[{}]的月见黑被修改：（{}->{}）", name, model.getNonawardCount(), newCount);
         model.setNonawardCount(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
@@ -204,11 +207,11 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDuelPoint(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
-        if (model == null){
-            throw new Exception(String.format("找不到用户：[%s]！", name));
+        if (model == null) {
+            throw new OperationException(String.format("找不到用户：[%s]！", name));
         }
 
-        log.info("[{}]的DP被修改：（{}->{}）", name, model.getDuelPoint(), newCount);
+        log.warn("[{}]的DP被修改：（{}->{}）", name, model.getDuelPoint(), newCount);
         model.setDuelPoint(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;

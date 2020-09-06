@@ -5,6 +5,7 @@ import com.weird.mapper.PackageInfoMapper;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.service.PackageService;
+import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,12 +30,12 @@ public class PackageServiceImpl implements PackageService {
     public boolean addPackage(String name) throws Exception {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(name);
-        if (oldPackage != null){
-            throw new Exception(String.format("卡包[%s]已存在！", name));
+        if (oldPackage != null) {
+            throw new OperationException(String.format("卡包[%s]已存在！", name));
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
-        log.info("添加卡包：[{}]", name);
+        log.warn("添加卡包：[{}]", name);
         return packageInfoMapper.insert(newPackage) > 0;
     }
 
@@ -48,14 +49,14 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public boolean updatePackageName(String oldName, String newName) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(oldName);
-        if (oldPackage == null){
-            throw new Exception(String.format("找不到该卡包：[%s]！", oldName));
+        if (oldPackage == null) {
+            throw new OperationException(String.format("找不到该卡包：[%s]！", oldName));
         }
-        if (oldPackage.getPackageName().equals(newName)){
-            throw new Exception("卡包名字未改动！");
+        if (oldPackage.getPackageName().equals(newName)) {
+            throw new OperationException("卡包名字未改动！");
         }
         oldPackage.setPackageName(newName);
-        log.info("卡包更改名字：[{}]->[{}]", oldName, newName);
+        log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
     }
 
@@ -63,8 +64,8 @@ public class PackageServiceImpl implements PackageService {
      * 在卡包中添加卡片
      *
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param rare 稀有度
+     * @param cardName    卡片名
+     * @param rare        稀有度
      * @return 是否添加成功
      */
     @Override
@@ -72,15 +73,15 @@ public class PackageServiceImpl implements PackageService {
     public boolean addCard(String packageName, String cardName, String rare) throws Exception {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
-        if (packageModel == null){
-            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
+        if (packageModel == null) {
+            throw new OperationException(String.format("找不到该卡包：[%s]！", packageName));
         }
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, cardName);
-        if (cardModel != null){
-            throw new Exception(String.format("卡片[%s]已存在！", cardName));
+        if (cardModel != null) {
+            throw new OperationException(String.format("卡片[%s]已存在！", cardName));
         }
 
         // 添加
@@ -88,7 +89,7 @@ public class PackageServiceImpl implements PackageService {
         newCardModel.setCardName(cardName);
         newCardModel.setPackageId(packageId);
         newCardModel.setRare(rare);
-        log.info("在卡包[{}]中添加卡片[{}]({})", packageName, cardName, rare);
+        log.warn("在卡包[{}]中添加卡片[{}]({})", packageName, cardName, rare);
         return packageCardMapper.insert(newCardModel) > 0;
     }
 
@@ -96,8 +97,8 @@ public class PackageServiceImpl implements PackageService {
      * 修改卡包中的卡片名字
      *
      * @param packageName 卡包名
-     * @param oldName 旧卡名
-     * @param newName 新卡名
+     * @param oldName     旧卡名
+     * @param newName     新卡名
      * @return 是否修改成功
      */
     @Override
@@ -105,19 +106,19 @@ public class PackageServiceImpl implements PackageService {
     public boolean updateCardName(String packageName, String oldName, String newName) throws Exception {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
-        if (packageModel == null){
-            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
+        if (packageModel == null) {
+            throw new OperationException(String.format("找不到该卡包：[%s]！", packageName));
         }
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, oldName);
-        if (cardModel == null){
-            throw new Exception(String.format("卡片[%s]不存在！", oldName));
+        if (cardModel == null) {
+            throw new OperationException(String.format("卡片[%s]不存在！", oldName));
         }
 
         // 修改
-        log.info("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
+        log.warn("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
         cardModel.setCardName(newName);
         return packageCardMapper.updateByPrimaryKey(cardModel) > 0;
     }

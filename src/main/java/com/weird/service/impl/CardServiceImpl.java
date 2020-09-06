@@ -11,6 +11,7 @@ import com.weird.model.UserDataModel;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
+import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,24 +38,24 @@ public class CardServiceImpl implements CardService {
     /**
      * 根据用户名、卡包名、卡片名获得用户ID和卡片ID
      *
-     * @param userName 用户名
+     * @param userName    用户名
      * @param packageName 卡包名
-     * @param cardName 卡片名
+     * @param cardName    卡片名
      * @return 列表，其中[0]=用户ID，[1]=卡片ID
      */
-    private List<Integer> getUserIdAndCardPk(String userName, String packageName, String cardName) throws Exception{
+    private List<Integer> getUserIdAndCardPk(String userName, String packageName, String cardName) throws Exception {
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
-        if (userModel == null){
-            throw new Exception(String.format("找不到该用户:[%s]！", userName));
+        if (userModel == null) {
+            throw new OperationException(String.format("找不到该用户:[%s]！", userName));
         }
 
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
-        if (packageModel == null){
-            throw new Exception(String.format("找不到该卡包：[%s]！", packageName));
+        if (packageModel == null) {
+            throw new OperationException(String.format("找不到该卡包：[%s]！", packageName));
         }
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageModel.getPackageId(), cardName);
-        if (cardModel == null){
-            throw new Exception(String.format("找不到该卡片：[%s]！", cardName));
+        if (cardModel == null) {
+            throw new OperationException(String.format("找不到该卡片：[%s]！", cardName));
         }
 
         return Arrays.asList(userModel.getUserId(), cardModel.getCardPk());
@@ -63,29 +64,29 @@ public class CardServiceImpl implements CardService {
     /**
      * 修改用户持有的卡片数量
      *
-     * @param userName 用户名
+     * @param userName    用户名
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param count 新的卡片数量
+     * @param cardName    卡片名
+     * @param count       新的卡片数量
      * @return 是否修改成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateCardCount(String userName, String packageName, String cardName, int count) throws Exception {
-        if (count > 3 || count < 0){
-            throw new Exception("修改卡片数量错误，应在0~3内！");
+        if (count > 3 || count < 0) {
+            throw new OperationException("修改卡片数量错误，应在0~3内！");
         }
         List<Integer> searchInfo = getUserIdAndCardPk(userName, packageName, cardName);
         int userId = searchInfo.get(0);
         int cardPk = searchInfo.get(1);
 
         UserCardListModel model = userCardListMapper.selectByUserCard(userId, cardPk);
-        if (model != null){
-            log.info("修改[{}]的卡片数量（{}->{}）", userName, model.getCount(), count);
+        if (model != null) {
+            log.warn("修改[{}]的卡片数量（{}->{}）", userName, model.getCount(), count);
             model.setCount(count);
             return userCardListMapper.update(model) > 0;
         } else {
-            log.info("修改[{}]的卡片数量（{}->{}）", userName, 0, count);
+            log.warn("修改[{}]的卡片数量（{}->{}）", userName, 0, count);
             model = new UserCardListModel();
             model.setUserId(userId);
             model.setCardPk(cardPk);
@@ -98,8 +99,8 @@ public class CardServiceImpl implements CardService {
      * 管理端根据条件筛选所有卡片
      *
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param rare 稀有度
+     * @param cardName    卡片名
+     * @param rare        稀有度
      * @return 查询结果
      */
     @Override

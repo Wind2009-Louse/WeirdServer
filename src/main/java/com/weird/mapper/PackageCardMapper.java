@@ -22,7 +22,7 @@ public interface PackageCardMapper {
      * 根据卡包和卡片名搜索卡片信息
      *
      * @param packageId 卡包ID
-     * @param name 卡片名
+     * @param name      卡片名
      * @return 查找结果
      */
     List<PackageCardModel> selectInPackage(@Param("packageId") int packageId,
@@ -32,7 +32,7 @@ public interface PackageCardMapper {
      * 根据卡包和卡片名搜索卡片信息
      *
      * @param packageId 卡包ID
-     * @param name 卡片名
+     * @param name      卡片名
      * @return 查找结果
      */
     PackageCardModel selectInPackageDistinct(@Param("packageId") int packageId,

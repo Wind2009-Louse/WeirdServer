@@ -4,6 +4,7 @@ import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
 import com.weird.service.PackageService;
+import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import com.weird.model.dto.PackageCardDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -56,7 +57,7 @@ public class CardListController {
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
         List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
@@ -108,13 +109,13 @@ public class CardListController {
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
 
-        if (cardService.updateCardCount(targetUser, packageName, cardName, newCount)){
+        if (cardService.updateCardCount(targetUser, packageName, cardName, newCount)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 
@@ -137,21 +138,21 @@ public class CardListController {
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
-        if (cardName == null || cardName.length() == 0){
-            throw new Exception("卡片名为空！");
+        if (cardName == null || cardName.length() == 0) {
+            throw new OperationException("卡片名为空！");
         }
 
         // 稀有度验证
-        if (!RARE_LIST.contains(rare)){
-            throw new Exception("稀有度设置错误！");
+        if (!RARE_LIST.contains(rare)) {
+            throw new OperationException("稀有度设置错误！");
         }
 
-        if (packageService.addCard(packageName, cardName, rare)){
+        if (packageService.addCard(packageName, cardName, rare)) {
             return "添加成功！";
         } else {
-            throw new Exception("添加失败！");
+            throw new OperationException("添加失败！");
         }
     }
 
@@ -173,9 +174,9 @@ public class CardListController {
                                    @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
 
-        throw new Exception("删除失败！");
+        throw new OperationException("删除失败！");
     }
 }

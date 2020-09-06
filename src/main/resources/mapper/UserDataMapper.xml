@@ -102,7 +102,7 @@
         password = #{password,jdbcType=VARCHAR},
         is_admin = #{isAdmin,jdbcType=TINYINT},
         nonaward_count = #{nonawardCount,jdbcType=INTEGER},
-        dust_count = #{dustCount,jdbcType=INTEGER}
+        dust_count = #{dustCount,jdbcType=INTEGER},
         duel_point = #{duelPoint,jdbcType=INTEGER}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>

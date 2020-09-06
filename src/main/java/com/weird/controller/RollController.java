@@ -2,6 +2,7 @@ package com.weird.controller;
 
 import com.weird.model.RollListModel;
 import com.weird.model.dto.RollDetailDTO;
+import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -49,15 +50,15 @@ public class RollController {
                        @RequestParam(value = "name") String name,
                        @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("用户信息错误！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("用户信息错误！");
         }
 
         List<String> cardNames = Arrays.asList(cardName1, cardName2, cardName3);
-        if (rollService.roll(packageName, cardNames, targetUser)){
+        if (rollService.roll(packageName, cardNames, targetUser)) {
             return "记录成功!";
         } else {
-            throw new Exception("抽卡记录失败！");
+            throw new OperationException("抽卡记录失败！");
         }
     }
 
@@ -95,21 +96,21 @@ public class RollController {
      */
     @RequestMapping("/roll/set")
     public String setRollStatus(@RequestParam(value = "id") long rollId,
-                          @RequestParam(value = "status") int status,
-                          @RequestParam(value = "name") String name,
-                          @RequestParam(value = "password") String password) throws Exception {
+                                @RequestParam(value = "status") int status,
+                                @RequestParam(value = "name") String name,
+                                @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("权限不足！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
         }
-        if (status != 0 && status != 1){
-            throw new Exception("状态设置错误！");
+        if (status != 0 && status != 1) {
+            throw new OperationException("状态设置错误！");
         }
 
-        if (rollService.setStatus(rollId, status)){
+        if (rollService.setStatus(rollId, status)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.weird.handler;
 
 import com.weird.model.ResultModel;
+import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -36,7 +37,9 @@ public class ResponseHandler implements ResponseBodyAdvice {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResultModel<String> customException(Exception e) {
-        e.printStackTrace();
+        if (!(e instanceof OperationException)){
+            e.printStackTrace();
+        }
         log.error(e.getMessage());
         return new ResultModel<>(500, e.getMessage());
     }

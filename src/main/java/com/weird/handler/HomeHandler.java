@@ -12,7 +12,7 @@ public class HomeHandler {
      * @return 首页信息
      */
     @RequestMapping({"/index.html", "/"})
-    public String Homepage_html(){
+    public String homePage() {
         return "Hello!\n你好！\nこんにちは";
     }
 }

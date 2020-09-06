@@ -2,6 +2,7 @@ package com.weird.service;
 
 /**
  * 卡包Service
+ *
  * @author Nidhogg
  */
 public interface PackageService {
@@ -26,8 +27,8 @@ public interface PackageService {
      * 在卡包中添加卡片
      *
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param rare 稀有度
+     * @param cardName    卡片名
+     * @param rare        稀有度
      * @return 是否添加成功
      */
     boolean addCard(String packageName, String cardName, String rare) throws Exception;
@@ -36,8 +37,8 @@ public interface PackageService {
      * 修改卡包中的卡片名字
      *
      * @param packageName 卡包名
-     * @param oldName 旧卡名
-     * @param newName 新卡名
+     * @param oldName     旧卡名
+     * @param newName     新卡名
      * @return 是否修改成功
      */
     boolean updateCardName(String packageName, String oldName, String newName) throws Exception;

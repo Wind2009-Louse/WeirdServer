@@ -60,7 +60,7 @@ public class PageResult<T> implements Serializable {
      */
     public void addPageInfo(List<T> list, int pageIndex) throws Exception {
         if (pageIndex <= 0){
-            throw new Exception("页码错误！");
+            throw new OperationException("页码错误！");
         }
         totalCount = list.size();
         currPage = pageIndex;

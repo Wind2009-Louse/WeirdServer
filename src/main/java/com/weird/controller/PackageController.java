@@ -3,6 +3,7 @@ package com.weird.controller;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
+import com.weird.utils.OperationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -35,16 +36,16 @@ public class PackageController {
                              @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
-        if (packageName == null || packageName.length() == 0){
-            throw new Exception("卡包名为空！");
+        if (packageName == null || packageName.length() == 0) {
+            throw new OperationException("卡包名为空！");
         }
 
-        if (packageService.addPackage(packageName)){
+        if (packageService.addPackage(packageName)) {
             return "新增成功！";
         } else {
-            throw new Exception("新增失败！");
+            throw new OperationException("新增失败！");
         }
     }
 
@@ -64,16 +65,16 @@ public class PackageController {
                                     @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
-        if (newPackageName == null || newPackageName.length() == 0){
-            throw new Exception("卡包名为空！");
+        if (newPackageName == null || newPackageName.length() == 0) {
+            throw new OperationException("卡包名为空！");
         }
 
-        if (packageService.updatePackageName(oldPackageName, newPackageName)){
+        if (packageService.updatePackageName(oldPackageName, newPackageName)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 
@@ -96,19 +97,19 @@ public class PackageController {
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new Exception("权限不足！");
+            throw new OperationException("权限不足！");
         }
-        if (newCardName == null || newCardName.length() == 0){
-            throw new Exception("卡片名为空！");
+        if (newCardName == null || newCardName.length() == 0) {
+            throw new OperationException("卡片名为空！");
         }
-        if (newCardName.equals(oldCardName)){
-            throw new Exception("名字未修改！");
+        if (newCardName.equals(oldCardName)) {
+            throw new OperationException("名字未修改！");
         }
 
-        if (packageService.updateCardName(packageName, oldCardName, newCardName)){
+        if (packageService.updateCardName(packageName, oldCardName, newCardName)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 }

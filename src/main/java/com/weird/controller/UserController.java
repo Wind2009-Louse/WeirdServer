@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -24,7 +25,7 @@ public class UserController {
     /**
      * 【ALL】查询用户信息
      *
-     * @param page 页号
+     * @param page     页号
      * @param userName 用户名
      * @return 查询结果
      */
@@ -54,14 +55,17 @@ public class UserController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("权限不足！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (name == null || name.length() == 0) {
+            throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateDust(targetUser, dustCount)){
+        if (userService.updateDust(targetUser, dustCount)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 
@@ -75,12 +79,12 @@ public class UserController {
      */
     @RequestMapping("/user/change")
     public String dustToCard(@RequestParam(value = "card") String cardName,
-                       @RequestParam(value = "name") String name,
-                       @RequestParam(value = "password") String password) throws Exception {
-        if (userService.dustToCard(cardName, name, password)){
+                             @RequestParam(value = "name") String name,
+                             @RequestParam(value = "password") String password) throws Exception {
+        if (userService.dustToCard(cardName, name, password)) {
             return "转换成功！";
         } else {
-            throw new Exception("转换失败！");
+            throw new OperationException("转换失败！");
         }
     }
 
@@ -95,18 +99,21 @@ public class UserController {
      */
     @RequestMapping("/user/award")
     public String updateCount(@RequestParam(value = "target") String targetUser,
-                        @RequestParam(value = "award") int awardCount,
-                        @RequestParam(value = "name") String name,
-                        @RequestParam(value = "password") String password) throws Exception {
+                              @RequestParam(value = "award") int awardCount,
+                              @RequestParam(value = "name") String name,
+                              @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("权限不足！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (name == null || name.length() == 0) {
+            throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateAward(targetUser, awardCount)){
+        if (userService.updateAward(targetUser, awardCount)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 
@@ -126,14 +133,17 @@ public class UserController {
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("权限不足！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (name == null || name.length() == 0) {
+            throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateDuelPoint(targetUser, dpCount)){
+        if (userService.updateDuelPoint(targetUser, dpCount)) {
             return "修改成功！";
         } else {
-            throw new Exception("修改失败！");
+            throw new OperationException("修改失败！");
         }
     }
 
@@ -141,38 +151,42 @@ public class UserController {
      * 【管理端】添加新用户
      * 新用户密码默认为123456
      *
-     * @param target 用户名
-     * @param name       操作用户名称
-     * @param password   操作用户密码
-     * @return 是否修改成功
+     * @param target   用户名
+     * @param name     操作用户名称
+     * @param password 操作用户密码
+     * @return 是否添加成功
      */
     @RequestMapping("/user/add")
-    public boolean addUser(@RequestParam(value = "target") String target,
-                           @RequestParam(value = "name") String name,
-                           @RequestParam(value = "password") String password) throws Exception {
+    public String addUser(@RequestParam(value = "target") String target,
+                          @RequestParam(value = "name") String name,
+                          @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN){
-            throw new Exception("权限不足！");
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
         }
-        if (name == null || name.length() == 0){
-            throw new Exception("用户名为空！");
+        if (name == null || name.length() == 0) {
+            throw new OperationException("用户名为空！");
         }
-        return userService.addUser(target);
+        if (userService.addUser(target)) {
+            return "添加成功！";
+        } else {
+            throw new OperationException("添加失败！");
+        }
     }
 
     /**
      * 【ALL】修改用户密码
      *
-     * @param name 用户名
-     * @param oldPassword   旧密码
-     * @param newPassword   新密码
+     * @param name        用户名
+     * @param oldPassword 旧密码
+     * @param newPassword 新密码
      * @return 是否修改成功
      */
     @RequestMapping("/user/pw")
     public String updatePassword(@RequestParam(value = "name") String name,
                                  @RequestParam(value = "old") String oldPassword,
-                                 @RequestParam(value = "new") String newPassword) throws Exception{
-        if (userService.updatePassword(name, oldPassword, newPassword)){
+                                 @RequestParam(value = "new") String newPassword) throws Exception {
+        if (userService.updatePassword(name, oldPassword, newPassword)) {
             return "修改成功！";
         } else {
             return "修改失败！";

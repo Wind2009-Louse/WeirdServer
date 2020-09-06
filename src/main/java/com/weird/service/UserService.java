@@ -42,7 +42,7 @@ public interface UserService {
     /**
      * 修改用户密码
      *
-     * @param name 用户名
+     * @param name        用户名
      * @param oldPassword 旧密码
      * @param newPassword 新密码
      * @return 是否更改成功
@@ -52,7 +52,7 @@ public interface UserService {
     /**
      * 修改用户尘数
      *
-     * @param name 用户名
+     * @param name     用户名
      * @param newCount 新尘数
      * @return 是否更改成功
      */
@@ -80,7 +80,7 @@ public interface UserService {
     /**
      * 修改DP
      *
-     * @param name 用户名
+     * @param name     用户名
      * @param newCount 新DP
      * @return 是否更改成功
      */

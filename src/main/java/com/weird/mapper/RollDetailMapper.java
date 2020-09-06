@@ -13,7 +13,7 @@ public interface RollDetailMapper {
      * 根据抽卡结果ID返回抽卡内容
      *
      * @param resultId
-     * @return
+     * @return 抽卡内容
      */
     List<RollDetailModel> selectCardPkById(long resultId);
 }

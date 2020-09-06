@@ -34,8 +34,8 @@ public interface UserCardListMapper {
      * 管理端查找卡片
      *
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param rare 稀有度
+     * @param cardName    卡片名
+     * @param rare        稀有度
      * @return 查询结果
      */
     List<CardListDTO> selectCardList(@Param("packageName") String packageName,
@@ -46,9 +46,9 @@ public interface UserCardListMapper {
      * 客户端查找卡片
      *
      * @param packageName 卡包名
-     * @param cardName 卡片名
-     * @param rare 稀有度
-     * @param userName 用户名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @param userName    用户名
      * @return 查询结果
      */
     List<CardOwnListDTO> selectCardOwnList(@Param("packageName") String packageName,
