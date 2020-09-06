@@ -120,6 +120,7 @@
         <include refid="Base_Column_List"/>
         from user_data
         where user_name like concat('%', #{name}, '%') and is_admin = 0
+        order by user_id desc
     </select>
 
     <select id="selectByNameDistinct" resultMap="BaseResultMap">

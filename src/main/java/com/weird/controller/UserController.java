@@ -58,7 +58,7 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (name == null || name.length() == 0) {
+        if (targetUser == null || targetUser.length() == 0) {
             throw new OperationException("用户名为空！");
         }
 
@@ -106,7 +106,7 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (name == null || name.length() == 0) {
+        if (targetUser == null || targetUser.length() == 0) {
             throw new OperationException("用户名为空！");
         }
 
@@ -136,7 +136,7 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (name == null || name.length() == 0) {
+        if (targetUser == null || targetUser.length() == 0) {
             throw new OperationException("用户名为空！");
         }
 
@@ -164,7 +164,7 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (name == null || name.length() == 0) {
+        if (target == null || target.length() == 0) {
             throw new OperationException("用户名为空！");
         }
         if (userService.addUser(target)) {

@@ -51,7 +51,7 @@ public class RollController {
                        @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new OperationException("用户信息错误！");
+            throw new OperationException("权限不足！");
         }
 
         List<String> cardNames = Arrays.asList(cardName1, cardName2, cardName3);
