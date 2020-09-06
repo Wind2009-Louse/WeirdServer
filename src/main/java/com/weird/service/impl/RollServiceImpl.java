@@ -5,6 +5,7 @@ import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.service.RollService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class RollServiceImpl implements RollService {
     @Autowired
     RollListMapper rollListMapper;
@@ -210,6 +212,13 @@ public class RollServiceImpl implements RollService {
 
         addCards(userModel, cardModels, rollModel.getRollId());
 
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("[%s]抽卡：",userName));
+        for (PackageCardModel card : cardModels){
+            sb.append(String.format("[%s](%s), ", card.getCardName(), card.getRare()));
+        }
+        log.info(sb.toString());
+
         return true;
     }
 
@@ -256,6 +265,7 @@ public class RollServiceImpl implements RollService {
         }
 
         rollListModel.setIsDisabled((byte) newStatus);
+        log.info("[{}]的状态变为{}",rollListModel, newStatus);
         if (rollListMapper.updateByPrimaryKey(rollListModel) <= 0){
             throw new Exception("修改抽卡记录状态失败！");
         }

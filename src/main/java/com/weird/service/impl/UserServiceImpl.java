@@ -10,6 +10,7 @@ import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
     @Autowired
     UserDataMapper userDataMapper;
@@ -105,6 +107,7 @@ public class UserServiceImpl implements UserService {
         newModel.setDustCount(0);
         newModel.setNonawardCount(0);
         userDataMapper.insert(newModel);
+        log.info("添加新用户：[{}]", name);
         return newModel.getUserId() > 0;
     }
 
@@ -124,6 +127,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception("用户名或密码错误！");
         }
         model.setPassword(newPassword);
+        log.info("[{}]的密码发生修改", name);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
 
@@ -142,6 +146,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception(String.format("找不到用户：[%s]！", name));
         }
 
+        log.info("[{}]的尘被修改：（{}->{}）", name, model.getDustCount(), newCount);
         model.setDustCount(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
@@ -189,6 +194,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception(String.format("找不到用户：[%s]！", name));
         }
 
+        log.info("[{}]的月见黑被修改：（{}->{}）", name, model.getNonawardCount(), newCount);
         model.setNonawardCount(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
@@ -202,6 +208,7 @@ public class UserServiceImpl implements UserService {
             throw new Exception(String.format("找不到用户：[%s]！", name));
         }
 
+        log.info("[{}]的DP被修改：（{}->{}）", name, model.getDuelPoint(), newCount);
         model.setDuelPoint(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;

@@ -5,11 +5,13 @@ import com.weird.mapper.PackageInfoMapper;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.service.PackageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Slf4j
 public class PackageServiceImpl implements PackageService {
     @Autowired
     PackageInfoMapper packageInfoMapper;
@@ -32,6 +34,7 @@ public class PackageServiceImpl implements PackageService {
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
+        log.info("添加卡包：[{}]", name);
         return packageInfoMapper.insert(newPackage) > 0;
     }
 
@@ -52,6 +55,7 @@ public class PackageServiceImpl implements PackageService {
             throw new Exception("卡包名字未改动！");
         }
         oldPackage.setPackageName(newName);
+        log.info("卡包更改名字：[{}]->[{}]", oldName, newName);
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
     }
 
@@ -84,6 +88,7 @@ public class PackageServiceImpl implements PackageService {
         newCardModel.setCardName(cardName);
         newCardModel.setPackageId(packageId);
         newCardModel.setRare(rare);
+        log.info("在卡包[{}]中添加卡片[{}]({})", packageName, cardName, rare);
         return packageCardMapper.insert(newCardModel) > 0;
     }
 
@@ -112,6 +117,7 @@ public class PackageServiceImpl implements PackageService {
         }
 
         // 修改
+        log.info("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
         cardModel.setCardName(newName);
         return packageCardMapper.updateByPrimaryKey(cardModel) > 0;
     }

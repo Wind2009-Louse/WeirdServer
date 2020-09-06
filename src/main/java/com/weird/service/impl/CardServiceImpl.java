@@ -11,6 +11,7 @@ import com.weird.model.UserDataModel;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
+@Slf4j
 public class CardServiceImpl implements CardService {
     @Autowired
     PackageInfoMapper packageInfoMapper;
@@ -79,9 +81,11 @@ public class CardServiceImpl implements CardService {
 
         UserCardListModel model = userCardListMapper.selectByUserCard(userId, cardPk);
         if (model != null){
+            log.info("修改[{}]的卡片数量（{}->{}）", userName, model.getCount(), count);
             model.setCount(count);
             return userCardListMapper.update(model) > 0;
         } else {
+            log.info("修改[{}]的卡片数量（{}->{}）", userName, 0, count);
             model = new UserCardListModel();
             model.setUserId(userId);
             model.setCardPk(cardPk);

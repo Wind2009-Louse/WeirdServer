@@ -11,10 +11,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
-import javax.xml.ws.Response;
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * 错误处理返回类
  *
@@ -40,6 +36,7 @@ public class ResponseHandler implements ResponseBodyAdvice {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResultModel<String> customException(Exception e) {
+        e.printStackTrace();
         log.error(e.getMessage());
         return new ResultModel<>(500, e.getMessage());
     }
