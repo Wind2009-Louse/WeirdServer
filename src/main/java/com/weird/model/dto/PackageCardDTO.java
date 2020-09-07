@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 卡片持有信息DTO
+ *
  * @author Nidhogg
  */
 @Data

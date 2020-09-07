@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 用户信息
  *
  * @author Nidhogg
- * @date   2020/09/04
+ * @date 2020/09/04
  */
 @Data
 public class UserDataDTO implements Serializable {

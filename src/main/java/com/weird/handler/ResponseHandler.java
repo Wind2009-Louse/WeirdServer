@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
 
 /**
- * 错误处理返回类
+ * 返回处理类
  *
  * @author Nidhogg
  */
@@ -25,6 +25,9 @@ public class ResponseHandler implements ResponseBodyAdvice {
         return true;
     }
 
+    /**
+     * 正常返回，code=200
+     */
     @Override
     public Object beforeBodyWrite(Object o, MethodParameter methodParameter, MediaType mediaType, Class aClass, ServerHttpRequest serverHttpRequest, ServerHttpResponse serverHttpResponse) {
         if (!(o instanceof ResultModel)) {
@@ -34,10 +37,13 @@ public class ResponseHandler implements ResponseBodyAdvice {
         return o;
     }
 
+    /**
+     * 异常返回，code=500
+     */
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResultModel<String> customException(Exception e) {
-        if (!(e instanceof OperationException)){
+        if (!(e instanceof OperationException)) {
             e.printStackTrace();
         }
         log.error(e.getMessage());

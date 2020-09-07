@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 卡包中的卡片信息
  *
  * @author Nidhogg
- * @date   2020/09/04
+ * @date 2020/09/04
  */
 @Data
 public class PackageCardModel implements Serializable {

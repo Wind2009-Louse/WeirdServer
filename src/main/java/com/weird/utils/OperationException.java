@@ -5,8 +5,8 @@ package com.weird.utils;
  *
  * @author Nidhogg
  */
-public class OperationException extends  Exception {
-    public OperationException(String cause){
+public class OperationException extends Exception {
+    public OperationException(String cause) {
         super(cause);
     }
 }

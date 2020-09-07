@@ -44,22 +44,14 @@ public class PageResult<T> implements Serializable {
      */
     private List<T> dataList;
 
-    public void build() {
-        if (totalCount % pageSize == 0) {
-            totalPage = totalCount / pageSize;
-        } else {
-            totalPage = totalCount / pageSize + 1;
-        }
-    }
-
     /**
      * 设置页面信息，根据页码进行分页等操作
      *
-     * @param list 要加入的页面内容
+     * @param list      要加入的页面内容
      * @param pageIndex 当前页码
      */
     public void addPageInfo(List<T> list, int pageIndex) throws Exception {
-        if (pageIndex <= 0){
+        if (pageIndex <= 0) {
             throw new OperationException("页码错误！");
         }
         totalCount = list.size();
@@ -67,12 +59,18 @@ public class PageResult<T> implements Serializable {
         pageSize = PAGE_SIZE;
         dataList = new LinkedList<>();
         // 复制
-        for (int index = pageSize * (currPage - 1); index < totalCount && index < pageSize * currPage; ++ index){
+        for (int index = pageSize * (currPage - 1); index < totalCount && index < pageSize * currPage; ++index) {
             T item = list.get(index);
-            if (item != null){
+            if (item != null) {
                 dataList.add(item);
             }
         }
-        build();
+
+        // 设置总页数
+        if (totalCount % pageSize == 0) {
+            totalPage = totalCount / pageSize;
+        } else {
+            totalPage = totalCount / pageSize + 1;
+        }
     }
 }

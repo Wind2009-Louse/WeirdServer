@@ -9,7 +9,7 @@ import java.util.Date;
  * 抽卡列表
  *
  * @author Nidhogg
- * @date   2020/09/04
+ * @date 2020/09/04
  */
 @Data
 public class RollListModel implements Serializable {

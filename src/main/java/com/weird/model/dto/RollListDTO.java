@@ -1,6 +1,5 @@
 package com.weird.model.dto;
 
-import com.weird.model.RollDetailModel;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -9,6 +8,7 @@ import java.util.List;
 
 /**
  * 抽卡记录DTO
+ *
  * @author Nidhogg
  */
 @Data

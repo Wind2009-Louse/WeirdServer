@@ -8,7 +8,7 @@ import java.io.Serializable;
  * 抽卡详细记录
  *
  * @author Nidhogg
- * @date   2020/09/04
+ * @date 2020/09/04
  */
 @Data
 public class RollDetailModel implements Serializable {

@@ -1,6 +1,12 @@
 package com.weird.model.enums;
 
-public enum LoginTypeEnum{
+/**
+ * 登录结果枚举类
+ *
+ * @author Nidhogg
+ */
+
+public enum LoginTypeEnum {
     /**
      * 未登录
      */

@@ -20,7 +20,7 @@ public class ResultModel<T> implements Serializable {
      * @param code 返回代码
      * @param data 数据
      */
-    public ResultModel(int code, T data){
+    public ResultModel(int code, T data) {
         this.code = code;
         this.data = data;
     }

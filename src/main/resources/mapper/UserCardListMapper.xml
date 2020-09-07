@@ -61,11 +61,11 @@
 
     <select id="selectCardList" resultMap="CardListDTO">
         select package_info.package_name,
-            package_card.card_name,
-            package_card.rare
+        package_card.card_name,
+        package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         where package_name like concat("%", #{packageName} ,"%")
-            and card_name like concat("%", #{cardName} ,"%")
+        and card_name like concat("%", #{cardName} ,"%")
         <if test="rare != ''">
             and rare = #{rare}
         </if>
@@ -83,21 +83,21 @@
 
     <select id="selectCardOwnList" resultMap="CardOwnListDTO">
         select package_info.package_name,
-            package_card.card_name,
-            package_card.rare,
-            user_data.user_name,
-            user_card_list.count
+        package_card.card_name,
+        package_card.rare,
+        user_data.user_name,
+        user_card_list.count
         from package_info inner join package_card on package_info.package_id = package_card.package_id
-            inner join user_card_list on package_card.card_pk = user_card_list.card_pk
-            inner join user_data on user_data.user_id = user_card_list.user_id
+        inner join user_card_list on package_card.card_pk = user_card_list.card_pk
+        inner join user_data on user_data.user_id = user_card_list.user_id
         where
-            user_data.is_admin = 0
-            and package_name like concat("%", #{packageName} ,"%")
-            and card_name like concat("%", #{cardName} ,"%")
+        user_data.is_admin = 0
+        and package_name like concat("%", #{packageName} ,"%")
+        and card_name like concat("%", #{cardName} ,"%")
         <if test="rare != ''">
             and rare = #{rare}
         </if>
-            and user_name like concat("%", #{userName} ,"%")
+        and user_name like concat("%", #{userName} ,"%")
         order by package_card.package_id, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 </mapper>
