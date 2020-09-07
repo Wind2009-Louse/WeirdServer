@@ -23,14 +23,14 @@ DROP TABLE IF EXISTS `package_card`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `package_card` (
-  `card_pk` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT '卡片主键',
+  `card_pk` int unsigned NOT NULL AUTO_INCREMENT COMMENT '卡片主键',
   `card_name` varchar(200) NOT NULL DEFAULT '' COMMENT '卡名',
-  `package_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT '所在卡包',
+  `package_id` int unsigned NOT NULL DEFAULT '0' COMMENT '所在卡包',
   `rare` varchar(45) NOT NULL DEFAULT 'N' COMMENT '稀有度',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`card_pk`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='卡包中的卡片信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡包中的卡片信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -50,12 +50,12 @@ DROP TABLE IF EXISTS `package_info`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `package_info` (
-  `package_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
+  `package_id` int NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
   `package_name` varchar(45) NOT NULL DEFAULT '' COMMENT '卡包名称',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`package_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='卡包信息'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡包信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -75,12 +75,12 @@ DROP TABLE IF EXISTS `roll_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roll_detail` (
-  `roll_id` bigint(20) NOT NULL COMMENT '抽卡记录ID',
-  `card_pk` int(11) NOT NULL COMMENT '抽卡PK',
-  `is_dust` tinyint(4) NOT NULL COMMENT '是否转化为尘',
+  `roll_id` bigint NOT NULL COMMENT '抽卡记录ID',
+  `card_pk` int NOT NULL COMMENT '抽卡PK',
+  `is_dust` tinyint NOT NULL COMMENT '是否转化为尘',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='抽卡详细记录';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽卡详细记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -100,14 +100,14 @@ DROP TABLE IF EXISTS `roll_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roll_list` (
-  `roll_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '抽卡记录ID',
-  `roll_user_id` int(11) NOT NULL DEFAULT '0' COMMENT '抽卡用户ID',
-  `roll_package_id` int(11) NOT NULL DEFAULT '0' COMMENT '卡包ID',
-  `is_disabled` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否被禁用（滚回）',
+  `roll_id` bigint NOT NULL AUTO_INCREMENT COMMENT '抽卡记录ID',
+  `roll_user_id` int NOT NULL DEFAULT '0' COMMENT '抽卡用户ID',
+  `roll_package_id` int NOT NULL DEFAULT '0' COMMENT '卡包ID',
+  `is_disabled` tinyint NOT NULL DEFAULT '0' COMMENT '是否被禁用（滚回）',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_tim` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新e时间',
   PRIMARY KEY (`roll_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='抽卡列表';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽卡列表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -127,12 +127,12 @@ DROP TABLE IF EXISTS `user_card_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_card_list` (
-  `user_id` int(11) NOT NULL COMMENT '用户ID',
-  `card_pk` int(11) NOT NULL DEFAULT '0' COMMENT '卡片PK',
-  `count` int(11) NOT NULL DEFAULT '0' COMMENT '持有数量',
+  `user_id` int NOT NULL COMMENT '用户ID',
+  `card_pk` int NOT NULL DEFAULT '0' COMMENT '卡片PK',
+  `count` int NOT NULL DEFAULT '0' COMMENT '持有数量',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户持有的卡片';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户持有的卡片';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -152,17 +152,17 @@ DROP TABLE IF EXISTS `user_data`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_data` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `user_id` int NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `user_name` varchar(45) NOT NULL DEFAULT '' COMMENT '用户名',
   `password` varchar(100) NOT NULL DEFAULT '' COMMENT '用户密码',
-  `is_admin` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否管理员',
-  `nonaward_count` int(11) NOT NULL DEFAULT '0' COMMENT '未出货的计数',
-  `dust_count` int(11) NOT NULL DEFAULT '0' COMMENT '尘数',
-  `duel_point` int(11) NOT NULL DEFAULT '0',
+  `is_admin` tinyint NOT NULL DEFAULT '0' COMMENT '是否管理员',
+  `nonaward_count` int NOT NULL DEFAULT '0' COMMENT '未出货的计数',
+  `dust_count` int NOT NULL DEFAULT '0' COMMENT '尘数',
+  `duel_point` int NOT NULL DEFAULT '0',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='用户信息';
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -171,6 +171,7 @@ CREATE TABLE `user_data` (
 
 LOCK TABLES `user_data` WRITE;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
+INSERT INTO `user_data` (`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`) VALUES ("admin","1",1,0,0,0);
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -183,4 +184,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-04 16:18:34
+-- Dump completed on 2020-09-07  9:32:53
