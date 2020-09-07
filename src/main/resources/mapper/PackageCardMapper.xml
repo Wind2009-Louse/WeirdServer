@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weird.mapper.PackageCardMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+            size="2048"
+            eviction="LRU"
+            readOnly="false"/>
     <resultMap id="BaseResultMap" type="com.weird.model.PackageCardModel">
         <id column="card_pk" jdbcType="INTEGER" property="cardPk"/>
         <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
