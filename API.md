@@ -3,7 +3,7 @@
 ## 【管理端】全卡片搜索
 
 #### 接口URL
-> 127.0.0.1:8080/card/list/admin?name=admin&password=1&package=&card=义豪&rare=&page=1
+> 127.0.0.1:15163/card/list/admin?name=admin&password=1&package=&card=义豪&rare=&page=1
 
 #### 请求方式
 > GET
@@ -72,55 +72,10 @@
 ```
 
 
-## 【管理端】修改用户持有的卡片数量
-
-#### 接口URL
-> 127.0.0.1:8080/user/card/update?name=admin&password=1&package=再造的世界&card=除草兽&target=test&count=2
-
-#### 请求方式
-> GET
-
-#### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| name     | admin | 必填 | 操作用户名称 |
-| password     | 1 | 必填 | 操作用户密码 |
-| package     | 再造的世界 | 必填 | 卡包名 |
-| card     | 除草兽 | 必填 | 卡片名 |
-| target     | test | 必填 | 用户名 |
-| count     | 2 | 必填 | 修改后的数量 |
-
-
-
-
-
-
-#### 成功响应示例
-```javascript
-{
-	"code": 200,
-	"data": "修改成功！"
-}
-```
-
-
-#### 错误响应示例
-```javascript
-{
-	"code": 500,
-	"data": "修改卡片数量错误，应在0~3内！"
-}
-```
-
-
 ## 【管理端】添加卡片信息
 
 #### 接口URL
-> 127.0.0.1:8080/package/card/add?name=admin&password=1&package=霸王的威压&card=入魔鬼·血石&rare=N
+> 127.0.0.1:15163/card/add?name=admin&password=1&package=霸王的威压&card=入魔鬼·血石&rare=N
 
 #### 请求方式
 > GET
@@ -161,10 +116,54 @@
 ```
 
 
+## 【管理端】修改卡片名称
+
+#### 接口URL
+> 127.0.0.1:15163/card/update?name=admin&password=1&package=再造的世界&oldname=草兽&newname=除草兽
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 操作用户名称 |
+| password     | 1 | 必填 | 操作用户密码 |
+| package     | 再造的世界 | 必填 | 卡包名 |
+| oldname     | 草兽 | 必填 | 旧卡名 |
+| newname     | 除草兽 | 必填 | 新卡名 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "卡片[除草兽]不存在！"
+}
+```
+
+
 ## 【ALL】全卡片拥有情况搜索
 
 #### 接口URL
-> 127.0.0.1:8080/card/list?package=&card=&rare=&target=&page=
+> 127.0.0.1:15163/card/list?package=&card=&rare=&target=&page=
 
 #### 请求方式
 > GET
@@ -236,7 +235,7 @@
 ## 【管理端】新增卡包
 
 #### 接口URL
-> 127.0.0.1:8080/package/add?name=admin&password=1&package=咕咕咕
+> 127.0.0.1:15163/package/add?name=admin&password=1&package=咕咕咕
 
 #### 请求方式
 > GET
@@ -278,7 +277,7 @@
 ## 【管理端】修改卡包名
 
 #### 接口URL
-> 127.0.0.1:8080/package/update?name=admin&password=1&oldname=咕咕咕&newname=咕咕咕咕
+> 127.0.0.1:15163/package/update?name=admin&password=1&oldname=咕咕咕&newname=咕咕咕咕
 
 #### 请求方式
 > GET
@@ -318,54 +317,10 @@
 ```
 
 
-## 【管理端】修改卡包中的卡片名称
-
+## 【管理端】添加新用户
+创建的用户密码默认为``E10ADC3949BA59ABBE56E057F20F883E``（``123456``经过32位大写MD5加密后）
 #### 接口URL
-> 127.0.0.1:8080/package/card/update?name=admin&password=1&package=再造的世界&oldname=除草兽&newname=草兽
-
-#### 请求方式
-> GET
-
-#### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| name     | admin | 必填 | 操作用户名称 |
-| password     | 1 | 必填 | 操作用户密码 |
-| package     | 再造的世界 | 必填 | 卡包名 |
-| oldname     | 除草兽 | 必填 | 旧卡名 |
-| newname     | 草兽 | 必填 | 新卡名 |
-
-
-
-
-
-
-#### 成功响应示例
-```javascript
-{
-	"code": 200,
-	"data": "修改成功！"
-}
-```
-
-
-#### 错误响应示例
-```javascript
-{
-	"code": 500,
-	"data": "卡片[除草兽]不存在！"
-}
-```
-
-
-## 【管理端】添加新用户（新用户密码默认为123456，32位大写MD5加密）
-
-#### 接口URL
-> 127.0.0.1:8080/user/add?name=admin&password=1&target=新的用户
+> 127.0.0.1:15163/user/add?name=admin&password=1&target=新的用户
 
 #### 请求方式
 > GET
@@ -404,10 +359,55 @@
 ```
 
 
+## 【管理端】修改用户持有的卡片数量
+
+#### 接口URL
+> 127.0.0.1:15163/user/card/update?name=admin&password=1&package=再造的世界&card=除草兽&target=test&count=2
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 操作用户名称 |
+| password     | 1 | 必填 | 操作用户密码 |
+| package     | 再造的世界 | 必填 | 卡包名 |
+| card     | 除草兽 | 必填 | 卡片名 |
+| target     | test | 必填 | 用户名 |
+| count     | 2 | 必填 | 修改后的数量 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "[test]的卡片[除草兽]的数量没有变化！"
+}
+```
+
+
 ## 【管理端】修改用户的尘数
 
 #### 接口URL
-> 127.0.0.1:8080/user/dust?name=admin&password=1&target=&count=1
+> 127.0.0.1:15163/user/dust?name=admin&password=1&target=&count=1
 
 #### 请求方式
 > GET
@@ -442,16 +442,15 @@
 ```javascript
 {
 	"code": 500,
-	"data": "权限不足！"
+	"data": "用户名为空！"
 }
 ```
-
 
 
 ## 【管理端】修改用户月见黑计数
 
 #### 接口URL
-> 127.0.0.1:8080/user/award?name=admin&password=1&target=新的用户&award=1
+> 127.0.0.1:15163/user/award?name=admin&password=1&target=新的用户&award=1
 
 #### 请求方式
 > GET
@@ -491,10 +490,44 @@
 ```
 
 
+## 【ALL】检查用户类型
+返回``ADMIN``、``NORMAL``、``UNLOGIN``三种。
+服务器不会有任何更新动作。
+#### 接口URL
+> 127.0.0.1:15163/user/check?name=admin&password=1
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 用户名 |
+| password     | 1 | 必填 | 用户密码 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "ADMIN"
+}
+```
+
+
+
 ## 【ALL】查询用户信息
 
 #### 接口URL
-> 127.0.0.1:8080/user/list?user=&page=
+> 127.0.0.1:15163/user/list?user=&page=
 
 #### 请求方式
 > GET
@@ -556,7 +589,7 @@
 ## 【玩家端】直接将尘转换为卡片
 
 #### 接口URL
-> 127.0.0.1:8080/user/change?name=新的用户&password=E10ADC3949BA59ABBE56E057F20F883E&card=草兽
+> 127.0.0.1:8080/user/change?name=新的用户&password=123456&card=草兽
 
 #### 请求方式
 > GET
@@ -569,7 +602,7 @@
 | 参数        | 示例值   | 是否必填   |  参数描述  |
 | :--------   | :-----  | :-----  | :----  |
 | name     | 新的用户 | 必填 | 操作用户名称 |
-| password     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 操作用户密码 |
+| password     | 123456 | 必填 | 操作用户密码 |
 | card     | 草兽 | 必填 | 卡片名 |
 
 
@@ -590,7 +623,7 @@
 ## 【管理端】设置某个抽卡结果是否适用
 
 #### 接口URL
-> 127.0.0.1:8080/roll/set?name=admin&password=1&id=3&status=0
+> 127.0.0.1:15163/roll/set?name=admin&password=1&id=3&status=0
 
 #### 请求方式
 > GET
@@ -633,7 +666,7 @@
 ## 【ALL】查询抽卡结果
 
 #### 接口URL
-> 127.0.0.1:8080/roll/list?page=1&package=&user=
+> 127.0.0.1:15163/roll/list?package=&user=&page=1
 
 #### 请求方式
 > GET
@@ -645,9 +678,9 @@
 
 | 参数        | 示例值   | 是否必填   |  参数描述  |
 | :--------   | :-----  | :-----  | :----  |
-| page     | 1 | 选填 | 页码 |
 | package     | - | 选填 | 卡包名，模糊搜索 |
 | user     | - | 选填 | 用户名，模糊搜索 |
+| page     | 1 | 选填 | 页码 |
 
 
 
@@ -766,7 +799,7 @@
 ## 【RMXP端】发送抽卡信息
 
 #### 接口URL
-> 127.0.0.1:8080/weirdUI/roll?name=admin&password=1&target=新的用户&package=再造的世界&card1=怨念之魂 业火&card2=喔喔雏鸡&card3=增草剂
+> 127.0.0.1:15163/weirdUI/roll?name=admin&password=1&target=新的用户&package=再造的世界&card1=怨念之魂 业火&card2=喔喔雏鸡&card3=增草剂
 
 #### 请求方式
 > GET
@@ -807,3 +840,4 @@
 	"data": "权限不足！"
 }
 ```
+

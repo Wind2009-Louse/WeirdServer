@@ -2,6 +2,7 @@ package com.weird.controller;
 
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
@@ -21,6 +22,9 @@ import java.util.List;
 public class UserController {
     @Autowired
     UserService userService;
+
+    @Autowired
+    CardService cardService;
 
     /**
      * 【ALL】查询用户信息
@@ -50,6 +54,38 @@ public class UserController {
     public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
                                       @RequestParam(value = "password") String password){
         return userService.checkLogin(name, password);
+    }
+
+
+    /**
+     * 【管理端】修改用户持有的卡片数量
+     *
+     * @param targetUser  用户名
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param newCount    新持有量
+     * @param name        操作用户名称
+     * @param password    操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/user/card/update")
+    public String updateUserCardCount(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "package") String packageName,
+            @RequestParam(value = "card") String cardName,
+            @RequestParam(value = "count") int newCount,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        if (cardService.updateCardCount(targetUser, packageName, cardName, newCount)) {
+            return "修改成功！";
+        } else {
+            throw new OperationException("修改失败！");
+        }
     }
 
     /**
@@ -90,7 +126,7 @@ public class UserController {
      * @param password 操作用户密码
      * @return 是否转换成功
      */
-    @RequestMapping("/user/change")
+    @RequestMapping("/user/card/change")
     public String dustToCard(@RequestParam(value = "card") String cardName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {

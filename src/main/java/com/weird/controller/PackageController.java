@@ -81,38 +81,5 @@ public class PackageController {
         }
     }
 
-    /**
-     * 【管理端】修改卡包中的卡片名称
-     *
-     * @param packageName 卡包名
-     * @param oldCardName 旧卡片名
-     * @param newCardName 新卡片名
-     * @param name        操作用户名称
-     * @param password    操作用户密码
-     * @return 是否修改成功
-     */
-    @RequestMapping("/package/card/update")
-    public String updateCardName(
-            @RequestParam(value = "package", required = false) String packageName,
-            @RequestParam(value = "oldname") String oldCardName,
-            @RequestParam(value = "newname") String newCardName,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) throws Exception {
-        // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            throw new OperationException("权限不足！");
-        }
-        if (newCardName == null || newCardName.length() == 0) {
-            throw new OperationException("卡片名为空！");
-        }
-        if (newCardName.equals(oldCardName)) {
-            throw new OperationException("名字未修改！");
-        }
 
-        if (packageService.updateCardName(packageName, oldCardName, newCardName)) {
-            return "修改成功！";
-        } else {
-            throw new OperationException("修改失败！");
-        }
-    }
 }
