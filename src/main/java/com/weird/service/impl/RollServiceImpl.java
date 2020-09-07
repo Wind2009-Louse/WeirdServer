@@ -218,6 +218,7 @@ public class RollServiceImpl implements RollService {
         for (PackageCardModel card : cardModels) {
             sb.append(String.format("[%s](%s), ", card.getCardName(), card.getRare()));
         }
+        sb.append(String.format("当前尘=%d，月见黑=%d", userModel.getDustCount(), userModel, userModel.getNonawardCount()));
         log.warn(sb.toString());
 
         return true;

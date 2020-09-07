@@ -103,7 +103,7 @@ public class UserServiceImpl implements UserService {
 
         UserDataModel newModel = new UserDataModel();
         newModel.setUserName(name);
-        newModel.setPassword(DEFAULT_PASSWORD);
+        newModel.setPassword(DEFAULT_PASSWORD_MD5);
         newModel.setIsAdmin((byte) 0);
         newModel.setDustCount(0);
         newModel.setDuelPoint(0);
