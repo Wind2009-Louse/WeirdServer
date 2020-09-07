@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
+import static com.weird.service.impl.RollServiceImpl.clearRollListCache;
 
 @Service
 @Slf4j
@@ -62,6 +63,7 @@ public class PackageServiceImpl implements PackageService {
         oldPackage.setPackageName(newName);
         log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
         clearCardListCache();
+        clearRollListCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
     }
 
@@ -128,8 +130,13 @@ public class PackageServiceImpl implements PackageService {
 
         // 修改
         log.warn("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
-        clearCardListCache();
         cardModel.setCardName(newName);
-        return packageCardMapper.updateByPrimaryKey(cardModel) > 0;
+        int result = packageCardMapper.updateByPrimaryKey(cardModel);
+        if (result > 0){
+            clearCardListCache();
+            clearRollListCache();
+            return true;
+        }
+        return false;
     }
 }

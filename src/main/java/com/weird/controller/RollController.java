@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 抽卡相关
@@ -72,15 +74,7 @@ public class RollController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
-        List<RollListDTO> modelList = rollService.selectRollList(packageName, userName);
-
-        // 通过分页截取需要查询详细内容的部分
-        PageResult<RollListDTO> resultList = new PageResult<>();
-        resultList.addPageInfo(modelList, page);
-        List<RollListDTO> cutList = resultList.getDataList();
-
-        resultList.setDataList(rollService.selectRollDetail(cutList));
-        return resultList;
+        return rollService.selectRollList(packageName, userName, page);
     }
 
     /**

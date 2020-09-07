@@ -6,14 +6,13 @@ import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.service.RollService;
 import com.weird.utils.OperationException;
+import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
 
@@ -130,32 +129,52 @@ public class RollServiceImpl implements RollService {
     }
 
     /**
-     * 根据用户名查找抽卡结果（只包含记录，结果未返回）
-     *
-     * @param packageName 卡包名
-     * @param userName    用户名
-     * @return 结果列表（内容需要查询）
+     * 抽卡记录列表缓存，避免频繁查全表
      */
-    @Override
-    public List<RollListDTO> selectRollList(String packageName, String userName) {
-        return rollListMapper.selectByParam(packageName, userName);
+    static Map<String, PageResult<RollListDTO>> rollListCache = new HashMap<>();
+
+    /**
+     * 更新数据后，手动清除抽卡记录列表缓存
+     */
+    static void clearRollListCache(){
+        log.debug("抽卡记录列表缓存被清除");
+        rollListCache.clear();
     }
 
     /**
-     * 根据抽卡结果返回详细内容
+     * 根据卡包名和用户名查找抽卡结果
      *
-     * @param list 抽卡结果
-     * @return 带详细内容的抽卡结果
+     * @param packageName 卡包名
+     * @param userName    用户名
+     * @param page        页码
+     * @return 结果列表
      */
     @Override
-    public List<RollListDTO> selectRollDetail(List<RollListDTO> list) throws Exception {
-        List<RollListDTO> result = new LinkedList<>();
-        for (RollListDTO dto : list) {
-            List<RollDetailModel> cardList = rollDetailMapper.selectCardPkById(dto.getRollId());
+    public PageResult<RollListDTO> selectRollList(String packageName, String userName, int page) throws Exception {
+        // 命中缓存，直接返回
+        String key = String.format("{%s, %s, %d}", packageName, userName, page);
+        log.debug("查询抽卡记录列表：{}", key);
+        PageResult<RollListDTO> cache = rollListCache.get(key);
+        if (cache != null){
+            return cache;
+        }
+
+        // 通过分页截取需要查询详细内容的部分
+        List<RollListDTO> allRollList = rollListMapper.selectByParam(packageName, userName);
+        PageResult<RollListDTO> resultList = new PageResult<>();
+        resultList.addPageInfo(allRollList, page);
+        List<RollListDTO> rollList = resultList.getDataList();
+
+        // 为每一条信息查询卡片内容
+        for (RollListDTO rollListDTO : rollList) {
+            // 查询卡片ID列表
+            List<RollDetailModel> cardList = rollDetailMapper.selectCardPkById(rollListDTO.getRollId());
             if (cardList == null || cardList.size() == 0) {
-                throw new OperationException("抽卡结果查询失败！");
+                throw new OperationException("抽卡结果[%d]查询失败！", rollListDTO.getRollId());
             }
+
             List<RollDetailDTO> cardResult = new LinkedList<>();
+            // 根据ID查询卡名和稀有度
             for (RollDetailModel rollCardModel : cardList) {
                 int cardPk = rollCardModel.getCardPk();
                 PackageCardModel cardModel = packageCardMapper.selectByPrimaryKey(cardPk);
@@ -167,10 +186,13 @@ public class RollServiceImpl implements RollService {
                 detailDTO.setRare(cardModel.getRare());
                 cardResult.add(detailDTO);
             }
-            dto.setRollResult(cardResult);
-            result.add(dto);
+            rollListDTO.setRollResult(cardResult);
         }
-        return result;
+
+        // 返回结果
+        resultList.setDataList(rollList);
+        rollListCache.put(key, resultList);
+        return resultList;
     }
 
     /**
@@ -223,6 +245,7 @@ public class RollServiceImpl implements RollService {
         sb.append(String.format("当前尘=%d，月见黑=%d", userModel.getDustCount(), userModel.getNonawardCount()));
         log.warn(sb.toString());
         clearCardListCache();
+        clearRollListCache();
 
         return true;
     }
@@ -277,6 +300,7 @@ public class RollServiceImpl implements RollService {
         if (newStatus == 0) {
             addCards(userModel, cardModels, 0);
             clearCardListCache();
+            clearRollListCache();
             return true;
         }
 
@@ -314,6 +338,7 @@ public class RollServiceImpl implements RollService {
         }
 
         clearCardListCache();
+        clearRollListCache();
         return true;
     }
 }
