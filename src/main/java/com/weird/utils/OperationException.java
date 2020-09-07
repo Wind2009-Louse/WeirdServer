@@ -9,4 +9,8 @@ public class OperationException extends Exception {
     public OperationException(String cause) {
         super(cause);
     }
+
+    public OperationException(String format, Object... args){
+        super(String.format(format, args));
+    }
 }

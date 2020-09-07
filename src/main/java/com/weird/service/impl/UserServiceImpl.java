@@ -143,7 +143,7 @@ public class UserServiceImpl implements UserService {
     public boolean updateDust(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
-            throw new OperationException(String.format("找不到用户：[%s]！", name));
+            throw new OperationException("找不到用户：[%s]！", name);
         }
 
 
@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
 
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel == null) {
-            throw new OperationException(String.format("找不到卡片：[%s]！", cardName));
+            throw new OperationException("找不到卡片：[%s]！", cardName);
         }
         int needDust = 0;
         if (NR_RARE.contains(cardModel.getRare())) {
@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
     public boolean updateAward(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
-            throw new OperationException(String.format("找不到用户：[%s]！", name));
+            throw new OperationException("找不到用户：[%s]！", name);
         }
 
         log.warn("[{}]的月见黑被修改：（{}->{}）", name, model.getNonawardCount(), newCount);
@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
     public boolean updateDuelPoint(String name, int newCount) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
-            throw new OperationException(String.format("找不到用户：[%s]！", name));
+            throw new OperationException("找不到用户：[%s]！", name);
         }
 
         log.warn("[{}]的DP被修改：（{}->{}）", name, model.getDuelPoint(), newCount);

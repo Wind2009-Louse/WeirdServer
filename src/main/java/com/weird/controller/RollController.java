@@ -69,7 +69,7 @@ public class RollController {
      */
     @RequestMapping("/roll/list")
     public PageResult<RollListDTO> getRollList(
-            @RequestParam(value = "page") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
         List<RollListDTO> modelList = rollService.selectRollList(packageName, userName);

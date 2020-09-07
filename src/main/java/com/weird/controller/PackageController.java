@@ -70,6 +70,9 @@ public class PackageController {
         if (newPackageName == null || newPackageName.length() == 0) {
             throw new OperationException("卡包名为空！");
         }
+        if (oldPackageName.equals(newPackageName)) {
+            throw new OperationException("名字未修改！");
+        }
 
         if (packageService.updatePackageName(oldPackageName, newPackageName)) {
             return "修改成功！";

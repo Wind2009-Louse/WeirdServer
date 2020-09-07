@@ -31,7 +31,7 @@ public class UserController {
      */
     @RequestMapping("/user/list")
     public PageResult<UserDataDTO> getDustList(
-            @RequestParam(value = "page") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
         List<UserDataDTO> dtoList = userService.getListByName(userName);
         PageResult<UserDataDTO> result = new PageResult<>();

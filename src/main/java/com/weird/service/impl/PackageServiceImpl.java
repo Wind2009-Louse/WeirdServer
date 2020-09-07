@@ -31,7 +31,7 @@ public class PackageServiceImpl implements PackageService {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(name);
         if (oldPackage != null) {
-            throw new OperationException(String.format("卡包[%s]已存在！", name));
+            throw new OperationException("卡包[%s]已存在！", name);
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
@@ -50,11 +50,13 @@ public class PackageServiceImpl implements PackageService {
     public boolean updatePackageName(String oldName, String newName) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByName(oldName);
         if (oldPackage == null) {
-            throw new OperationException(String.format("找不到该卡包：[%s]！", oldName));
+            throw new OperationException("找不到该卡包：[%s]！", oldName);
         }
-        if (oldPackage.getPackageName().equals(newName)) {
-            throw new OperationException("卡包名字未改动！");
+        PackageInfoModel newPackage = packageInfoMapper.selectByName(newName);
+        if (newPackage != null){
+            throw new OperationException("[%s]已存在！", newName);
         }
+
         oldPackage.setPackageName(newName);
         log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
@@ -74,14 +76,14 @@ public class PackageServiceImpl implements PackageService {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
         if (packageModel == null) {
-            throw new OperationException(String.format("找不到该卡包：[%s]！", packageName));
+            throw new OperationException("找不到该卡包：[%s]！", packageName);
         }
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, cardName);
         if (cardModel != null) {
-            throw new OperationException(String.format("卡片[%s]已存在！", cardName));
+            throw new OperationException("卡片[%s]已存在！", cardName);
         }
 
         // 添加
@@ -107,14 +109,18 @@ public class PackageServiceImpl implements PackageService {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
         if (packageModel == null) {
-            throw new OperationException(String.format("找不到该卡包：[%s]！", packageName));
+            throw new OperationException("找不到该卡包：[%s]！", packageName);
         }
         int packageId = packageModel.getPackageId();
 
-        // 查找卡片是否存在
+        // 查找是否能否更新
         PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, oldName);
         if (cardModel == null) {
-            throw new OperationException(String.format("卡片[%s]不存在！", oldName));
+            throw new OperationException("卡片[%s]不存在！", oldName);
+        }
+        PackageCardModel goalModel = packageCardMapper.selectInPackageDistinct(packageId, newName);
+        if (goalModel != null){
+            throw new OperationException("卡片[%s]已存在！", newName);
         }
 
         // 修改

@@ -50,7 +50,7 @@ public class CardListController {
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "page") int page,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
@@ -79,7 +79,7 @@ public class CardListController {
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
             @RequestParam(value = "target", required = false, defaultValue = "") String targetUser,
-            @RequestParam(value = "page") int page) throws Exception {
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page) throws Exception {
         List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
         PageResult<CardOwnListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page);
