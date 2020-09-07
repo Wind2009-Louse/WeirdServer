@@ -40,6 +40,19 @@ public class UserController {
     }
 
     /**
+     * 【ALL】检查用户类型
+     *
+     * @param name 用户名
+     * @param password 用户密码
+     * @return UNLOGIN(未登录)、ADMIN(管理员)、(NORMAL)普通用户
+     */
+    @RequestMapping("/user/check")
+    public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
+                                      @RequestParam(value = "password") String password){
+        return userService.checkLogin(name, password);
+    }
+
+    /**
      * 【管理端】修改用户的尘数
      *
      * @param targetUser 用户名
