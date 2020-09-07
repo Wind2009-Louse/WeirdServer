@@ -30,7 +30,7 @@ public class PackageController {
      * @param password    操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/package/add")
+    @RequestMapping("/weird_project/package/add")
     public String addPackage(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {
@@ -58,7 +58,7 @@ public class PackageController {
      * @param password       操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/package/update")
+    @RequestMapping("/weird_project/package/update")
     public String updatePackageName(@RequestParam(value = "oldname") String oldPackageName,
                                     @RequestParam(value = "newname") String newPackageName,
                                     @RequestParam(value = "name") String name,

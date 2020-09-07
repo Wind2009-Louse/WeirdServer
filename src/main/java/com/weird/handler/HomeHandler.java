@@ -11,7 +11,7 @@ public class HomeHandler {
      *
      * @return 首页信息
      */
-    @RequestMapping({"/index.html", "/"})
+    @RequestMapping({"/weird_project/index.html", "/weird_project/"})
     public String homePage() {
         return "Hello!\n你好！\nこんにちは";
     }

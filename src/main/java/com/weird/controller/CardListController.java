@@ -45,7 +45,7 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 搜索结果
      */
-    @RequestMapping("/card/list/admin")
+    @RequestMapping("/weird_project/card/list/admin")
     public PageResult<CardListDTO> searchCardList(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
@@ -73,7 +73,7 @@ public class CardListController {
      * @param page        页码
      * @return 搜索结果
      */
-    @RequestMapping("/card/list")
+    @RequestMapping("/weird_project/card/list")
     public PageResult<CardOwnListDTO> searchCardOwnList(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
@@ -96,7 +96,7 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否添加成功
      */
-    @RequestMapping("/card/add")
+    @RequestMapping("/weird_project/card/add")
     public String addCardDetail(
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card") String cardName,
@@ -133,7 +133,7 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/card/update")
+    @RequestMapping("/weird_project/card/update")
     public String updateCardName(
             @RequestParam(value = "package", required = false) String packageName,
             @RequestParam(value = "oldname") String oldCardName,
@@ -168,7 +168,7 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否删除成功
      */
-    @RequestMapping("/card/delete")
+    @RequestMapping("/weird_project/card/delete")
     @Deprecated
     public String deleteCardDetail(@RequestParam(value = "package") String packageName,
                                    @RequestParam(value = "card") String cardName,

@@ -41,7 +41,7 @@ public class RollController {
      * @param password    操作用户密码
      * @return 抽卡是否成功
      */
-    @RequestMapping("/weirdUI/roll")
+    @RequestMapping("/weird_project/weirdUI/roll")
     public String roll(@RequestParam(value = "target") String targetUser,
                        @RequestParam(value = "package") String packageName,
                        @RequestParam(value = "card1") String cardName1,
@@ -69,7 +69,7 @@ public class RollController {
      * @param userName 抽卡用户名
      * @return 抽卡结果
      */
-    @RequestMapping("/roll/list")
+    @RequestMapping("/weird_project/roll/list")
     public PageResult<RollListDTO> getRollList(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
@@ -86,7 +86,7 @@ public class RollController {
      * @param password 操作用户密码
      * @return 是否成功
      */
-    @RequestMapping("/roll/set")
+    @RequestMapping("/weird_project/roll/set")
     public String setRollStatus(@RequestParam(value = "id") long rollId,
                                 @RequestParam(value = "status") int status,
                                 @RequestParam(value = "name") String name,

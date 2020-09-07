@@ -33,7 +33,7 @@ public class UserController {
      * @param userName 用户名
      * @return 查询结果
      */
-    @RequestMapping("/user/list")
+    @RequestMapping("/weird_project/user/list")
     public PageResult<UserDataDTO> getDustList(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
@@ -50,7 +50,7 @@ public class UserController {
      * @param password 用户密码
      * @return UNLOGIN(未登录)、ADMIN(管理员)、(NORMAL)普通用户
      */
-    @RequestMapping("/user/check")
+    @RequestMapping("/weird_project/user/check")
     public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
                                       @RequestParam(value = "password") String password){
         return userService.checkLogin(name, password);
@@ -68,7 +68,7 @@ public class UserController {
      * @param password    操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/user/card/update")
+    @RequestMapping("/weird_project/user/card/update")
     public String updateUserCardCount(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "package") String packageName,
@@ -97,7 +97,7 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/user/dust")
+    @RequestMapping("/weird_project/user/dust")
     public String updateDust(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "count") int dustCount,
@@ -126,7 +126,7 @@ public class UserController {
      * @param password 操作用户密码
      * @return 是否转换成功
      */
-    @RequestMapping("/user/card/change")
+    @RequestMapping("/weird_project/user/card/change")
     public String dustToCard(@RequestParam(value = "card") String cardName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {
@@ -146,7 +146,7 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/user/award")
+    @RequestMapping("/weird_project/user/award")
     public String updateCount(@RequestParam(value = "target") String targetUser,
                               @RequestParam(value = "award") int awardCount,
                               @RequestParam(value = "name") String name,
@@ -175,7 +175,7 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/user/dp")
+    @RequestMapping("/weird_project/user/dp")
     public String updateDuelPoint(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "dp") int dpCount,
@@ -205,7 +205,7 @@ public class UserController {
      * @param password 操作用户密码
      * @return 是否添加成功
      */
-    @RequestMapping("/user/add")
+    @RequestMapping("/weird_project/user/add")
     public String addUser(@RequestParam(value = "target") String target,
                           @RequestParam(value = "name") String name,
                           @RequestParam(value = "password") String password) throws Exception {
@@ -231,7 +231,7 @@ public class UserController {
      * @param newPassword 新密码
      * @return 是否修改成功
      */
-    @RequestMapping("/user/pw")
+    @RequestMapping("/weird_project/user/pw")
     public String updatePassword(@RequestParam(value = "name") String name,
                                  @RequestParam(value = "old") String oldPassword,
                                  @RequestParam(value = "new") String newPassword) throws Exception {
