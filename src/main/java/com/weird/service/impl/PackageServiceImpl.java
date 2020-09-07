@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
+
 @Service
 @Slf4j
 public class PackageServiceImpl implements PackageService {
@@ -59,6 +61,7 @@ public class PackageServiceImpl implements PackageService {
 
         oldPackage.setPackageName(newName);
         log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
+        clearCardListCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
     }
 
@@ -125,6 +128,7 @@ public class PackageServiceImpl implements PackageService {
 
         // 修改
         log.warn("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
+        clearCardListCache();
         cardModel.setCardName(newName);
         return packageCardMapper.updateByPrimaryKey(cardModel) > 0;
     }

@@ -15,6 +15,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
+
 @Service
 @Slf4j
 public class RollServiceImpl implements RollService {
@@ -220,6 +222,7 @@ public class RollServiceImpl implements RollService {
         }
         sb.append(String.format("当前尘=%d，月见黑=%d", userModel.getDustCount(), userModel.getNonawardCount()));
         log.warn(sb.toString());
+        clearCardListCache();
 
         return true;
     }
@@ -273,6 +276,7 @@ public class RollServiceImpl implements RollService {
         }
         if (newStatus == 0) {
             addCards(userModel, cardModels, 0);
+            clearCardListCache();
             return true;
         }
 
@@ -309,6 +313,7 @@ public class RollServiceImpl implements RollService {
             throw new OperationException("更新用户信息失败！");
         }
 
+        clearCardListCache();
         return true;
     }
 }

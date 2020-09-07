@@ -94,7 +94,7 @@ public class UserServiceImpl implements UserService {
         if (modelList != null) {
             for (UserDataModel model : modelList) {
                 if (model.getUserName().equals(name)) {
-                    throw new OperationException("该用户已存在！");
+                    throw new OperationException("该用户：[%s]已存在！", name);
                 }
             }
         }
@@ -201,6 +201,13 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * 修改DP数量
+     *
+     * @param name     用户名
+     * @param newCount 新结果
+     * @return 是否更改成功
+     */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDuelPoint(String name, int newCount) throws Exception {

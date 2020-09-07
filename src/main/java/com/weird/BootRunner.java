@@ -7,8 +7,6 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 @SpringBootApplication
 public class BootRunner extends SpringBootServletInitializer {
     public static void main(String[] args) {
-        SpringApplication.run(applicationClass, args);
+        SpringApplication.run(BootRunner.class, args);
     }
-
-    private static Class<BootRunner> applicationClass = BootRunner.class;
 }

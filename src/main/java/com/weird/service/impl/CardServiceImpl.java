@@ -18,7 +18,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -36,32 +38,6 @@ public class CardServiceImpl implements CardService {
     UserCardListMapper userCardListMapper;
 
     /**
-     * 根据用户名、卡包名、卡片名获得用户ID和卡片ID
-     *
-     * @param userName    用户名
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @return 列表，其中[0]=用户ID，[1]=卡片ID
-     */
-    private List<Integer> getUserIdAndCardPk(String userName, String packageName, String cardName) throws Exception {
-        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
-        if (userModel == null) {
-            throw new OperationException("找不到该用户:[%s]！", userName);
-        }
-
-        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
-        if (packageModel == null) {
-            throw new OperationException("找不到该卡包：[%s]！", packageName);
-        }
-        PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageModel.getPackageId(), cardName);
-        if (cardModel == null) {
-            throw new OperationException("找不到该卡片：[%s]！", cardName);
-        }
-
-        return Arrays.asList(userModel.getUserId(), cardModel.getCardPk());
-    }
-
-    /**
      * 修改用户持有的卡片数量
      *
      * @param userName    用户名
@@ -76,14 +52,29 @@ public class CardServiceImpl implements CardService {
         if (count > 3 || count < 0) {
             throw new OperationException("修改卡片数量错误，应在0~3内！");
         }
-        List<Integer> searchInfo = getUserIdAndCardPk(userName, packageName, cardName);
-        int userId = searchInfo.get(0);
-        int cardPk = searchInfo.get(1);
+
+        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
+        if (userModel == null) {
+            throw new OperationException("找不到该用户:[%s]！", userName);
+        }
+
+        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
+        if (packageModel == null) {
+            throw new OperationException("找不到该卡包：[%s]！", packageName);
+        }
+        PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageModel.getPackageId(), cardName);
+        if (cardModel == null) {
+            throw new OperationException("找不到该卡片：[%s]！", cardName);
+        }
+
+        int userId = userModel.getUserId();
+        int cardPk = cardModel.getCardPk();
 
         UserCardListModel model = userCardListMapper.selectByUserCard(userId, cardPk);
         if (model != null) {
             log.warn("修改[{}]的卡片数量（{}->{}）", userName, model.getCount(), count);
             model.setCount(count);
+            clearCardListCache();
             return userCardListMapper.update(model) > 0;
         } else {
             log.warn("修改[{}]的卡片数量（{}->{}）", userName, 0, count);
@@ -91,6 +82,7 @@ public class CardServiceImpl implements CardService {
             model.setUserId(userId);
             model.setCardPk(cardPk);
             model.setCount(count);
+            clearCardListCache();
             return userCardListMapper.insert(model) > 0;
         }
     }
@@ -108,8 +100,28 @@ public class CardServiceImpl implements CardService {
         return userCardListMapper.selectCardList(packageName, cardName, rare);
     }
 
+    /**
+     * 卡片列表缓存，避免频繁联表查询
+     */
+    static Map<String, List<CardOwnListDTO>> cardListCache = new HashMap<>();
+
+    /**
+     * 更新数据后，手动清除卡片列表缓存
+     */
+    static void clearCardListCache(){
+        log.debug("卡片列表数据缓存被清除");
+        cardListCache.clear();
+    }
+
     @Override
     public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
-        return userCardListMapper.selectCardOwnList(packageName, cardName, rare, userName);
+        String key = String.format("{%s, %s, %s, %s}", packageName, cardName, rare, userName);
+        log.debug("查询卡片列表：{}", key);
+        List<CardOwnListDTO> cache = cardListCache.get(key);
+        if (cache == null) {
+            cache = userCardListMapper.selectCardOwnList(packageName, cardName, rare, userName);
+            cardListCache.put(key, cache);
+        }
+        return cache;
     }
 }
