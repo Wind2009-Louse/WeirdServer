@@ -44,4 +44,18 @@ public interface UserDataMapper {
      * @return 用户
      */
     UserDataModel selectByNameDistinct(@Param("name") String name);
+
+    /**
+     * 更新日常统计
+     *
+     * @return 更新条目数量
+     */
+    int updateDaily();
+
+    /**
+     * 更新周常统计
+     *
+     * @return 更新条目数量
+     */
+    int updateWeekly();
 }

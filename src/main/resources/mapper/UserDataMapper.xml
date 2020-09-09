@@ -214,4 +214,18 @@
         #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
         #{weeklyDustChangeAlter,jdbcType=INTEGER})
     </insert>
+
+    <update id="updateDaily">
+        update user_data
+        set daily_win = 0,
+            daily_lost = 0,
+            daily_award = 0
+    </update>
+
+    <update id="updateWeekly">
+        update user_data
+        set weekly_dust_change_n = 0,
+            weekly_dust_change_r = 0,
+            weekly_dust_change_alter = 0
+    </update>
 </mapper>
