@@ -32,7 +32,7 @@ public class PageResult<T> implements Serializable {
     /**
      * 每页条数
      */
-    private int pageSize = 20;
+    private int pageSize;
 
     /**
      * 当前页
@@ -68,6 +68,7 @@ public class PageResult<T> implements Serializable {
         totalCount = list.size();
         currPage = pageIndex;
         dataList = new LinkedList<>();
+        this.pageSize = pageSize;
         // 复制
         for (int index = pageSize * (currPage - 1); index < totalCount && index < pageSize * currPage; ++index) {
             T item = list.get(index);
