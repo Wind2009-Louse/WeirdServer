@@ -46,4 +46,34 @@ public class UserDataModel implements Serializable {
      * DP
      */
     private int duelPoint;
+
+    /**
+     * 当天胜利次数
+     */
+    private int dailyWin;
+
+    /**
+     * 当天失败次数
+     */
+    private int dailyLost;
+
+    /**
+     * 当天是否出货
+     */
+    private int dailyAward;
+
+    /**
+     * 每周换NR的次数
+     */
+    private int weeklyDustChangeN;
+
+    /**
+     * 每周换随机闪的次数
+     */
+    private int weeklyDustChangeR;
+
+    /**
+     * 每周换自选闪的次数
+     */
+    private int weeklyDustChangeAlter;
 }

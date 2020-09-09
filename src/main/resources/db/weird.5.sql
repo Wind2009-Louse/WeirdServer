@@ -158,7 +158,13 @@ CREATE TABLE `user_data` (
   `is_admin` tinyint(4) NOT NULL DEFAULT '0' COMMENT '是否管理员',
   `nonaward_count` int(11) NOT NULL DEFAULT '0' COMMENT '未出货的计数',
   `dust_count` int(11) NOT NULL DEFAULT '0' COMMENT '尘数',
-  `duel_point` int(11) NOT NULL DEFAULT '0',
+  `duel_point` int NOT NULL DEFAULT '0' COMMENT 'DP',
+  `daily_win` int NOT NULL DEFAULT '0' COMMENT '当天胜利次数',
+  `daily_lost` int NOT NULL DEFAULT '0' COMMENT '当天失败次数',
+  `daily_award` int NOT NULL DEFAULT '0' COMMENT '当天是否出货',
+  `weekly_dust_change_n` int NOT NULL DEFAULT '0' COMMENT '每周换NR的次数',
+  `weekly_dust_change_r` int NOT NULL DEFAULT '0' COMMENT '每周换随机闪的次数',
+  `weekly_dust_change_alter` int NOT NULL DEFAULT '0' COMMENT '每周换自选闪的次数',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`user_id`)
@@ -184,4 +190,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-09-05 20:16:30
+-- Dump completed on 2020-09-09 16:57:

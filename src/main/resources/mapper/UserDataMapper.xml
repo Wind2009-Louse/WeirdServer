@@ -13,9 +13,16 @@
         <result column="nonaward_count" jdbcType="INTEGER" property="nonawardCount"/>
         <result column="dust_count" jdbcType="INTEGER" property="dustCount"/>
         <result column="duel_point" jdbcType="INTEGER" property="duelPoint"/>
+        <result column="daily_win" jdbcType="INTEGER" property="dailyWin"/>
+        <result column="daily_lost" jdbcType="INTEGER" property="dailyLost"/>
+        <result column="daily_award" jdbcType="INTEGER" property="dailyAward"/>
+        <result column="weekly_dust_change_n" jdbcType="INTEGER" property="weeklyDustChangeN"/>
+        <result column="weekly_dust_change_r" jdbcType="INTEGER" property="weeklyDustChangeR"/>
+        <result column="weekly_dust_change_alter" jdbcType="INTEGER" property="weeklyDustChangeAlter"/>
     </resultMap>
     <sql id="Base_Column_List">
-        user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point
+        user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point, daily_win,
+        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -51,6 +58,24 @@
             <if test="duelPoint != null">
                 duel_point,
             </if>
+            <if test="dailyWin != null">
+                daily_win,
+            </if>
+            <if test="dailyLost != null">
+                daily_lost,
+            </if>
+            <if test="dailyAward != null">
+                daily_award,
+            </if>
+            <if test="weeklyDustChangeN != null">
+                weekly_dust_change_n,
+            </if>
+            <if test="weeklyDustChangeR != null">
+                weekly_dust_change_r,
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                weekly_dust_change_alter,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -73,6 +98,24 @@
             </if>
             <if test="duelPoint != null">
                 #{duelPoint,jdbcType=INTEGER},
+            </if>
+            <if test="dailyWin != null">
+                #{dailyWin,jdbcType=INTEGER},
+            </if>
+            <if test="dailyLost != null">
+                #{dailyLost,jdbcType=INTEGER},
+            </if>
+            <if test="dailyAward != null">
+                #{dailyAward,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeN != null">
+                #{weeklyDustChangeN,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeR != null">
+                #{weeklyDustChangeR,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                #{weeklyDustChangeAlter,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -97,6 +140,24 @@
             <if test="duelPoint != null">
                 duel_point = #{duelPoint,jdbcType=INTEGER},
             </if>
+            <if test="dailyWin != null">
+                daily_win = #{dailyWin,jdbcType=INTEGER},
+            </if>
+            <if test="dailyLost != null">
+                daily_lost = #{dailyLost,jdbcType=INTEGER},
+            </if>
+            <if test="dailyAward != null">
+                daily_award = #{dailyAward,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeN != null">
+                weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeR != null">
+                weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
@@ -107,7 +168,13 @@
         is_admin = #{isAdmin,jdbcType=TINYINT},
         nonaward_count = #{nonawardCount,jdbcType=INTEGER},
         dust_count = #{dustCount,jdbcType=INTEGER},
-        duel_point = #{duelPoint,jdbcType=INTEGER}
+        duel_point = #{duelPoint,jdbcType=INTEGER},
+        daily_win = #{dailyWin,jdbcType=INTEGER},
+        daily_lost = #{dailyLost,jdbcType=INTEGER},
+        daily_award = #{dailyAward,jdbcType=INTEGER},
+        weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
+        weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
+        weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
 
@@ -137,11 +204,14 @@
     <insert id="insert" parameterType="com.weird.model.UserDataModel"
             useGeneratedKeys="true" keyProperty="userId">
         insert into user_data (user_name, password,
-        is_admin, nonaward_count, dust_count, duel_point
-        )
+        is_admin, nonaward_count, dust_count,
+        duel_point, daily_win, daily_lost,
+        daily_award, weekly_dust_change_n, weekly_dust_change_r,
+        weekly_dust_change_alter)
         values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER},
-        #{duelPoint,jdbcType=INTEGER}
-        )
+        #{duelPoint,jdbcType=INTEGER}, #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER},
+        #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
+        #{weeklyDustChangeAlter,jdbcType=INTEGER})
     </insert>
 </mapper>

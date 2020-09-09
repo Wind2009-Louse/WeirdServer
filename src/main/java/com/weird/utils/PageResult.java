@@ -59,11 +59,11 @@ public class PageResult<T> implements Serializable {
      *
      * @param list      要加入的页面内容
      * @param pageIndex 当前页码
-     * @param pageSize 页面大小
+     * @param pageSize  页面大小
      */
     public void addPageInfo(List<T> list, int pageIndex, int pageSize) throws Exception {
-        if (pageIndex <= 0) {
-            throw new OperationException("页码错误！");
+        if (pageIndex <= 0 || pageSize <= 0) {
+            throw new OperationException("分页设置错误！");
         }
         totalCount = list.size();
         currPage = pageIndex;
