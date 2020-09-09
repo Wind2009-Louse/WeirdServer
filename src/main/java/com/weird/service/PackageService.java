@@ -1,11 +1,23 @@
 package com.weird.service;
 
+import com.weird.model.PackageInfoModel;
+
+import java.util.List;
+
 /**
  * 卡包Service
  *
  * @author Nidhogg
  */
 public interface PackageService {
+    /**
+     * 根据名称查找卡包列表
+     *
+     * @param packageName 卡包名
+     * @return 卡包列表
+     */
+    List<PackageInfoModel> selectByName(String packageName) throws Exception;
+
     /**
      * 添加卡包
      *

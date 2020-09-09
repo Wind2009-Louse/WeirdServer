@@ -63,10 +63,17 @@
         values (#{packageName})
     </insert>
 
-    <select id="selectByName" resultMap="BaseResultMap">
+    <select id="selectByNameDistinct" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from package_info
         where package_name = #{packageName}
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_info
+        where package_name like concat("%", #{packageName}, "%")
     </select>
 </mapper>

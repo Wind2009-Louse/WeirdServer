@@ -41,6 +41,7 @@ public class CardListController {
      * @param cardName    卡片名
      * @param rare        稀有度
      * @param page        页码
+     * @param pageSize    页面大小
      * @param name        操作用户名称
      * @param password    操作用户密码
      * @return 搜索结果
@@ -51,6 +52,7 @@ public class CardListController {
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
@@ -59,7 +61,7 @@ public class CardListController {
         }
         List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page);
+        result.addPageInfo(dtoList, page, pageSize);
         return result;
     }
 
@@ -79,10 +81,11 @@ public class CardListController {
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
             @RequestParam(value = "target", required = false, defaultValue = "") String targetUser,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page) throws Exception {
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize) throws Exception {
         List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
         PageResult<CardOwnListDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page);
+        result.addPageInfo(dtoList, page, pageSize);
         return result;
     }
 

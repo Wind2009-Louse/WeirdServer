@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.model.PackageInfoModel;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 卡包相关
@@ -21,6 +24,19 @@ public class PackageController {
 
     @Autowired
     PackageService packageService;
+
+    /**
+     * 【ALL】查询卡包列表
+     *
+     * @param packageName 卡包名（模糊搜索）
+     * @return 结果列表
+     */
+    @RequestMapping("/weird_project/package/list")
+    public List<PackageInfoModel> getPackages(
+            @RequestParam(value = "name", required = false, defaultValue = "") String packageName
+    ) throws Exception {
+        return packageService.selectByName(packageName);
+    }
 
     /**
      * 【管理端】新增卡包

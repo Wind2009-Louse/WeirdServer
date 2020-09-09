@@ -51,12 +51,22 @@ public class PageResult<T> implements Serializable {
      * @param pageIndex 当前页码
      */
     public void addPageInfo(List<T> list, int pageIndex) throws Exception {
+        addPageInfo(list, pageIndex, PAGE_SIZE);
+    }
+
+    /**
+     * 设置页面信息，根据页码进行分页等操作
+     *
+     * @param list      要加入的页面内容
+     * @param pageIndex 当前页码
+     * @param pageSize 页面大小
+     */
+    public void addPageInfo(List<T> list, int pageIndex, int pageSize) throws Exception {
         if (pageIndex <= 0) {
             throw new OperationException("页码错误！");
         }
         totalCount = list.size();
         currPage = pageIndex;
-        pageSize = PAGE_SIZE;
         dataList = new LinkedList<>();
         // 复制
         for (int index = pageSize * (currPage - 1); index < totalCount && index < pageSize * currPage; ++index) {

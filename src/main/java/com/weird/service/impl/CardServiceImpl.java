@@ -17,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +57,7 @@ public class CardServiceImpl implements CardService {
             throw new OperationException("找不到该用户:[%s]！", userName);
         }
 
-        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
             throw new OperationException("找不到该卡包：[%s]！", packageName);
         }
@@ -121,7 +120,7 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
-        String key = String.format("{%s, %s, %s, %s}", packageName, cardName, rare, userName);
+        String key = String.format("{%s,%s,%s,%s}", packageName, cardName, rare, userName);
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = cardListCache.get(key);
         if (cache == null) {

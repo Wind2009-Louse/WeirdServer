@@ -2,7 +2,7 @@
 ## 【管理端】全卡片搜索
 
 #### 接口URL
-> 127.0.0.1:15163/weird_project/card/list/admin?name=admin&password=1&package=&card=义豪&rare=&page=1
+> 127.0.0.1:15163/weird_project/card/list/admin?name=admin&password=1&package=&card=义豪&rare=&page=1&pagesize=
 
 #### 请求方式
 > GET
@@ -16,10 +16,11 @@
 | :--------   | :-----  | :-----  | :----  |
 | name     | admin | 必填 | 操作用户名称 |
 | password     | 1 | 必填 | 操作用户密码 |
-| package     | - | 必填 | 卡包名，模糊匹配 |
-| card     | 义豪 | 必填 | 卡片名，模糊匹配 |
-| rare     | - | 必填 | 稀有度，精确匹配 |
-| page     | 1 | 必填 | 页码 |
+| package     | - | 选填 | 卡包名，模糊匹配 |
+| card     | 义豪 | 选填 | 卡片名，模糊匹配 |
+| rare     | - | 选填 | 稀有度，精确匹配 |
+| page     | 1 | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
 
 
 
@@ -162,7 +163,7 @@
 ## 【ALL】全卡片拥有情况搜索
 
 #### 接口URL
-> 127.0.0.1:15163/weird_project/card/list?package=&card=&rare=&target=&page=
+> 127.0.0.1:15163/weird_project/card/list?package=&card=&rare=&target=&page=&pagesize=
 
 #### 请求方式
 > GET
@@ -179,6 +180,7 @@
 | rare     | - | 选填 | 稀有度，精确搜索 |
 | target     | - | 选填 | 用户名，模糊搜索 |
 | page     | - | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
 
 
 
@@ -314,6 +316,48 @@
 	"data": "找不到该卡包：[咕咕咕]！"
 }
 ```
+
+
+## 【ALL】查询卡包列表
+
+#### 接口URL
+> 127.0.0.1:15163/weird_project/package/list?name=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | - | 选填 | 卡包名，模糊搜索 |
+
+
+
+
+#### 请求Header参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | - |  选填 | 卡包名，模糊搜索 |
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": [
+		{
+			"packageId": 1,
+			"packageName": "咕咕咕"
+		}
+	]
+}
+```
+
 
 
 ## 【管理端】添加新用户
@@ -534,7 +578,7 @@
 ## 【ALL】查询用户信息
 ``duelPoint``为DP，在该版尚未用到，属于预留变量
 #### 接口URL
-> 127.0.0.1:15163/weird_project/user/list?user=&page=
+> 127.0.0.1:15163/weird_project/user/list?user=&page=&pagesize=
 
 #### 请求方式
 > GET
@@ -548,6 +592,7 @@
 | :--------   | :-----  | :-----  | :----  |
 | user     | - | 选填 | 用户名，模糊搜索 |
 | page     | - | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
 
 
 
@@ -594,7 +639,7 @@
 
 
 ## 【玩家端】直接将尘转换为卡片
-
+当前版本暂未实现该功能。
 #### 接口URL
 > 127.0.0.1:15163/weird_project/user/card/change?name=新的用户&password=123456&card=草兽
 

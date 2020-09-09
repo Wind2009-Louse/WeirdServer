@@ -147,12 +147,16 @@ public class RollServiceImpl implements RollService {
      * @param packageName 卡包名
      * @param userName    用户名
      * @param page        页码
+     * @param pageSize    页面大小
      * @return 结果列表
      */
     @Override
-    public PageResult<RollListDTO> selectRollList(String packageName, String userName, int page) throws Exception {
+    public PageResult<RollListDTO> selectRollList(String packageName,
+                                                  String userName,
+                                                  int page,
+                                                  int pageSize) throws Exception {
         // 命中缓存，直接返回
-        String key = String.format("{%s, %s, %d}", packageName, userName, page);
+        String key = String.format("{%s,%s,%d,%d}", packageName, userName, page, pageSize);
         log.debug("查询抽卡记录列表：{}", key);
         PageResult<RollListDTO> cache = rollListCache.get(key);
         if (cache != null){
@@ -162,7 +166,7 @@ public class RollServiceImpl implements RollService {
         // 通过分页截取需要查询详细内容的部分
         List<RollListDTO> allRollList = rollListMapper.selectByParam(packageName, userName);
         PageResult<RollListDTO> resultList = new PageResult<>();
-        resultList.addPageInfo(allRollList, page);
+        resultList.addPageInfo(allRollList, page, pageSize);
         List<RollListDTO> rollList = resultList.getDataList();
 
         // 为每一条信息查询卡片内容
@@ -207,7 +211,7 @@ public class RollServiceImpl implements RollService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean roll(String packageName, List<String> cardNames, String userName) throws Exception {
         // 判断输入
-        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
             throw new OperationException("找不到该卡包：%s！", packageName);
         }

@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
 import static com.weird.service.impl.RollServiceImpl.clearRollListCache;
 
@@ -24,6 +26,17 @@ public class PackageServiceImpl implements PackageService {
     PackageCardMapper packageCardMapper;
 
     /**
+     * 根据名称查找卡包列表
+     *
+     * @param packageName 卡包名
+     * @return 卡包列表
+     */
+    @Override
+    public List<PackageInfoModel> selectByName(String packageName) throws Exception {
+        return packageInfoMapper.selectByName(packageName);
+    }
+
+    /**
      * 添加卡包
      *
      * @param name 卡包名称
@@ -32,7 +45,7 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public boolean addPackage(String name) throws Exception {
         // 查找是否重名
-        PackageInfoModel oldPackage = packageInfoMapper.selectByName(name);
+        PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(name);
         if (oldPackage != null) {
             throw new OperationException("卡包[%s]已存在！", name);
         }
@@ -51,11 +64,11 @@ public class PackageServiceImpl implements PackageService {
      */
     @Override
     public boolean updatePackageName(String oldName, String newName) throws Exception {
-        PackageInfoModel oldPackage = packageInfoMapper.selectByName(oldName);
+        PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(oldName);
         if (oldPackage == null) {
             throw new OperationException("找不到该卡包：[%s]！", oldName);
         }
-        PackageInfoModel newPackage = packageInfoMapper.selectByName(newName);
+        PackageInfoModel newPackage = packageInfoMapper.selectByNameDistinct(newName);
         if (newPackage != null){
             throw new OperationException("[%s]已存在！", newName);
         }
@@ -79,7 +92,7 @@ public class PackageServiceImpl implements PackageService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addCard(String packageName, String cardName, String rare) throws Exception {
         // 查找卡包是否存在
-        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
             throw new OperationException("找不到该卡包：[%s]！", packageName);
         }
@@ -112,7 +125,7 @@ public class PackageServiceImpl implements PackageService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateCardName(String packageName, String oldName, String newName) throws Exception {
         // 查找卡包是否存在
-        PackageInfoModel packageModel = packageInfoMapper.selectByName(packageName);
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
             throw new OperationException("找不到该卡包：[%s]！", packageName);
         }

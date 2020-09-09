@@ -12,9 +12,13 @@ public interface RollService {
      * @param packageName 卡包名
      * @param userName    用户名
      * @param page        页码
+     * @param pageSize    页面大小
      * @return 结果列表
      */
-    PageResult<RollListDTO> selectRollList(String packageName, String userName, int page) throws Exception;
+    PageResult<RollListDTO> selectRollList(String packageName,
+                                           String userName,
+                                           int page,
+                                           int pageSize) throws Exception;
 
     /**
      * 抽卡处理
