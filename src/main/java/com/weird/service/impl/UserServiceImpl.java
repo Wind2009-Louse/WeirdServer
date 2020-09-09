@@ -18,6 +18,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+/**
+ * 用户Service实现
+ *
+ * @author Nidhogg
+ * @date 2020.9.9
+ */
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
@@ -172,10 +178,25 @@ public class UserServiceImpl implements UserService {
         }
         int needDust = 0;
         if (NR_RARE.contains(cardModel.getRare())) {
-            needDust = 5;
+            if (model.getWeeklyDustChangeN() >= 10){
+                throw new OperationException("[%s]的每周更换次数已用完！", userName);
+            }
+            needDust = 15;
         } else {
-            needDust = 150;
+            if (model.getWeeklyDustChangeAlter() > 0){
+                throw new OperationException("[%s]的每周更换次数已用完！", userName);
+            }
+            needDust = 300;
         }
+        if (model.getDustCount() < needDust){
+            throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, model.getDustCount());
+        }
+
+        // TODO
+        // 判断卡片是否已经拥有3张
+
+        // TODO
+        // 进行转换操作
 
         return false;
     }
