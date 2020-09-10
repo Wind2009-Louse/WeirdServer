@@ -100,4 +100,10 @@
         and user_name like concat("%", #{userName} ,"%")
         order by package_card.package_id, package_card.rare, package_card.card_name, user_data.user_name
     </select>
+
+    <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="true">
+        select count(1)
+        from user_card_list
+        where card_pk = #{cardPk}
+    </select>
 </mapper>

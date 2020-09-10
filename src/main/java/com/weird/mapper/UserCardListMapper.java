@@ -55,4 +55,12 @@ public interface UserCardListMapper {
                                            @Param("cardName") String cardName,
                                            @Param("rare") String rare,
                                            @Param("userName") String userName);
+
+    /**
+     * 查找卡片的拥有数量
+     *
+     * @param cardPk 卡片Pk
+     * @return 卡片拥有数量
+     */
+    int selectCardOwnCount(@Param("cardPk") int cardPk);
 }

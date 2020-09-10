@@ -1,8 +1,10 @@
 package com.weird.service.impl;
 
 import com.weird.mapper.PackageCardMapper;
+import com.weird.mapper.UserCardListMapper;
 import com.weird.mapper.UserDataMapper;
 import com.weird.model.PackageCardModel;
+import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -29,6 +31,9 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     @Autowired
     UserDataMapper userDataMapper;
+
+    @Autowired
+    UserCardListMapper userCardListMapper;
 
     @Autowired
     PackageCardMapper packageCardMapper;
@@ -167,38 +172,70 @@ public class UserServiceImpl implements UserService {
     @Deprecated
     public boolean dustToCard(String cardName, String userName, String password) throws Exception {
         // 玩家权限验证
-        UserDataModel model = userDataMapper.selectByNamePassword(userName, password);
-        if (model == null) {
+        UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
+        if (userModel == null) {
             throw new OperationException("登录失败！");
         }
 
+        // 判断卡片是否可合成
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel == null) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
+        int recordCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+        if (recordCount <= 0){
+            throw new OperationException("找不到卡片：[%s]！", cardName);
+        }
+
+        // 根据稀有度判断更换次数是否用完
         int needDust = 0;
+        boolean isRare = false;
         if (NR_RARE.contains(cardModel.getRare())) {
-            if (model.getWeeklyDustChangeN() >= 10){
+            if (userModel.getWeeklyDustChangeN() >= 10){
                 throw new OperationException("[%s]的每周更换次数已用完！", userName);
             }
             needDust = 15;
         } else {
-            if (model.getWeeklyDustChangeAlter() > 0){
+            isRare = true;
+            if (userModel.getWeeklyDustChangeAlter() > 0){
                 throw new OperationException("[%s]的每周更换次数已用完！", userName);
             }
             needDust = 300;
         }
-        if (model.getDustCount() < needDust){
-            throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, model.getDustCount());
+
+        // 判断尘是否用完
+        if (userModel.getDustCount() < needDust){
+            throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, userModel.getDustCount());
         }
 
-        // TODO
         // 判断卡片是否已经拥有3张
-
-        // TODO
+        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), cardModel.getCardPk());
+        boolean newRecord = false;
+        if (cardListModel == null){
+            newRecord = true;
+            cardListModel = new UserCardListModel();
+            cardListModel.setUserId(userModel.getUserId());
+            cardListModel.setCardPk(cardModel.getCardPk());
+            cardListModel.setCount(0);
+        }
+        if (cardListModel.getCount() >= 3){
+            throw new OperationException("[%s]当前已拥有3张[%s]，无法再合成！", userName, cardName);
+        }
+        
         // 进行转换操作
+        if (isRare){
+            userModel.setWeeklyDustChangeR(userModel.getWeeklyDustChangeR() + 1);
+        } else {
+            userModel.setWeeklyDustChangeN(userModel.getWeeklyDustChangeN() + 1);
+        }
+        cardListModel.setCount(cardListModel.getCount() + 1);
+        if (newRecord){
+            userCardListMapper.insert(cardListModel);
+        } else {
+            userCardListMapper.update(cardListModel);
+        }
 
-        return false;
+        return true;
     }
 
     /**
