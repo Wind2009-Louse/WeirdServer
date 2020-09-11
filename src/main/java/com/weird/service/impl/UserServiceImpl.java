@@ -8,6 +8,7 @@ import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
@@ -192,13 +193,13 @@ public class UserServiceImpl implements UserService {
         boolean isRare = false;
         if (NR_RARE.contains(cardModel.getRare())) {
             if (userModel.getWeeklyDustChangeN() >= 10){
-                throw new OperationException("[%s]的每周更换次数已用完！", userName);
+                throw new OperationException("[%s]的每周NR更换次数已用完！", userName);
             }
             needDust = 15;
         } else {
             isRare = true;
             if (userModel.getWeeklyDustChangeAlter() > 0){
-                throw new OperationException("[%s]的每周更换次数已用完！", userName);
+                throw new OperationException("[%s]的每周自选闪卡更换次数已用完！", userName);
             }
             needDust = 300;
         }
@@ -224,17 +225,21 @@ public class UserServiceImpl implements UserService {
         
         // 进行转换操作
         if (isRare){
-            userModel.setWeeklyDustChangeR(userModel.getWeeklyDustChangeR() + 1);
+            userModel.setWeeklyDustChangeAlter(userModel.getWeeklyDustChangeAlter() + 1);
         } else {
             userModel.setWeeklyDustChangeN(userModel.getWeeklyDustChangeN() + 1);
         }
+        userModel.setDustCount(userModel.getDustCount() - needDust);
         cardListModel.setCount(cardListModel.getCount() + 1);
         if (newRecord){
             userCardListMapper.insert(cardListModel);
         } else {
             userCardListMapper.update(cardListModel);
         }
+        userDataMapper.updateByPrimaryKey(userModel);
 
+        // 清除缓存
+        CardServiceImpl.clearCardListCache();
         return true;
     }
 

@@ -1,19 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.weird.mapper.UserCardListMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="1024"
+           eviction="LRU"
+           readOnly="false"/>
     <resultMap id="BaseResultMap" type="com.weird.model.UserCardListModel">
         <result column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
         <result column="count" jdbcType="INTEGER" property="count"/>
     </resultMap>
 
-    <insert id="insert" parameterType="com.weird.model.UserCardListModel">
+    <insert id="insert" parameterType="com.weird.model.UserCardListModel" flushCache="true">
         insert into user_card_list (user_id, card_pk, count
         )
         values (#{userId,jdbcType=INTEGER}, #{cardPk,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}
         )
     </insert>
-    <insert id="insertSelective" parameterType="com.weird.model.UserCardListModel">
+    <insert id="insertSelective" parameterType="com.weird.model.UserCardListModel" flushCache="true">
         insert into user_card_list
         <trim prefix="(" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -40,13 +44,13 @@
     </insert>
 
     <!-- 自定义 -->
-    <select id="selectByUserCard" resultMap="BaseResultMap">
+    <select id="selectByUserCard" resultMap="BaseResultMap" useCache="true">
         select user_id, card_pk, count
         from user_card_list
         where user_id = #{userId} and card_pk = #{cardPk}
     </select>
 
-    <update id="update" parameterType="com.weird.model.UserCardListModel">
+    <update id="update" parameterType="com.weird.model.UserCardListModel" flushCache="true">
         update user_card_list
         set count = #{count}
         where user_id = #{userId} and card_pk = #{cardPk}
@@ -59,7 +63,7 @@
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
     </resultMap>
 
-    <select id="selectCardList" resultMap="CardListDTO">
+    <select id="selectCardList" resultMap="CardListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
         package_card.rare
@@ -81,7 +85,7 @@
         <result column="count" jdbcType="INTEGER" property="count"/>
     </resultMap>
 
-    <select id="selectCardOwnList" resultMap="CardOwnListDTO">
+    <select id="selectCardOwnList" resultMap="CardOwnListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
         package_card.rare,

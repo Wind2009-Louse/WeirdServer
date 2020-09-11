@@ -74,7 +74,7 @@ public class CardServiceImpl implements CardService {
             if (count == model.getCount()){
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
-            log.warn("修改[{}]的卡片数量（{}->{}）", userName, model.getCount(), count);
+            log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, model.getCount(), count);
             model.setCount(count);
             clearCardListCache();
             return userCardListMapper.update(model) > 0;
@@ -82,7 +82,7 @@ public class CardServiceImpl implements CardService {
             if (count == 0){
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
-            log.warn("修改[{}]的卡片数量（{}->{}）", userName, 0, count);
+            log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, 0, count);
             model = new UserCardListModel();
             model.setUserId(userId);
             model.setCardPk(cardPk);
