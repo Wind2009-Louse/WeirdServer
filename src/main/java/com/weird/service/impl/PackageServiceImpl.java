@@ -1,7 +1,9 @@
 package com.weird.service.impl;
 
+import com.weird.mapper.CardHistoryMapper;
 import com.weird.mapper.PackageCardMapper;
 import com.weird.mapper.PackageInfoMapper;
+import com.weird.model.CardHistoryModel;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.service.PackageService;
@@ -24,6 +26,9 @@ public class PackageServiceImpl implements PackageService {
 
     @Autowired
     PackageCardMapper packageCardMapper;
+
+    @Autowired
+    CardHistoryMapper cardHistoryMapper;
 
     /**
      * 根据名称查找卡包列表
@@ -119,11 +124,15 @@ public class PackageServiceImpl implements PackageService {
      * @param packageName 卡包名
      * @param oldName     旧卡名
      * @param newName     新卡名
+     * @param isShow      是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateCardName(String packageName, String oldName, String newName) throws Exception {
+    public boolean updateCardName(String packageName,
+                                  String oldName,
+                                  String newName,
+                                  int isShow) throws Exception {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
@@ -146,6 +155,16 @@ public class PackageServiceImpl implements PackageService {
         cardModel.setCardName(newName);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
         if (result > 0){
+            if (isShow != 0){
+                CardHistoryModel cardHistory = new CardHistoryModel();
+                cardHistory.setPackageId(packageId);
+                cardHistory.setCardPk(cardModel.getCardPk());
+                cardHistory.setOldName(oldName);
+                cardHistory.setNewName(newName);
+                cardHistory.setRare(cardModel.getRare());
+                cardHistoryMapper.insert(cardHistory);
+            }
+
             clearCardListCache();
             clearRollListCache();
             return true;

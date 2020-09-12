@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.CardHistoryMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="2048"
+           eviction="LRU"
+           readOnly="false"/>
+    <resultMap id="BaseResultMap" type="com.weird.model.CardHistoryModel">
+        <result column="package_id" jdbcType="INTEGER" property="packageId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="old_name" jdbcType="VARCHAR" property="oldName"/>
+        <result column="new_name" jdbcType="VARCHAR" property="newName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        package_id, card_pk, old_name, new_name, rare, db_created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weird.model.CardHistoryModel">
+        insert into card_history (package_id, card_pk, old_name, new_name, rare)
+        values (#{packageId}, #{cardPk}, #{oldName}, #{newName}, #{rare})
+    </insert>
+</mapper>

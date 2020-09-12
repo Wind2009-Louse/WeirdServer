@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.enums.LoginTypeEnum;
@@ -73,6 +74,7 @@ public class CardListController {
      * @param rare        稀有度
      * @param targetUser  用户名
      * @param page        页码
+     * @param pageSize    页面大小
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/list")
@@ -87,6 +89,25 @@ public class CardListController {
         PageResult<CardOwnListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
         return result;
+    }
+
+    /**
+     * 查询卡片更改的历史纪录
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param page        页码
+     * @param pageSize    页面大小
+     * @return 查询结果
+     */
+    @RequestMapping("/weird_project/card/history")
+    public List<CardHistoryDTO> searchHistory(
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize
+    ){
+        return null;
     }
 
     /**
@@ -132,6 +153,7 @@ public class CardListController {
      * @param packageName 卡包名
      * @param oldCardName 旧卡片名
      * @param newCardName 新卡片名
+     * @param isShow      是否在历史记录中显示该卡片
      * @param name        操作用户名称
      * @param password    操作用户密码
      * @return 是否修改成功
@@ -141,6 +163,7 @@ public class CardListController {
             @RequestParam(value = "package", required = false) String packageName,
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
+            @RequestParam(value= "show", required = false, defaultValue = "0") int isShow,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
@@ -154,7 +177,7 @@ public class CardListController {
             throw new OperationException("名字未修改！");
         }
 
-        if (packageService.updateCardName(packageName, oldCardName, newCardName)) {
+        if (packageService.updateCardName(packageName, oldCardName, newCardName, isShow)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

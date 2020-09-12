@@ -118,6 +118,15 @@ public class CardServiceImpl implements CardService {
         cardListCache.clear();
     }
 
+    /**
+     * 根据条件筛选拥有的卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @param userName    用户名
+     * @return 查询结果
+     */
     @Override
     public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
         String key = String.format("{%s,%s,%s,%s}", packageName, cardName, rare, userName);

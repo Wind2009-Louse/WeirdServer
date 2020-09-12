@@ -51,7 +51,8 @@ public interface PackageService {
      * @param packageName 卡包名
      * @param oldName     旧卡名
      * @param newName     新卡名
+     * @param isShow      是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
-    boolean updateCardName(String packageName, String oldName, String newName) throws Exception;
+    boolean updateCardName(String packageName, String oldName, String newName, int isShow) throws Exception;
 }
