@@ -240,6 +240,7 @@ public class UserServiceImpl implements UserService {
 
         // 清除缓存
         CardServiceImpl.clearCardListCache();
+        log.warn("[{}]合成了一张[{}]", userName, cardName);
         return true;
     }
 

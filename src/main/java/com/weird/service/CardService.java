@@ -1,5 +1,6 @@
 package com.weird.service;
 
+import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 
@@ -37,4 +38,14 @@ public interface CardService {
      * @return 查询结果
      */
     List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName);
+
+    /**
+     * 根据条件筛选卡片的历史记录
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @return 查询结果
+     */
+    List<CardHistoryDTO> selectHistory(String packageName, String cardName, String rare);
 }

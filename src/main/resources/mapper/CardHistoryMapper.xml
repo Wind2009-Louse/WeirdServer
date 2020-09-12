@@ -21,4 +21,47 @@
         insert into card_history (package_id, card_pk, old_name, new_name, rare)
         values (#{packageId}, #{cardPk}, #{oldName}, #{newName}, #{rare})
     </insert>
+
+    <select id="selectCardPk" resultType="java.lang.Integer">
+        select card_pk
+        from card_history
+        <where>
+            <if test="rare != null and rare != ''">
+                rare = #{rare}
+            </if>
+            <if test="packages != null">
+                and package_id in
+                <foreach collection="packages" item="packageId" open="(" close=")" separator=",">
+                    #{packageId}
+                </foreach>
+            </if>
+            and
+                (old_name like concat("%",#{card},"%")
+            or new_name like concat("%",#{card},"%"))
+        </where>
+        order by db_created_time desc
+    </select>
+
+    <resultMap id="ResultMap" type="com.weird.model.dto.CardHistoryDTO">
+        <result column="package_name" jdbcType="INTEGER" property="packageName"/>
+        <result column="old_name" jdbcType="VARCHAR" property="oldName"/>
+        <result column="new_name" jdbcType="VARCHAR" property="newName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+    <select id="selectByCardPk" resultMap="ResultMap">
+        select pack.package_name package_name,
+            his.old_name old_name,
+            his.new_name new_name,
+            his.rare rare,
+            his.db_created_time db_created_time
+        from card_history his inner join package_info pack
+            on pack.package_id = his.package_id
+        where
+            his.card_pk in
+            <foreach collection="cards" item="cardPk" open="(" close=")" separator=",">
+                #{cardPk}
+            </foreach>
+        order by his.db_created_time desc
+    </select>
 </mapper>

@@ -1,13 +1,11 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.PackageCardMapper;
-import com.weird.mapper.PackageInfoMapper;
-import com.weird.mapper.UserCardListMapper;
-import com.weird.mapper.UserDataMapper;
+import com.weird.mapper.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
+import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
@@ -17,9 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -35,6 +35,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     UserCardListMapper userCardListMapper;
+
+    @Autowired
+    CardHistoryMapper cardHistoryMapper;
 
     /**
      * 修改用户持有的卡片数量
@@ -137,5 +140,30 @@ public class CardServiceImpl implements CardService {
             cardListCache.put(key, cache);
         }
         return cache;
+    }
+
+    /**
+     * 根据条件筛选卡片的历史记录
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @return 查询结果
+     */
+    @Override
+    public List<CardHistoryDTO> selectHistory(String packageName, String cardName, String rare) {
+        List<Integer> packageIndexList;
+        if (packageName.length() > 0){
+            List<PackageInfoModel> packageList = packageInfoMapper.selectByName(packageName);
+            packageIndexList = packageList.stream().map(PackageInfoModel::getPackageId).collect(Collectors.toList());
+        } else {
+            packageIndexList = null;
+        }
+        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardName, rare);
+        if (cardIndexList.size() == 0){
+            return Collections.emptyList();
+        } else {
+            return cardHistoryMapper.selectByCardPk(cardIndexList);
+        }
     }
 }

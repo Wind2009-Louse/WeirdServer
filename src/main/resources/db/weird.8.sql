@@ -16,6 +16,33 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
+-- Table structure for table `card_history`
+--
+
+DROP TABLE IF EXISTS `card_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `card_history` (
+  `package_id` int(11) NOT NULL COMMENT '卡包ID',
+  `card_pk` int(11) NOT NULL COMMENT '卡片PK',
+  `old_name` varchar(45) NOT NULL DEFAULT '' COMMENT '原卡名',
+  `new_name` varchar(45) NOT NULL DEFAULT '' COMMENT '现卡名',
+  `rare` varchar(45) NOT NULL,
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡片更改历史';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `card_history`
+--
+
+LOCK TABLES `card_history` WRITE;
+/*!40000 ALTER TABLE `card_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `card_history` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `package_card`
 --
 

@@ -92,7 +92,7 @@ public class CardListController {
     }
 
     /**
-     * 查询卡片更改的历史纪录
+     * 【ALL】查询卡片更改的历史纪录
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -101,13 +101,17 @@ public class CardListController {
      * @return 查询结果
      */
     @RequestMapping("/weird_project/card/history")
-    public List<CardHistoryDTO> searchHistory(
+    public PageResult<CardHistoryDTO> searchHistory(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize
-    ){
-        return null;
+    ) throws Exception {
+        List<CardHistoryDTO> dtoList = cardService.selectHistory(packageName, cardName, rare);
+        PageResult<CardHistoryDTO> result = new PageResult<>();
+        result.addPageInfo(dtoList, page, pageSize);
+        return result;
     }
 
     /**
@@ -160,10 +164,10 @@ public class CardListController {
      */
     @RequestMapping("/weird_project/card/update")
     public String updateCardName(
-            @RequestParam(value = "package", required = false) String packageName,
+            @RequestParam(value = "package") String packageName,
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
-            @RequestParam(value= "show", required = false, defaultValue = "0") int isShow,
+            @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证

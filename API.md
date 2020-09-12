@@ -119,7 +119,7 @@
 ## 【管理端】修改卡片名称
 
 #### 接口URL
-> 127.0.0.1:15163/weird_project/card/update?name=admin&password=1&package=再造的世界&oldname=草兽&newname=除草兽
+> 127.0.0.1:15163/weird_project/card/update?name=admin&password=1&package=再造的世界&oldname=草兽&newname=除草兽&show=
 
 #### 请求方式
 > GET
@@ -136,6 +136,7 @@
 | package     | 再造的世界 | 必填 | 卡包名 |
 | oldname     | 草兽 | 必填 | 旧卡名 |
 | newname     | 除草兽 | 必填 | 新卡名 |
+| show     | - | 选填 | 是否记录在更新记录（0以外为记录，默认为0） |
 
 
 
@@ -218,6 +219,71 @@
 		],
 		"pageSize": 20,
 		"totalCount": 3,
+		"totalPage": 1
+	}
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "Required int parameter 'page' is not present"
+}
+```
+
+
+## 【ALL】卡片修改记录搜索
+
+#### 接口URL
+> 127.0.0.1:15163/weird_project/card/history?package=&card=&rare=&page=&pagesize=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| package     | - | 选填 | 卡包名，模糊搜索 |
+| card     | - | 选填 | 卡片名，模糊搜索 |
+| rare     | - | 选填 | 稀有度，精确搜索，留空为所有稀有度 |
+| page     | - | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": {
+		"currPage": 1,
+		"dataList": [
+			{
+				"createdTime": "2020-09-12 18:30:07",
+				"newName": "草泥马",
+				"oldName": "除草兽",
+				"packageName": "再造的世界",
+				"rare": "N"
+			},
+			{
+				"createdTime": "2020-09-12 17:54:30",
+				"newName": "除草兽",
+				"oldName": "草",
+				"packageName": "再造的世界",
+				"rare": "N"
+			}
+		],
+		"pageSize": 20,
+		"totalCount": 2,
 		"totalPage": 1
 	}
 }
@@ -641,7 +707,7 @@
 ## 【玩家端】直接将尘转换为卡片
 当前版本暂未实现该功能。
 #### 接口URL
-> 127.0.0.1:15163/weird_project/user/card/change?name=新的用户&password=123456&card=草兽
+> 127.0.0.1:15163/weird_project/user/card/change?name=用户&password=E10ADC3949BA59ABBE56E057F20F883E&card=草泥马
 
 #### 请求方式
 > GET
@@ -653,21 +719,29 @@
 
 | 参数        | 示例值   | 是否必填   |  参数描述  |
 | :--------   | :-----  | :-----  | :----  |
-| name     | 新的用户 | 必填 | 操作用户名称 |
-| password     | 123456 | 必填 | 操作用户密码 |
-| card     | 草兽 | 必填 | 卡片名 |
+| name     | 用户 | 必填 | 操作用户名称 |
+| password     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 操作用户密码 |
+| card     | 草泥马 | 必填 | 卡片名 |
 
 
 
 
 
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "转换成功！"
+}
+```
 
 
 #### 错误响应示例
 ```javascript
 {
 	"code": 500,
-	"data": "转换失败！"
+	"data": "[用户]当前已拥有3张[草泥马]，无法再合成！"
 }
 ```
 
