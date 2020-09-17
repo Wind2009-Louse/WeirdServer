@@ -213,7 +213,8 @@ public class CardListController {
         }
 
         // 重名判断
-        List<String> allCardList = param.getNList();
+        List<String> allCardList = new LinkedList<>();
+        allCardList.addAll(param.getNList());
         allCardList.addAll(param.getRList());
         allCardList.addAll(param.getSrList());
         allCardList.addAll(param.getUrList());
