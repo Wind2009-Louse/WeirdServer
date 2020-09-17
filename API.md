@@ -116,6 +116,55 @@
 ```
 
 
+## 【管理端】批量添加卡片信息
+
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/card/add
+
+#### 请求方式
+> POST
+
+#### Content-Type
+> json
+
+
+
+
+
+
+#### 请求Body参数
+
+```javascript
+{
+	"name": "admin",
+	"password": "E10ADC3949BA59ABBE56E057F20F883E",
+	"packageName": "咕咕",
+	"nList": ["N"],
+	"rList": ["R1", "R2"],
+	"srList": ["SR1", "SR2"],
+	"urList": ["UR1", "UR2"],
+	"hrList": ["HR"]
+}
+```
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "添加成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "输入中存在重复卡片：[SR1, SR2]"
+}
+```
+
+
 ## 【管理端】修改卡片名称
 
 #### 接口URL

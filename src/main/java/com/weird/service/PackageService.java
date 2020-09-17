@@ -1,6 +1,7 @@
 package com.weird.service;
 
 import com.weird.model.PackageInfoModel;
+import com.weird.model.dto.BatchAddCardParam;
 
 import java.util.List;
 
@@ -44,6 +45,15 @@ public interface PackageService {
      * @return 是否添加成功
      */
     boolean addCard(String packageName, String cardName, String rare) throws Exception;
+
+    /**
+     * 在卡包中批量添加卡片
+     *
+     * @param param 批量添加参数
+     * @param allCardList 所有卡片的名称列表
+     * @return 返回结果
+     */
+    String addCardList(BatchAddCardParam param, List<String> allCardList);
 
     /**
      * 修改卡包中的卡片名字

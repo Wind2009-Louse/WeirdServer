@@ -1,11 +1,13 @@
 package com.weird.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.weird.mapper.CardHistoryMapper;
 import com.weird.mapper.PackageCardMapper;
 import com.weird.mapper.PackageInfoMapper;
 import com.weird.model.CardHistoryModel;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
+import com.weird.model.dto.BatchAddCardParam;
 import com.weird.service.PackageService;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
@@ -74,7 +76,7 @@ public class PackageServiceImpl implements PackageService {
             throw new OperationException("找不到该卡包：[%s]！", oldName);
         }
         PackageInfoModel newPackage = packageInfoMapper.selectByNameDistinct(newName);
-        if (newPackage != null){
+        if (newPackage != null) {
             throw new OperationException("[%s]已存在！", newName);
         }
 
@@ -119,6 +121,63 @@ public class PackageServiceImpl implements PackageService {
     }
 
     /**
+     * 在卡包中批量添加卡片
+     *
+     * @param param 批量添加参数
+     * @return 返回结果
+     */
+    @Transactional
+    @Override
+    public String addCardList(BatchAddCardParam param, List<String> allCardList) {
+        PackageInfoModel packageInfoModel = packageInfoMapper.selectByNameDistinct(param.getPackageName());
+        if (packageInfoModel == null){
+            return String.format("找不到卡包：%s！", param.getPackageName());
+        }
+
+        List<String> existsList = packageCardMapper.selectByNameListDistinct(allCardList);
+        if (existsList.size() > 0) {
+            return String.format("以下卡片已在卡池中：%s！", JSON.toJSONString(existsList));
+        }
+
+        StringBuilder sb = new StringBuilder();
+        if (param.getNList().size() > 0){
+            int nCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "N", param.getNList());
+            if (nCount < param.getNList().size()){
+                sb.append("N卡没有全部更新，请重试！\n");
+            }
+        }
+        if (param.getRList().size() > 0){
+            int rCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "R", param.getRList());
+            if (rCount < param.getRList().size()){
+                sb.append("R卡没有全部更新，请重试！\n");
+            }
+        }
+        if (param.getSrList().size() > 0){
+            int srCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "SR", param.getSrList());
+            if (srCount < param.getSrList().size()){
+                sb.append("SR卡没有全部更新，请重试！\n");
+            }
+        }
+        if (param.getUrList().size() > 0){
+            int urCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "UR", param.getUrList());
+            if (urCount < param.getUrList().size()){
+                sb.append("SR卡没有全部更新，请重试！\n");
+            }
+        }
+        if (param.getHrList().size() > 0){
+            int hrCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "HR", param.getHrList());
+            if (hrCount < param.getHrList().size()){
+                sb.append("SR卡没有全部更新，请重试！\n");
+            }
+        }
+        if (sb.length() > 0){
+            return sb.toString();
+        }
+        log.warn("批量添加卡片：{}", param);
+        return "";
+    }
+
+    /**
      * 修改卡包中的卡片名字
      *
      * @param packageName 卡包名
@@ -145,8 +204,8 @@ public class PackageServiceImpl implements PackageService {
         if (cardModel == null) {
             throw new OperationException("卡片[%s]不存在！", oldName);
         }
-        PackageCardModel goalModel = packageCardMapper.selectInPackageDistinct(packageId, newName);
-        if (goalModel != null){
+        PackageCardModel goalModel = packageCardMapper.selectByNameDistinct(newName);
+        if (goalModel != null) {
             throw new OperationException("卡片[%s]已存在！", newName);
         }
 
@@ -154,8 +213,8 @@ public class PackageServiceImpl implements PackageService {
         log.warn("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
         cardModel.setCardName(newName);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
-        if (result > 0){
-            if (isShow != 0){
+        if (result > 0) {
+            if (isShow != 0) {
                 CardHistoryModel cardHistory = new CardHistoryModel();
                 cardHistory.setPackageId(packageId);
                 cardHistory.setCardPk(cardModel.getCardPk());

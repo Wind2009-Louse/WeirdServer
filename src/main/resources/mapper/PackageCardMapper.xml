@@ -108,4 +108,25 @@
         from package_card
         where card_pk = #{cardPk,jdbcType=BIGINT}
     </select>
+
+    <select id="selectByNameListDistinct" resultType="java.lang.String">
+        select card_name from package_card
+        where card_name in
+        <foreach collection="list" item="cardname" open="(" close=")" separator=",">
+            #{cardname}
+        </foreach>
+    </select>
+
+    <insert id="insertByRareBatch">
+        insert into package_card (card_name,
+        package_id, rare)
+        values
+        <foreach collection="list" item="cardName" separator=",">
+        (
+            #{cardName,jdbcType=VARCHAR},
+            #{packageId,jdbcType=INTEGER},
+            #{rare,jdbcType=VARCHAR}
+        )
+        </foreach>
+    </insert>
 </mapper>

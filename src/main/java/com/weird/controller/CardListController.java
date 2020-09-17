@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.model.dto.BatchAddCardParam;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
@@ -10,12 +11,9 @@ import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * 卡片列表相关
@@ -124,7 +122,7 @@ public class CardListController {
      * @param password    操作用户密码
      * @return 是否添加成功
      */
-    @RequestMapping("/weird_project/card/add")
+    @GetMapping("/weird_project/card/add")
     public String addCardDetail(
             @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card") String cardName,
@@ -148,6 +146,100 @@ public class CardListController {
             return "添加成功！";
         } else {
             throw new OperationException("添加失败！");
+        }
+    }
+
+    /**
+     * 【管理端】批量添加卡片信息
+     *
+     * @param param 信息参数
+     * @return 是否添加成功
+     */
+    @PostMapping("/weird_project/card/add")
+    public String addCardList(@RequestBody BatchAddCardParam param) throws OperationException {
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        if (param.getPackageName() == null || param.getPackageName().length() == 0){
+            throw new OperationException("卡包名为空！");
+        }
+
+        // 空参数判断
+        StringBuilder sb = new StringBuilder();
+        if (param.getNList() == null) {
+            sb.append("N卡列表为NULL！\n");
+        }
+        if (param.getRList() == null) {
+            sb.append("R卡列表为NULL！\n");
+        }
+        if (param.getSrList() == null) {
+            sb.append("SR卡列表为NULL！\n");
+        }
+        if (param.getUrList() == null) {
+            sb.append("UR卡列表为NULL！");
+        }
+        if (param.getHrList() == null) {
+            sb.append("HR卡列表为NULL！");
+        }
+        if (sb.length() > 0) {
+            throw new OperationException(sb.toString());
+        }
+        for (String nCard: param.getNList()){
+            if (nCard == null || nCard.length() == 0){
+                throw new OperationException("N卡中存在卡片名字为空！");
+            }
+        }
+        for (String rCard: param.getRList()){
+            if (rCard == null || rCard.length() == 0){
+                throw new OperationException("R卡中存在卡片名字为空！");
+            }
+        }
+        for (String srCard: param.getSrList()){
+            if (srCard == null || srCard.length() == 0){
+                throw new OperationException("SR卡中存在卡片名字为空！");
+            }
+        }
+        for (String urCard: param.getUrList()){
+            if (urCard == null || urCard.length() == 0){
+                throw new OperationException("UR卡中存在卡片名字为空！");
+            }
+        }
+        for (String hrCard: param.getUrList()){
+            if (hrCard == null || hrCard.length() == 0){
+                throw new OperationException("UR卡中存在卡片名字为空！");
+            }
+        }
+
+        // 重名判断
+        List<String> allCardList = param.getNList();
+        allCardList.addAll(param.getRList());
+        allCardList.addAll(param.getSrList());
+        allCardList.addAll(param.getUrList());
+        allCardList.addAll(param.getHrList());
+        if (allCardList.size() == 0) {
+            throw new OperationException("添加卡片列表为空！");
+        }
+        Set<String> allCardSet = new HashSet<>();
+        List<String> dumpList = new LinkedList<>();
+        for (String card : allCardList){
+            int oldCount = allCardSet.size();
+            allCardSet.add(card);
+            if (oldCount == allCardSet.size()){
+                dumpList.add(card);
+            }
+        }
+        if (dumpList.size() > 0){
+            throw new OperationException("输入中存在重复卡片：%s", dumpList.toString());
+        }
+
+        // 添加卡片
+        String result = packageService.addCardList(param, allCardList);
+        if (result.length() == 0){
+            return "添加成功！";
+        } else {
+            throw new OperationException(result);
         }
     }
 
