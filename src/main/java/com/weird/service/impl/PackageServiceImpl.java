@@ -130,7 +130,7 @@ public class PackageServiceImpl implements PackageService {
     @Override
     public String addCardList(BatchAddCardParam param, List<String> allCardList) {
         PackageInfoModel packageInfoModel = packageInfoMapper.selectByNameDistinct(param.getPackageName());
-        if (packageInfoModel == null){
+        if (packageInfoModel == null) {
             return String.format("找不到卡包：%s！", param.getPackageName());
         }
 
@@ -140,37 +140,37 @@ public class PackageServiceImpl implements PackageService {
         }
 
         StringBuilder sb = new StringBuilder();
-        if (param.getNList().size() > 0){
+        if (param.getNList().size() > 0) {
             int nCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "N", param.getNList());
-            if (nCount < param.getNList().size()){
+            if (nCount < param.getNList().size()) {
                 sb.append("N卡没有全部更新，请重试！\n");
             }
         }
-        if (param.getRList().size() > 0){
+        if (param.getRList().size() > 0) {
             int rCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "R", param.getRList());
-            if (rCount < param.getRList().size()){
+            if (rCount < param.getRList().size()) {
                 sb.append("R卡没有全部更新，请重试！\n");
             }
         }
-        if (param.getSrList().size() > 0){
+        if (param.getSrList().size() > 0) {
             int srCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "SR", param.getSrList());
-            if (srCount < param.getSrList().size()){
+            if (srCount < param.getSrList().size()) {
                 sb.append("SR卡没有全部更新，请重试！\n");
             }
         }
-        if (param.getUrList().size() > 0){
+        if (param.getUrList().size() > 0) {
             int urCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "UR", param.getUrList());
-            if (urCount < param.getUrList().size()){
+            if (urCount < param.getUrList().size()) {
                 sb.append("SR卡没有全部更新，请重试！\n");
             }
         }
-        if (param.getHrList().size() > 0){
+        if (param.getHrList().size() > 0) {
             int hrCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "HR", param.getHrList());
-            if (hrCount < param.getHrList().size()){
+            if (hrCount < param.getHrList().size()) {
                 sb.append("SR卡没有全部更新，请重试！\n");
             }
         }
-        if (sb.length() > 0){
+        if (sb.length() > 0) {
             return sb.toString();
         }
         log.warn("批量添加卡片：{}", param);
@@ -222,6 +222,64 @@ public class PackageServiceImpl implements PackageService {
                 cardHistory.setNewName(newName);
                 cardHistory.setRare(cardModel.getRare());
                 cardHistoryMapper.insert(cardHistory);
+            }
+
+            clearCardListCache();
+            clearRollListCache();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean exchangeCardName(String packageName, String name1, String name2, int isShow) throws Exception {
+        // 查找卡包是否存在
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
+        if (packageModel == null) {
+            throw new OperationException("找不到该卡包：[%s]！", packageName);
+        }
+        int packageId = packageModel.getPackageId();
+
+
+        // 查找是否能否更新
+        PackageCardModel cardModel1 = packageCardMapper.selectInPackageDistinct(packageId, name1);
+        if (cardModel1 == null) {
+            throw new OperationException("卡片[%s]不存在！", name1);
+        }
+        PackageCardModel cardModel2 = packageCardMapper.selectInPackageDistinct(packageId, name2);
+        if (cardModel2 == null) {
+            throw new OperationException("卡片[%s]不存在！", name1);
+        }
+        if (cardModel1.getRare().equals(cardModel2.getRare())) {
+            throw new OperationException("卡片[%s]和[%s]的稀有度相同！", name1, name2);
+        }
+
+        // 修改
+        log.warn("卡包[{}]中的卡片[{}]({})、[{}]({})稀有度互换",
+                packageName,
+                cardModel1.getCardName(), cardModel1.getRare(),
+                cardModel2.getCardName(), cardModel2.getRare());
+        String tempName = cardModel1.getCardName();
+        cardModel1.setCardName(cardModel2.getCardName());
+        cardModel2.setCardName(tempName);
+        int result = packageCardMapper.updateByPrimaryKey(cardModel1) + packageCardMapper.updateByPrimaryKey(cardModel2);
+        if (result == 2) {
+            if (isShow != 0) {
+                CardHistoryModel cardHistory1 = new CardHistoryModel();
+                cardHistory1.setPackageId(packageId);
+                cardHistory1.setCardPk(cardModel1.getCardPk());
+                cardHistory1.setOldName(name1);
+                cardHistory1.setNewName(name2);
+                cardHistory1.setRare(cardModel1.getRare());
+                cardHistoryMapper.insert(cardHistory1);
+
+                CardHistoryModel cardHistory2 = new CardHistoryModel();
+                cardHistory2.setPackageId(packageId);
+                cardHistory2.setCardPk(cardModel2.getCardPk());
+                cardHistory2.setOldName(name2);
+                cardHistory2.setNewName(name1);
+                cardHistory2.setRare(cardModel1.getRare());
+                cardHistoryMapper.insert(cardHistory2);
             }
 
             clearCardListCache();

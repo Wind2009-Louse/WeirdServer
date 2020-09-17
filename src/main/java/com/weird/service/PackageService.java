@@ -49,7 +49,7 @@ public interface PackageService {
     /**
      * 在卡包中批量添加卡片
      *
-     * @param param 批量添加参数
+     * @param param       批量添加参数
      * @param allCardList 所有卡片的名称列表
      * @return 返回结果
      */
@@ -65,4 +65,15 @@ public interface PackageService {
      * @return 是否修改成功
      */
     boolean updateCardName(String packageName, String oldName, String newName, int isShow) throws Exception;
+
+    /**
+     * 互换卡包中两张卡的稀有度
+     *
+     * @param packageName 卡包名
+     * @param name1       卡名1
+     * @param name2       卡名2
+     * @param isShow      是否展示
+     * @return 是否修改成功
+     */
+    boolean exchangeCardName(String packageName, String name1, String name2, int isShow) throws Exception;
 }

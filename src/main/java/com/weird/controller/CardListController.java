@@ -162,7 +162,7 @@ public class CardListController {
             throw new OperationException("权限不足！");
         }
 
-        if (param.getPackageName() == null || param.getPackageName().length() == 0){
+        if (param.getPackageName() == null || param.getPackageName().length() == 0) {
             throw new OperationException("卡包名为空！");
         }
 
@@ -186,28 +186,28 @@ public class CardListController {
         if (sb.length() > 0) {
             throw new OperationException(sb.toString());
         }
-        for (String nCard: param.getNList()){
-            if (nCard == null || nCard.length() == 0){
+        for (String nCard : param.getNList()) {
+            if (nCard == null || nCard.length() == 0) {
                 throw new OperationException("N卡中存在卡片名字为空！");
             }
         }
-        for (String rCard: param.getRList()){
-            if (rCard == null || rCard.length() == 0){
+        for (String rCard : param.getRList()) {
+            if (rCard == null || rCard.length() == 0) {
                 throw new OperationException("R卡中存在卡片名字为空！");
             }
         }
-        for (String srCard: param.getSrList()){
-            if (srCard == null || srCard.length() == 0){
+        for (String srCard : param.getSrList()) {
+            if (srCard == null || srCard.length() == 0) {
                 throw new OperationException("SR卡中存在卡片名字为空！");
             }
         }
-        for (String urCard: param.getUrList()){
-            if (urCard == null || urCard.length() == 0){
+        for (String urCard : param.getUrList()) {
+            if (urCard == null || urCard.length() == 0) {
                 throw new OperationException("UR卡中存在卡片名字为空！");
             }
         }
-        for (String hrCard: param.getUrList()){
-            if (hrCard == null || hrCard.length() == 0){
+        for (String hrCard : param.getUrList()) {
+            if (hrCard == null || hrCard.length() == 0) {
                 throw new OperationException("UR卡中存在卡片名字为空！");
             }
         }
@@ -224,20 +224,20 @@ public class CardListController {
         }
         Set<String> allCardSet = new HashSet<>();
         List<String> dumpList = new LinkedList<>();
-        for (String card : allCardList){
+        for (String card : allCardList) {
             int oldCount = allCardSet.size();
             allCardSet.add(card);
-            if (oldCount == allCardSet.size()){
+            if (oldCount == allCardSet.size()) {
                 dumpList.add(card);
             }
         }
-        if (dumpList.size() > 0){
+        if (dumpList.size() > 0) {
             throw new OperationException("输入中存在重复卡片：%s", dumpList.toString());
         }
 
         // 添加卡片
         String result = packageService.addCardList(param, allCardList);
-        if (result.length() == 0){
+        if (result.length() == 0) {
             return "添加成功！";
         } else {
             throw new OperationException(result);
@@ -275,6 +275,42 @@ public class CardListController {
         }
 
         if (packageService.updateCardName(packageName, oldCardName, newCardName, isShow)) {
+            return "修改成功！";
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+
+    /**
+     * 交换两张卡的稀有度
+     *
+     * @param packageName 卡包名
+     * @param cardName1   卡名1
+     * @param cardName2   卡名2
+     * @param isShow      是否展示
+     * @param name        操作用户名称
+     * @param password    操作用户密码
+     * @return 是否修改成功
+     * @throws Exception
+     */
+    @RequestMapping("/weird_project/card/exchange")
+    public String exchangeName(
+            @RequestParam(value = "package") String packageName,
+            @RequestParam(value = "card1") String cardName1,
+            @RequestParam(value = "card2") String cardName2,
+            @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (cardName1 == null || cardName1.length() == 0
+                || cardName2 == null || cardName2.length() == 0) {
+            throw new OperationException("卡片名为空！");
+        }
+
+        if (packageService.exchangeCardName(packageName, cardName1, cardName2, isShow)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");
