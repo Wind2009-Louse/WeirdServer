@@ -47,13 +47,13 @@ public class UserController {
     /**
      * 【ALL】检查用户类型
      *
-     * @param name 用户名
+     * @param name     用户名
      * @param password 用户密码
      * @return UNLOGIN(未登录)、ADMIN(管理员)、(NORMAL)普通用户
      */
     @RequestMapping("/weird_project/user/check")
     public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
-                                      @RequestParam(value = "password") String password){
+                                      @RequestParam(value = "password") String password) {
         return userService.checkLogin(name, password);
     }
 
@@ -72,7 +72,6 @@ public class UserController {
     @RequestMapping("/weird_project/user/card/update")
     public String updateUserCardCount(
             @RequestParam(value = "target") String targetUser,
-            @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card") String cardName,
             @RequestParam(value = "count") int newCount,
             @RequestParam(value = "name") String name,
@@ -82,7 +81,7 @@ public class UserController {
             throw new OperationException("权限不足！");
         }
 
-        if (cardService.updateCardCount(targetUser, packageName, cardName, newCount)) {
+        if (cardService.updateCardCount(targetUser, cardName, newCount)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

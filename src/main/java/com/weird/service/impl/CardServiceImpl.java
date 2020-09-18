@@ -42,15 +42,14 @@ public class CardServiceImpl implements CardService {
     /**
      * 修改用户持有的卡片数量
      *
-     * @param userName    用户名
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param count       新的卡片数量
+     * @param userName 用户名
+     * @param cardName 卡片名
+     * @param count    新的卡片数量
      * @return 是否修改成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateCardCount(String userName, String packageName, String cardName, int count) throws Exception {
+    public boolean updateCardCount(String userName, String cardName, int count) throws Exception {
         if (count > 3 || count < 0) {
             throw new OperationException("修改卡片数量错误，应在0~3内！");
         }
@@ -60,11 +59,7 @@ public class CardServiceImpl implements CardService {
             throw new OperationException("找不到该用户:[%s]！", userName);
         }
 
-        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
-        if (packageModel == null) {
-            throw new OperationException("找不到该卡包：[%s]！", packageName);
-        }
-        PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageModel.getPackageId(), cardName);
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel == null) {
             throw new OperationException("找不到该卡片：[%s]！", cardName);
         }

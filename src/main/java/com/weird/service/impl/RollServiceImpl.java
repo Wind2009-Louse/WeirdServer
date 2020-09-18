@@ -136,7 +136,7 @@ public class RollServiceImpl implements RollService {
     /**
      * 更新数据后，手动清除抽卡记录列表缓存
      */
-    static void clearRollListCache(){
+    static void clearRollListCache() {
         log.debug("抽卡记录列表缓存被清除");
         rollListCache.clear();
     }
@@ -159,7 +159,7 @@ public class RollServiceImpl implements RollService {
         String key = String.format("{%s,%s,%d,%d}", packageName, userName, page, pageSize);
         log.debug("查询抽卡记录列表：{}", key);
         PageResult<RollListDTO> cache = rollListCache.get(key);
-        if (cache != null){
+        if (cache != null) {
             return cache;
         }
 
@@ -202,25 +202,25 @@ public class RollServiceImpl implements RollService {
     /**
      * 抽卡处理
      *
-     * @param packageName 卡包名
-     * @param cardNames   卡片名
-     * @param userName    用户名
+     * @param cardNames 卡片名
+     * @param userName  用户名
      * @return 是否记录成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean roll(String packageName, List<String> cardNames, String userName) throws Exception {
+    public boolean roll(List<String> cardNames, String userName) throws Exception {
         // 判断输入
-        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
-        if (packageModel == null) {
-            throw new OperationException("找不到该卡包：%s！", packageName);
-        }
-        int packageId = packageModel.getPackageId();
         List<PackageCardModel> cardModels = new LinkedList<>();
+        int packageId = 0;
         for (String cardName : cardNames) {
-            PackageCardModel card = packageCardMapper.selectInPackageDistinct(packageId, cardName);
+            PackageCardModel card = packageCardMapper.selectByNameDistinct(cardName);
             if (card == null) {
                 throw new OperationException("找不到该卡片：%s！", cardName);
+            }
+            if (packageId == 0) {
+                packageId = card.getPackageId();
+            } else if (card.getPackageId() != packageId) {
+                throw new OperationException("卡片不在同一列表中！");
             }
             cardModels.add(card);
         }

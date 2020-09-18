@@ -269,9 +269,8 @@ public class CardListController {
     }
 
     /**
-     * 【管理端】修改卡包中的卡片名称
+     * 【管理端】修改卡片名称
      *
-     * @param packageName 卡包名
      * @param oldCardName 旧卡片名
      * @param newCardName 新卡片名
      * @param isShow      是否在历史记录中显示该卡片
@@ -281,7 +280,6 @@ public class CardListController {
      */
     @RequestMapping("/weird_project/card/update")
     public String updateCardName(
-            @RequestParam(value = "package") String packageName,
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
             @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
@@ -298,7 +296,7 @@ public class CardListController {
             throw new OperationException("名字未修改！");
         }
 
-        if (packageService.updateCardName(packageName, oldCardName, newCardName, isShow)) {
+        if (packageService.updateCardName(oldCardName, newCardName, isShow)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");
@@ -308,18 +306,16 @@ public class CardListController {
     /**
      * 交换两张卡的稀有度
      *
-     * @param packageName 卡包名
-     * @param cardName1   卡名1
-     * @param cardName2   卡名2
-     * @param isShow      是否展示
-     * @param name        操作用户名称
-     * @param password    操作用户密码
+     * @param cardName1 卡名1
+     * @param cardName2 卡名2
+     * @param isShow    是否展示
+     * @param name      操作用户名称
+     * @param password  操作用户密码
      * @return 是否修改成功
      * @throws Exception
      */
     @RequestMapping("/weird_project/card/exchange")
     public String exchangeName(
-            @RequestParam(value = "package") String packageName,
             @RequestParam(value = "card1") String cardName1,
             @RequestParam(value = "card2") String cardName2,
             @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
@@ -334,7 +330,7 @@ public class CardListController {
             throw new OperationException("卡片名为空！");
         }
 
-        if (packageService.exchangeCardName(packageName, cardName1, cardName2, isShow)) {
+        if (packageService.exchangeCardName(cardName1, cardName2, isShow)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

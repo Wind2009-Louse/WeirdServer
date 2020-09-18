@@ -178,29 +178,20 @@ public class PackageServiceImpl implements PackageService {
     }
 
     /**
-     * 修改卡包中的卡片名字
+     * 修改卡片名字
      *
-     * @param packageName 卡包名
-     * @param oldName     旧卡名
-     * @param newName     新卡名
-     * @param isShow      是否在历史记录中显示该卡片
+     * @param oldName 旧卡名
+     * @param newName 新卡名
+     * @param isShow  是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateCardName(String packageName,
-                                  String oldName,
+    public boolean updateCardName(String oldName,
                                   String newName,
                                   int isShow) throws Exception {
-        // 查找卡包是否存在
-        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
-        if (packageModel == null) {
-            throw new OperationException("找不到该卡包：[%s]！", packageName);
-        }
-        int packageId = packageModel.getPackageId();
-
         // 查找是否能否更新
-        PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, oldName);
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(oldName);
         if (cardModel == null) {
             throw new OperationException("卡片[%s]不存在！", oldName);
         }
@@ -210,13 +201,13 @@ public class PackageServiceImpl implements PackageService {
         }
 
         // 修改
-        log.warn("卡包[{}]中的卡片[{}]更改为[{}]", packageName, cardModel.getCardName(), newName);
+        log.warn("卡片[{}]重命名为[{}]", oldName, newName);
         cardModel.setCardName(newName);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
         if (result > 0) {
             if (isShow != 0) {
                 CardHistoryModel cardHistory = new CardHistoryModel();
-                cardHistory.setPackageId(packageId);
+                cardHistory.setPackageId(cardModel.getPackageId());
                 cardHistory.setCardPk(cardModel.getCardPk());
                 cardHistory.setOldName(oldName);
                 cardHistory.setNewName(newName);
@@ -232,31 +223,25 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public boolean exchangeCardName(String packageName, String name1, String name2, int isShow) throws Exception {
-        // 查找卡包是否存在
-        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
-        if (packageModel == null) {
-            throw new OperationException("找不到该卡包：[%s]！", packageName);
-        }
-        int packageId = packageModel.getPackageId();
-
-
+    public boolean exchangeCardName(String name1, String name2, int isShow) throws Exception {
         // 查找是否能否更新
-        PackageCardModel cardModel1 = packageCardMapper.selectInPackageDistinct(packageId, name1);
+        PackageCardModel cardModel1 = packageCardMapper.selectByNameDistinct(name1);
         if (cardModel1 == null) {
             throw new OperationException("卡片[%s]不存在！", name1);
         }
-        PackageCardModel cardModel2 = packageCardMapper.selectInPackageDistinct(packageId, name2);
+        PackageCardModel cardModel2 = packageCardMapper.selectByNameDistinct(name2);
         if (cardModel2 == null) {
             throw new OperationException("卡片[%s]不存在！", name1);
         }
         if (cardModel1.getRare().equals(cardModel2.getRare())) {
             throw new OperationException("卡片[%s]和[%s]的稀有度相同！", name1, name2);
         }
+        if (cardModel1.getPackageId() != cardModel2.getPackageId()) {
+            throw new OperationException("卡片[%s]和[%s]不在同一卡包！", name1, name2);
+        }
 
         // 修改
-        log.warn("卡包[{}]中的卡片[{}]({})、[{}]({})稀有度互换",
-                packageName,
+        log.warn("卡片[{}]({})、[{}]({})稀有度互换",
                 cardModel1.getCardName(), cardModel1.getRare(),
                 cardModel2.getCardName(), cardModel2.getRare());
         String tempName = cardModel1.getCardName();
@@ -266,7 +251,7 @@ public class PackageServiceImpl implements PackageService {
         if (result == 2) {
             if (isShow != 0) {
                 CardHistoryModel cardHistory1 = new CardHistoryModel();
-                cardHistory1.setPackageId(packageId);
+                cardHistory1.setPackageId(cardModel1.getPackageId());
                 cardHistory1.setCardPk(cardModel1.getCardPk());
                 cardHistory1.setOldName(name1);
                 cardHistory1.setNewName(name2);
@@ -274,7 +259,7 @@ public class PackageServiceImpl implements PackageService {
                 cardHistoryMapper.insert(cardHistory1);
 
                 CardHistoryModel cardHistory2 = new CardHistoryModel();
-                cardHistory2.setPackageId(packageId);
+                cardHistory2.setPackageId(cardModel2.getPackageId());
                 cardHistory2.setCardPk(cardModel2.getCardPk());
                 cardHistory2.setOldName(name2);
                 cardHistory2.setNewName(name1);

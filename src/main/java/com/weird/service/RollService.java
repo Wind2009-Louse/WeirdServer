@@ -23,12 +23,11 @@ public interface RollService {
     /**
      * 抽卡处理
      *
-     * @param packageName 卡包名
-     * @param cardNames   卡片名
-     * @param userName    用户名
+     * @param cardNames 卡片名
+     * @param userName  用户名
      * @return 是否记录成功
      */
-    boolean roll(String packageName, List<String> cardNames, String userName) throws Exception;
+    boolean roll(List<String> cardNames, String userName) throws Exception;
 
     /**
      * 设置抽卡记录状态

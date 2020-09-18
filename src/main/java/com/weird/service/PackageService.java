@@ -56,24 +56,22 @@ public interface PackageService {
     String addCardList(BatchAddCardParam param, List<String> allCardList);
 
     /**
-     * 修改卡包中的卡片名字
+     * 修改卡片名字
      *
-     * @param packageName 卡包名
-     * @param oldName     旧卡名
-     * @param newName     新卡名
-     * @param isShow      是否在历史记录中显示该卡片
+     * @param oldName 旧卡名
+     * @param newName 新卡名
+     * @param isShow  是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
-    boolean updateCardName(String packageName, String oldName, String newName, int isShow) throws Exception;
+    boolean updateCardName(String oldName, String newName, int isShow) throws Exception;
 
     /**
      * 互换卡包中两张卡的稀有度
      *
-     * @param packageName 卡包名
-     * @param name1       卡名1
-     * @param name2       卡名2
-     * @param isShow      是否展示
+     * @param name1  卡名1
+     * @param name2  卡名2
+     * @param isShow 是否展示
      * @return 是否修改成功
      */
-    boolean exchangeCardName(String packageName, String name1, String name2, int isShow) throws Exception;
+    boolean exchangeCardName(String name1, String name2, int isShow) throws Exception;
 }

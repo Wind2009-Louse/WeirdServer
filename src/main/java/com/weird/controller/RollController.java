@@ -30,18 +30,16 @@ public class RollController {
     /**
      * 【管理端】发送抽卡信息（诡异UI用）
      *
-     * @param targetUser  用户名
-     * @param packageName 卡包名
-     * @param cardName1   卡片名称1
-     * @param cardName2   卡片名称2
-     * @param cardName3   卡片名称3
-     * @param name        操作用户名称
-     * @param password    操作用户密码
+     * @param targetUser 用户名
+     * @param cardName1  卡片名称1
+     * @param cardName2  卡片名称2
+     * @param cardName3  卡片名称3
+     * @param name       操作用户名称
+     * @param password   操作用户密码
      * @return 抽卡是否成功
      */
     @RequestMapping("/weird_project/weirdUI/roll")
     public String roll(@RequestParam(value = "target") String targetUser,
-                       @RequestParam(value = "package") String packageName,
                        @RequestParam(value = "card1") String cardName1,
                        @RequestParam(value = "card2") String cardName2,
                        @RequestParam(value = "card3") String cardName3,
@@ -53,7 +51,7 @@ public class RollController {
         }
 
         List<String> cardNames = Arrays.asList(cardName1, cardName2, cardName3);
-        if (rollService.roll(packageName, cardNames, targetUser)) {
+        if (rollService.roll(cardNames, targetUser)) {
             return "记录成功!";
         } else {
             throw new OperationException("抽卡记录失败！");

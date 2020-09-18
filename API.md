@@ -319,7 +319,7 @@
 ## 【管理端】修改卡片名称
 
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/card/update?name=admin&password=1&package=再造的世界&oldname=草兽&newname=除草兽&show=
+> https://127.0.0.1:15163/weird_project/card/update?name=admin&password=1&oldname=草兽&newname=除草兽&show=
 
 #### 请求方式
 > GET
@@ -333,7 +333,6 @@
 | :--------   | :-----  | :-----  | :----  |
 | name     | admin | 必填 | 操作用户名称 |
 | password     | 1 | 必填 | 操作用户密码 |
-| package     | 再造的世界 | 必填 | 卡包名 |
 | oldname     | 草兽 | 必填 | 旧卡名 |
 | newname     | 除草兽 | 必填 | 新卡名 |
 | show     | - | 选填 | 是否记录在更新记录（0以外为记录，默认为0） |
@@ -364,7 +363,7 @@
 ## 【管理端】互换两张卡的稀有度
 
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/card/exchange?name=admin&password=1&package=再造的世界&card1=草兽&card2=除草兽&show=
+> https://127.0.0.1:15163/weird_project/card/exchange?name=admin&password=1&card1=草兽&card2=除草兽&show=
 
 #### 请求方式
 > GET
@@ -378,7 +377,6 @@
 | :--------   | :-----  | :-----  | :----  |
 | name     | admin | 必填 | 操作用户名称 |
 | password     | 1 | 必填 | 操作用户密码 |
-| package     | 再造的世界 | 必填 | 卡包名 |
 | card1     | 草兽 | 必填 | 卡名1 |
 | card2     | 除草兽 | 必填 | 卡名2 |
 | show     | - | 选填 | 是否记录在更新记录（0以外为记录，默认为0） |
@@ -716,7 +714,7 @@
 ## 【管理端】修改用户持有的卡片数量
 
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/user/card/update?name=admin&password=1&package=再造的世界&card=除草兽&target=test&count=2
+> https://127.0.0.1:15163/weird_project/user/card/update?name=admin&password=1&card=除草兽&target=test&count=2
 
 #### 请求方式
 > GET
@@ -730,7 +728,6 @@
 | :--------   | :-----  | :-----  | :----  |
 | name     | admin | 必填 | 操作用户名称 |
 | password     | 1 | 必填 | 操作用户密码 |
-| package     | 再造的世界 | 必填 | 卡包名 |
 | card     | 除草兽 | 必填 | 卡片名 |
 | target     | test | 必填 | 用户名 |
 | count     | 2 | 必填 | 修改后的数量 |
@@ -1209,10 +1206,10 @@
 ```
 
 
-## 【RMXP端】发送抽卡信息
+## 【管理端】发送抽卡信息
 
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/weirdUI/roll?name=admin&password=1&target=新的用户&package=再造的世界&card1=怨念之魂 业火&card2=喔喔雏鸡&card3=增草剂
+> https://127.0.0.1:15163/weird_project/weirdUI/roll?name=admin&password=1&target=新的用户&card1=怨念之魂 业火&card2=喔喔雏鸡&card3=增草剂
 
 #### 请求方式
 > GET
@@ -1227,7 +1224,6 @@
 | name     | admin | 必填 | 操作用户名称 |
 | password     | 1 | 必填 | 操作用户密码 |
 | target     | 新的用户 | 必填 | 对象用户名 |
-| package     | 再造的世界 | 必填 | 卡包名 |
 | card1     | 怨念之魂 业火 | 必填 | 卡片名1 |
 | card2     | 喔喔雏鸡 | 必填 | 卡片名2 |
 | card3     | 增草剂 | 必填 | 卡片名3 |
