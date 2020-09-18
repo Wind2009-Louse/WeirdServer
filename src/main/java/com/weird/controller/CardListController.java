@@ -46,7 +46,7 @@ public class CardListController {
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/list/admin")
-    public PageResult<CardListDTO> searchCardList(
+    public PageResult<CardListDTO> searchCardListAdmin(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
@@ -59,6 +59,30 @@ public class CardListController {
             throw new OperationException("权限不足！");
         }
         List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
+        PageResult<CardListDTO> result = new PageResult<>();
+        result.addPageInfo(dtoList, page, pageSize);
+        return result;
+    }
+
+    /**
+     * 【ALL】全已知卡片搜索
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @param page        页码
+     * @param pageSize    页面大小
+     * @return 搜索结果
+     */
+    @RequestMapping("/weird_project/card/list/user")
+    public PageResult<CardListDTO> searchCardListUser(
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize
+    ) throws Exception {
+        List<CardListDTO> dtoList = cardService.selectListUser(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
         return result;

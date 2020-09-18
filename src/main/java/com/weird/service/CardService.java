@@ -29,6 +29,16 @@ public interface CardService {
     List<CardListDTO> selectListAdmin(String packageName, String cardName, String rare);
 
     /**
+     * 玩家端根据条件筛选所有卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @return 查询结果
+     */
+    List<CardListDTO> selectListUser(String packageName, String cardName, String rare);
+
+    /**
      * 根据条件筛选拥有的卡片
      *
      * @param packageName 卡包名

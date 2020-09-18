@@ -72,6 +72,157 @@
 ```
 
 
+## 【ALL】已知卡片搜索
+
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/card/list/user?package=&card=&rare=&page=&pagesize=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| package     | - | 选填 | 卡包名，模糊匹配 |
+| card     | - | 必填 | 卡片名，模糊匹配 |
+| rare     | - | 选填 | 稀有度，精确匹配 |
+| page     | - | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": {
+		"currPage": 1,
+		"dataList": [
+			{
+				"cardName": "狱落鸟",
+				"packageName": "再造的世界",
+				"rare": "HR"
+			},
+			{
+				"cardName": "恶魔显现",
+				"packageName": "霸王的威压",
+				"rare": "HR"
+			},
+			{
+				"cardName": "战神-不知火",
+				"packageName": "限界突破",
+				"rare": "HR"
+			},
+			{
+				"cardName": "宇宙智者",
+				"packageName": "智慧之光芒",
+				"rare": "HR"
+			},
+			{
+				"cardName": "最大瞬移者",
+				"packageName": "念力冲击",
+				"rare": "HR"
+			},
+			{
+				"cardName": "重铠装-黑鳍条枪兵",
+				"packageName": "水火之激奏",
+				"rare": "HR"
+			},
+			{
+				"cardName": "混沌战士 -宵暗的使者-",
+				"packageName": "光与暗之洗礼",
+				"rare": "HR"
+			},
+			{
+				"cardName": "朱罗纪陨石兽",
+				"packageName": "联合之力",
+				"rare": "HR"
+			},
+			{
+				"cardName": "特异英雄 神杖先驱",
+				"packageName": "鼓动的灵魂",
+				"rare": "HR"
+			},
+			{
+				"cardName": "星遗物的守护龙 米罗达克",
+				"packageName": "久远之记忆",
+				"rare": "HR"
+			},
+			{
+				"cardName": "野兽眼灵摆龙",
+				"packageName": "传说的激斗",
+				"rare": "HR"
+			},
+			{
+				"cardName": "银岭巨神",
+				"packageName": "一族的牵绊",
+				"rare": "HR"
+			},
+			{
+				"cardName": "紫炎的老中 缘",
+				"packageName": "无限幻象",
+				"rare": "HR"
+			},
+			{
+				"cardName": "电子界时钟龙",
+				"packageName": "跃升进化",
+				"rare": "HR"
+			},
+			{
+				"cardName": "邪龙 阿难陀",
+				"packageName": "流星之舞",
+				"rare": "HR"
+			},
+			{
+				"cardName": "三位圣统者",
+				"packageName": "异界的波动",
+				"rare": "HR"
+			},
+			{
+				"cardName": "元素英雄 秩序新宇侠",
+				"packageName": "决战融合",
+				"rare": "HR"
+			},
+			{
+				"cardName": "咒符龙",
+				"packageName": "命运的裁断",
+				"rare": "HR"
+			},
+			{
+				"cardName": "魔导天士 杜勒蒙德",
+				"packageName": "绚烂的奇迹",
+				"rare": "HR"
+			},
+			{
+				"cardName": "电子龙·新星",
+				"packageName": "终端领域",
+				"rare": "HR"
+			}
+		],
+		"pageSize": 20,
+		"totalCount": 87,
+		"totalPage": 5
+	}
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
+}
+```
+
+
 ## 【管理端】添加卡片信息
 
 #### 接口URL

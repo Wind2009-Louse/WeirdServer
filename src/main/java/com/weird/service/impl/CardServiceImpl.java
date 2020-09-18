@@ -74,7 +74,7 @@ public class CardServiceImpl implements CardService {
 
         UserCardListModel model = userCardListMapper.selectByUserCard(userId, cardPk);
         if (model != null) {
-            if (count == model.getCount()){
+            if (count == model.getCount()) {
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
             log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, model.getCount(), count);
@@ -82,7 +82,7 @@ public class CardServiceImpl implements CardService {
             clearCardListCache();
             return userCardListMapper.update(model) > 0;
         } else {
-            if (count == 0){
+            if (count == 0) {
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
             log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, 0, count);
@@ -105,7 +105,20 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(String packageName, String cardName, String rare) {
-        return userCardListMapper.selectCardList(packageName, cardName, rare);
+        return userCardListMapper.selectCardListAdmin(packageName, cardName, rare);
+    }
+
+    /**
+     * 玩家端根据条件筛选所有卡片
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @return 查询结果
+     */
+    @Override
+    public List<CardListDTO> selectListUser(String packageName, String cardName, String rare) {
+        return userCardListMapper.selectCardListUser(packageName, cardName, rare);
     }
 
     /**
@@ -116,7 +129,7 @@ public class CardServiceImpl implements CardService {
     /**
      * 更新数据后，手动清除卡片列表缓存
      */
-    static void clearCardListCache(){
+    static void clearCardListCache() {
         log.debug("卡片列表数据缓存被清除");
         cardListCache.clear();
     }
@@ -153,14 +166,14 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<CardHistoryDTO> selectHistory(String packageName, String cardName, String rare) {
         List<Integer> packageIndexList;
-        if (packageName.length() > 0){
+        if (packageName.length() > 0) {
             List<PackageInfoModel> packageList = packageInfoMapper.selectByName(packageName);
             packageIndexList = packageList.stream().map(PackageInfoModel::getPackageId).collect(Collectors.toList());
         } else {
             packageIndexList = null;
         }
         List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardName, rare);
-        if (cardIndexList.size() == 0){
+        if (cardIndexList.size() == 0) {
             return Collections.emptyList();
         } else {
             return cardHistoryMapper.selectByCardPk(cardIndexList);

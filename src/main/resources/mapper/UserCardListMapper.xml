@@ -63,7 +63,7 @@
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
     </resultMap>
 
-    <select id="selectCardList" resultMap="CardListDTO" useCache="false">
+    <select id="selectCardListAdmin" resultMap="CardListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
         package_card.rare
@@ -76,6 +76,21 @@
         order by package_card.package_id, package_card.rare, package_card.card_name
     </select>
 
+    <select id="selectCardListUser" resultMap="CardListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.rare
+        from package_info inner join package_card on package_info.package_id = package_card.package_id
+        where package_name like "%"||#{packageName}||"%"
+        and card_name like "%"||#{cardName}||"%"
+        <if test="rare != ''">
+            and rare = #{rare}
+        </if>
+        and (
+        rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
+        )
+        order by package_card.package_id, package_card.rare, package_card.card_name
+    </select>
 
     <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">
         <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
