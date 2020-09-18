@@ -1,15 +1,14 @@
 package com.weird.controller;
 
 import com.weird.model.dto.RollListDTO;
+import com.weird.model.dto.RollParam;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,7 +27,7 @@ public class RollController {
     UserService userService;
 
     /**
-     * 【管理端】发送抽卡信息（诡异UI用）
+     * 【RMXP端】发送抽卡信息（诡异UI用）
      *
      * @param targetUser 用户名
      * @param cardName1  卡片名称1
@@ -52,6 +51,29 @@ public class RollController {
 
         List<String> cardNames = Arrays.asList(cardName1, cardName2, cardName3);
         if (rollService.roll(cardNames, targetUser)) {
+            return "记录成功!";
+        } else {
+            throw new OperationException("抽卡记录失败！");
+        }
+    }
+
+    /**
+     * 【管理端】发送抽卡信息
+     *
+     * @param param 参数
+     * @return 抽卡是否成功
+     */
+    @PostMapping("/weird_project/roll/add")
+    public String rollPost(@RequestBody RollParam param) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (param.getCards() == null || param.getCards().size() == 0){
+            throw new OperationException("抽卡列表为空！");
+        }
+
+        if (rollService.roll(param.getCards(), param.getTarget())) {
             return "记录成功!";
         } else {
             throw new OperationException("抽卡记录失败！");

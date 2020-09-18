@@ -1251,6 +1251,55 @@
 ```
 
 
+## 【管理端】发送抽卡信息（POST）
+
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/roll/add
+
+#### 请求方式
+> POST
+
+#### Content-Type
+> json
+
+
+
+
+
+
+#### 请求Body参数
+
+```javascript
+{
+	"name": "admin",
+	"password": "e10adc3949ba59abbe56e057f20f883e",
+	"target": "细胞",
+	"cards": [
+		"喔喔雏鸡",
+		"义豪灵蜥",
+		"罡炎星-麒俊麟"
+	]
+}
+```
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "记录成功!"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "抽卡列表为空！"
+}
+```
+
+
 ## 【ALL】HOME
 测试项目是否正常启动的接口
 #### 接口URL
