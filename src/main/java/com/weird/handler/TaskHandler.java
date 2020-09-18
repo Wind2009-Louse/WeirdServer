@@ -8,7 +8,13 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import java.time.LocalDateTime;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 定时任务Handler
@@ -29,6 +35,17 @@ public class TaskHandler {
         log.info("【日常刷新】开始");
         int updateCount = taskService.updateDaily();
         log.info("【日常刷新】更新{}条数据", updateCount);
+        log.info("【日常备份】开始");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = formatter.format(new Date());
+        File dir = new File("backup");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        Path source = Paths.get("data.db");
+        Files.copy(source, new FileOutputStream(String.format("backup/data.db-%s", dateString)));
+        log.info("【日常备份】结束");
+
     }
 
     @Async
