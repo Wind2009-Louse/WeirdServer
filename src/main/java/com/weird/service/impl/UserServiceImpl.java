@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     PackageCardMapper packageCardMapper;
 
     final String DEFAULT_PASSWORD = "123456";
-    final String DEFAULT_PASSWORD_MD5 = "E10ADC3949BA59ABBE56E057F20F883E";
+    final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
     final List<String> NR_RARE = Arrays.asList("N", "R");
 
     /**

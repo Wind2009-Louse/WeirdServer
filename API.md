@@ -210,6 +210,51 @@
 ```
 
 
+## 【管理端】互换两张卡的稀有度
+
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/card/exchange?name=admin&password=1&package=再造的世界&card1=草兽&card2=除草兽&show=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 操作用户名称 |
+| password     | 1 | 必填 | 操作用户密码 |
+| package     | 再造的世界 | 必填 | 卡包名 |
+| card1     | 草兽 | 必填 | 卡名1 |
+| card2     | 除草兽 | 必填 | 卡名2 |
+| show     | - | 选填 | 是否记录在更新记录（0以外为记录，默认为0） |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "卡片[除草兽]不存在！"
+}
+```
+
+
 ## 【ALL】全卡片拥有情况搜索
 
 #### 接口URL
@@ -749,6 +794,48 @@
 {
 	"code": 500,
 	"data": "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
+}
+```
+
+
+## 【ALL】修改用户密码
+
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/user/pw?name=admin&old=E10ADC3949BA59ABBE56E057F20F883E&new=e10adc3949ba59abbe56e057f20f883e
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 用户名 |
+| old     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 旧密码 |
+| new     | e10adc3949ba59abbe56e057f20f883e | 必填 | 新密码 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "用户名或密码错误！"
 }
 ```
 

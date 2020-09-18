@@ -74,6 +74,6 @@
         select
         <include refid="Base_Column_List"/>
         from package_info
-        where package_name like concat("%", #{packageName}, "%")
+        where package_name like "%"||#{packageName}||"%"
     </select>
 </mapper>

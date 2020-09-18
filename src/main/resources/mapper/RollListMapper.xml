@@ -95,8 +95,8 @@
         roll_list inner join user_data on roll_list.roll_user_id = user_data.user_id
         inner join package_info on roll_list.roll_package_id = package_info.package_id
         where
-        package_info.package_name like concat("%", #{packageName}, "%")
-        and user_data.user_name like concat("%", #{userName}, "%")
+        package_info.package_name like "%"||#{packageName}||"%"
+        and user_data.user_name like "%"||#{userName}||"%"
         order by roll_list.db_created_time desc
     </select>
 

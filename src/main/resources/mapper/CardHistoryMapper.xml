@@ -36,8 +36,8 @@
                 </foreach>
             </if>
             and
-                (old_name like concat("%",#{card},"%")
-            or new_name like concat("%",#{card},"%"))
+                (old_name like "%"||#{card}||"%"
+            or new_name like "%"||#{card}||"%")
         </where>
         order by db_created_time desc
     </select>

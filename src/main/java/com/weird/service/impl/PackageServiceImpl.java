@@ -106,7 +106,7 @@ public class PackageServiceImpl implements PackageService {
         int packageId = packageModel.getPackageId();
 
         // 查找卡片是否存在
-        PackageCardModel cardModel = packageCardMapper.selectInPackageDistinct(packageId, cardName);
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel != null) {
             throw new OperationException("卡片[%s]已存在！", cardName);
         }
@@ -278,7 +278,7 @@ public class PackageServiceImpl implements PackageService {
                 cardHistory2.setCardPk(cardModel2.getCardPk());
                 cardHistory2.setOldName(name2);
                 cardHistory2.setNewName(name1);
-                cardHistory2.setRare(cardModel1.getRare());
+                cardHistory2.setRare(cardModel2.getRare());
                 cardHistoryMapper.insert(cardHistory2);
             }
 

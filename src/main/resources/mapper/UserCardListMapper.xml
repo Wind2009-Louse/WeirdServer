@@ -68,8 +68,8 @@
         package_card.card_name,
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
-        where package_name like concat("%", #{packageName} ,"%")
-        and card_name like concat("%", #{cardName} ,"%")
+        where package_name like "%"||#{packageName}||"%"
+        and card_name like "%"||#{cardName}||"%"
         <if test="rare != ''">
             and rare = #{rare}
         </if>
@@ -96,12 +96,12 @@
         inner join user_data on user_data.user_id = user_card_list.user_id
         where
         user_data.is_admin = 0
-        and package_name like concat("%", #{packageName} ,"%")
-        and card_name like concat("%", #{cardName} ,"%")
+        and package_name like "%"||#{packageName}||"%"
+        and card_name like "%"||#{cardName}||"%"
         <if test="rare != ''">
             and rare = #{rare}
         </if>
-        and user_name like concat("%", #{userName} ,"%")
+        and user_name like "%"||#{userName}||"%"
         order by package_card.package_id, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 
