@@ -35,16 +35,6 @@ public class TaskHandler {
         log.info("【日常刷新】开始");
         int updateCount = taskService.updateDaily();
         log.info("【日常刷新】更新{}条数据", updateCount);
-        log.info("【日常备份】开始");
-        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = formatter.format(new Date());
-        File dir = new File("backup");
-        if (!dir.exists()) {
-            dir.mkdir();
-        }
-        Path source = Paths.get("data.db");
-        Files.copy(source, new FileOutputStream(String.format("backup/data.db-%s", dateString)));
-        log.info("【日常备份】结束");
 
     }
 
@@ -54,5 +44,20 @@ public class TaskHandler {
         log.info("【周常刷新】开始");
         int updateCount = taskService.updateWeekly();
         log.info("【周常刷新】更新{}条记录", updateCount);
+    }
+
+    @Async
+    @Scheduled(cron = "1 0 0 * * ?")
+    public void backupDB() throws Exception {
+        log.info("【数据库备份】开始");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+        String dateString = formatter.format(new Date());
+        File dir = new File("backup");
+        if (!dir.exists()) {
+            dir.mkdir();
+        }
+        Path source = Paths.get("data.db");
+        Files.copy(source, new FileOutputStream(String.format("backup/data.db-%s", dateString)));
+        log.info("【数据库备份】结束");
     }
 }

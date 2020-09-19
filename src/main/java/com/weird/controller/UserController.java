@@ -137,6 +137,14 @@ public class UserController {
         }
     }
 
+    // TODO
+    @RequestMapping("/weird_project/user/card/random")
+    public String dustToRare(@RequestMapping(value = "name") String name,
+                             @RequestMapping(value = "password") String password,
+                             @RequestMapping(value = "package") String packageName) throws Exception {
+        return "";
+    }
+
     /**
      * 【管理端】修改用户不出货数量
      *

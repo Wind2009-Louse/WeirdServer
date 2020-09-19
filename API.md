@@ -72,7 +72,7 @@
 ```
 
 
-## 【ALL】已知卡片搜索
+## 【玩家段】已知卡片搜索
 
 #### 接口URL
 > https://127.0.0.1:15163/weird_project/card/list/user?package=&card=&rare=&page=&pagesize=
@@ -88,7 +88,7 @@
 | 参数        | 示例值   | 是否必填   |  参数描述  |
 | :--------   | :-----  | :-----  | :----  |
 | package     | - | 选填 | 卡包名，模糊匹配 |
-| card     | - | 必填 | 卡片名，模糊匹配 |
+| card     | - | 选填 | 卡片名，模糊匹配 |
 | rare     | - | 选填 | 稀有度，精确匹配 |
 | page     | - | 选填 | 页码 |
 | pagesize     | - | 选填 | 页面大小，默认20 |
@@ -209,6 +209,79 @@
 		"pageSize": 20,
 		"totalCount": 87,
 		"totalPage": 5
+	}
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "Failed to convert value of type 'java.lang.String' to required type 'int'; nested exception is java.lang.NumberFormatException: For input string: \"\""
+}
+```
+
+
+## 【ALL】卡片列表搜索
+根据传入的账户信息，判断是否为管理员。若是管理员，则返回全卡列表， 否则返回已知卡片列表
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/card/list?name=admin&password=1&package=&card=义豪&rare=&page=1&pagesize=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | admin | 必填 | 操作用户名称 |
+| password     | 1 | 必填 | 操作用户密码 |
+| package     | - | 选填 | 卡包名，模糊匹配 |
+| card     | 义豪 | 选填 | 卡片名，模糊匹配 |
+| rare     | - | 选填 | 稀有度，精确匹配 |
+| page     | 1 | 选填 | 页码 |
+| pagesize     | - | 选填 | 页面大小，默认20 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": {
+		"currPage": 1,
+		"dataList": [
+			{
+				"cardName": "义豪灵蜥",
+				"packageName": "再造的世界",
+				"rare": "N"
+			},
+			{
+				"cardName": "巨歧蜥·魔蜥义豪",
+				"packageName": "再造的世界",
+				"rare": "N"
+			},
+			{
+				"cardName": "歧蜥·魔蜥义豪",
+				"packageName": "再造的世界",
+				"rare": "N"
+			},
+			{
+				"cardName": "魔蜥义豪",
+				"packageName": "再造的世界",
+				"rare": "N"
+			}
+		],
+		"pageSize": 20,
+		"totalCount": 4,
+		"totalPage": 1
 	}
 }
 ```
@@ -407,7 +480,7 @@
 ## 【ALL】全卡片拥有情况搜索
 
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/card/list?package=&card=&rare=&target=&page=&pagesize=
+> https://127.0.0.1:15163/weird_project/card/ownlist?package=&card=&rare=&target=&page=&pagesize=
 
 #### 请求方式
 > GET
@@ -1006,6 +1079,48 @@
 | name     | 用户 | 必填 | 操作用户名称 |
 | password     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 操作用户密码 |
 | card     | 草泥马 | 必填 | 卡片名 |
+
+
+
+
+
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "转换成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "[用户]当前已拥有3张[草泥马]，无法再合成！"
+}
+```
+
+
+## 【玩家端】随机卡包抽闪
+当前版本暂未实现该功能。
+#### 接口URL
+> https://127.0.0.1:15163/weird_project/user/card/random?name=用户&password=E10ADC3949BA59ABBE56E057F20F883E&package=
+
+#### 请求方式
+> GET
+
+#### Content-Type
+> form-data
+
+#### 请求Query参数
+
+| 参数        | 示例值   | 是否必填   |  参数描述  |
+| :--------   | :-----  | :-----  | :----  |
+| name     | 用户 | 必填 | 操作用户名称 |
+| password     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 操作用户密码 |
+| package     | - | 必填 | 卡包名 |
 
 
 

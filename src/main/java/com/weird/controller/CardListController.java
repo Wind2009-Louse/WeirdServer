@@ -34,6 +34,35 @@ public class CardListController {
     final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
     /**
+     * 【ALL】全卡片搜索
+     *
+     * @param packageName 卡包名
+     * @param cardName    卡片名
+     * @param rare        稀有度
+     * @param page        页码
+     * @param pageSize    页面大小
+     * @param name        操作用户名称
+     * @param password    操作用户密码
+     * @return 搜索结果
+     */
+    @RequestMapping("/weird_project/card/list")
+    public PageResult<CardListDTO> searchCardList(
+            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
+            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
+            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
+            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
+            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            return searchCardListUser(packageName, cardName, rare, page, pageSize);
+        } else {
+            return searchCardListAdmin(packageName, cardName, rare, page, pageSize, name, password);
+        }
+    }
+
+    /**
      * 【管理端】全卡片搜索
      *
      * @param packageName 卡包名
@@ -65,7 +94,7 @@ public class CardListController {
     }
 
     /**
-     * 【ALL】全已知卡片搜索
+     * 【玩家端】全已知卡片搜索
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
@@ -99,7 +128,7 @@ public class CardListController {
      * @param pageSize    页面大小
      * @return 搜索结果
      */
-    @RequestMapping("/weird_project/card/list")
+    @RequestMapping("/weird_project/card/ownlist")
     public PageResult<CardOwnListDTO> searchCardOwnList(
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
             @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
