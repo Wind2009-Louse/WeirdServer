@@ -52,8 +52,8 @@ public class CardListController {
             @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) throws Exception {
+            @RequestParam(value = "name", required = false, defaultValue = "") String name,
+            @RequestParam(value = "password", required = false, defaultValue = "") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             return searchCardListUser(packageName, cardName, rare, page, pageSize);
