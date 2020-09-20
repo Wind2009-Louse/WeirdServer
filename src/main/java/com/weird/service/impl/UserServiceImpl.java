@@ -1,14 +1,16 @@
 package com.weird.service.impl;
 
 import com.weird.mapper.PackageCardMapper;
+import com.weird.mapper.PackageInfoMapper;
 import com.weird.mapper.UserCardListMapper;
 import com.weird.mapper.UserDataMapper;
 import com.weird.model.PackageCardModel;
+import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.UserDataDTO;
+import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
-import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * 用户Service实现
@@ -38,6 +41,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     PackageCardMapper packageCardMapper;
+
+    @Autowired
+    PackageInfoMapper packageInfoMapper;
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
@@ -166,11 +172,15 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 暂时不做
+     * 将尘转换成卡片
+     *
+     * @param cardName 卡片名称
+     * @param userName 用户名
+     * @param password 密码
+     * @return 是否转换成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    @Deprecated
     public boolean dustToCard(String cardName, String userName, String password) throws Exception {
         // 玩家权限验证
         UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
@@ -184,7 +194,7 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
         int recordCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
-        if (recordCount <= 0){
+        if (recordCount <= 0) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
 
@@ -192,46 +202,46 @@ public class UserServiceImpl implements UserService {
         int needDust = 0;
         boolean isRare = false;
         if (NR_RARE.contains(cardModel.getRare())) {
-            if (userModel.getWeeklyDustChangeN() >= 10){
+            if (userModel.getWeeklyDustChangeN() >= 10) {
                 throw new OperationException("[%s]的每周NR更换次数已用完！", userName);
             }
-            needDust = 15;
+            needDust = DustEnum.TO_NR.getCount();
         } else {
             isRare = true;
-            if (userModel.getWeeklyDustChangeAlter() > 0){
+            if (userModel.getWeeklyDustChangeAlter() > 0) {
                 throw new OperationException("[%s]的每周自选闪卡更换次数已用完！", userName);
             }
-            needDust = 300;
+            needDust = DustEnum.TO_ALTER.getCount();
         }
 
         // 判断尘是否用完
-        if (userModel.getDustCount() < needDust){
+        if (userModel.getDustCount() < needDust) {
             throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, userModel.getDustCount());
         }
 
         // 判断卡片是否已经拥有3张
         UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), cardModel.getCardPk());
         boolean newRecord = false;
-        if (cardListModel == null){
+        if (cardListModel == null) {
             newRecord = true;
             cardListModel = new UserCardListModel();
             cardListModel.setUserId(userModel.getUserId());
             cardListModel.setCardPk(cardModel.getCardPk());
             cardListModel.setCount(0);
         }
-        if (cardListModel.getCount() >= 3){
+        if (cardListModel.getCount() >= 3) {
             throw new OperationException("[%s]当前已拥有3张[%s]，无法再合成！", userName, cardName);
         }
-        
+
         // 进行转换操作
-        if (isRare){
+        if (isRare) {
             userModel.setWeeklyDustChangeAlter(userModel.getWeeklyDustChangeAlter() + 1);
         } else {
             userModel.setWeeklyDustChangeN(userModel.getWeeklyDustChangeN() + 1);
         }
         userModel.setDustCount(userModel.getDustCount() - needDust);
         cardListModel.setCount(cardListModel.getCount() + 1);
-        if (newRecord){
+        if (newRecord) {
             userCardListMapper.insert(cardListModel);
         } else {
             userCardListMapper.update(cardListModel);
@@ -242,6 +252,89 @@ public class UserServiceImpl implements UserService {
         CardServiceImpl.clearCardListCache();
         log.warn("[{}]合成了一张[{}]", userName, cardName);
         return true;
+    }
+
+    /**
+     * 将尘转换成指定卡包的随机闪
+     *
+     * @param packageName 卡包名
+     * @param userName    用户名
+     * @param password    密码
+     * @return 转换结果
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String dustToRare(String packageName, String userName, String password) throws Exception {
+        // 玩家权限验证
+        UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
+        if (userModel == null) {
+            throw new OperationException("登录失败！");
+        }
+        if (userModel.getDustCount() < DustEnum.TO_RANDOM.getCount()) {
+            throw new OperationException("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, userModel.getDustCount());
+        }
+        if (userModel.getWeeklyDustChangeR() > 0) {
+            throw new OperationException("[%s]本周的随机合成次数已用完！", userName);
+        }
+        int dustCount = userModel.getDustCount() - DustEnum.TO_RANDOM.getCount();
+
+        // 随机指定卡片
+        PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
+        if (packageModel == null) {
+            throw new OperationException("找不到卡包：[%s]！", packageName);
+        }
+        List<PackageCardModel> rareList = packageCardMapper.selectRare(packageModel.getPackageId());
+        if (rareList == null || rareList.size() == 0) {
+            throw new OperationException("当前卡包没有可以抽的卡！");
+        }
+        Random rd = new Random();
+        PackageCardModel rareCard = rareList.get(rd.nextInt(rareList.size()));
+
+        // 记录查询
+        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), rareCard.getCardPk());
+        boolean newRecord = false;
+        if (cardListModel == null) {
+            newRecord = true;
+            cardListModel = new UserCardListModel();
+            cardListModel.setUserId(userModel.getUserId());
+            cardListModel.setCardPk(rareCard.getCardPk());
+            cardListModel.setCount(0);
+        }
+
+        String result = "";
+        if (cardListModel.getCount() >= 3) {
+            dustCount += DustEnum.GET_RARE.getCount();
+            result = String.format("你抽到了[%s](%s)，由于已达3张，直接转换为尘！", rareCard.getCardName(), rareCard.getRare());
+        } else {
+            cardListModel.setCount(cardListModel.getCount() + 1);
+            result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
+        }
+
+        // 更新
+        userModel.setWeeklyDustChangeR(1);
+        userModel.setDustCount(dustCount);
+        if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
+            throw new OperationException("更新用户数据错误！");
+        }
+        if (newRecord) {
+            if (userCardListMapper.insert(cardListModel) <= 0) {
+                throw new OperationException("添加卡片数据错误！");
+            }
+        } else {
+            if (userCardListMapper.update(cardListModel) <= 0) {
+                throw new OperationException("更新卡片数据错误！");
+            }
+        }
+
+        // 清除缓存
+        CardServiceImpl.clearCardListCache();
+        log.warn("[{}]在[{}]随机抽到了一张[{}]({})",
+                userName,
+                packageName,
+                rareCard.getCardName(),
+                rareCard.getRare());
+
+        return result;
     }
 
     /**

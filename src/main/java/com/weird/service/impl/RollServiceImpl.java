@@ -4,6 +4,7 @@ import com.weird.mapper.*;
 import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
+import com.weird.model.enums.DustEnum;
 import com.weird.service.RollService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
@@ -78,9 +79,9 @@ public class RollServiceImpl implements RollService {
             if (ownCount >= 3) {
                 rollDetailModel.setIsDust((byte) 1);
                 if (NR_RARE.contains(card.getRare())) {
-                    addDust++;
+                    addDust += DustEnum.GET_NR.getCount();
                 } else {
-                    addDust += 50;
+                    addDust += DustEnum.GET_RARE.getCount();
                 }
             } else {
                 cardCountModel.setCount(ownCount + 1);
@@ -316,9 +317,9 @@ public class RollServiceImpl implements RollService {
             // 抽的是尘，减尘
             if (rollDetail.getIsDust() == 1) {
                 if (NR_RARE.contains(cardModel.getRare())) {
-                    dustCount--;
+                    dustCount -= DustEnum.GET_NR.getCount();
                 } else {
-                    dustCount -= 50;
+                    dustCount -= DustEnum.GET_RARE.getCount();
                 }
             } else {
                 // 减少对应的卡片数量

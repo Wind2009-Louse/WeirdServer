@@ -72,7 +72,7 @@
 ```
 
 
-## 【玩家段】已知卡片搜索
+## 【玩家端】已知卡片搜索
 
 #### 接口URL
 > https://127.0.0.1:15163/weird_project/card/list/user?package=&card=&rare=&page=&pagesize=
@@ -1062,7 +1062,7 @@
 
 
 ## 【玩家端】直接将尘转换为卡片
-当前版本暂未实现该功能。
+
 #### 接口URL
 > https://127.0.0.1:15163/weird_project/user/card/change?name=用户&password=E10ADC3949BA59ABBE56E057F20F883E&card=草泥马
 
@@ -1104,9 +1104,9 @@
 
 
 ## 【玩家端】随机卡包抽闪
-当前版本暂未实现该功能。
+
 #### 接口URL
-> https://127.0.0.1:15163/weird_project/user/card/random?name=用户&password=E10ADC3949BA59ABBE56E057F20F883E&package=
+> https://127.0.0.1:15163/weird_project/user/card/random?name=小白鼠&password=e10adc3949ba59abbe56e057f20f883e&package=联合之力
 
 #### 请求方式
 > GET
@@ -1118,9 +1118,9 @@
 
 | 参数        | 示例值   | 是否必填   |  参数描述  |
 | :--------   | :-----  | :-----  | :----  |
-| name     | 用户 | 必填 | 操作用户名称 |
-| password     | E10ADC3949BA59ABBE56E057F20F883E | 必填 | 操作用户密码 |
-| package     | - | 必填 | 卡包名 |
+| name     | 小白鼠 | 必填 | 操作用户名称 |
+| password     | e10adc3949ba59abbe56e057f20f883e | 必填 | 操作用户密码 |
+| package     | 联合之力 | 必填 | 卡包名 |
 
 
 
@@ -1131,7 +1131,7 @@
 ```javascript
 {
 	"code": 200,
-	"data": "转换成功！"
+	"data": "你抽到了[强制退出装置](SR)！"
 }
 ```
 
@@ -1140,7 +1140,7 @@
 ```javascript
 {
 	"code": 500,
-	"data": "[用户]当前已拥有3张[草泥马]，无法再合成！"
+	"data": "[新的用户]本周的随机合成次数已用完！"
 }
 ```
 

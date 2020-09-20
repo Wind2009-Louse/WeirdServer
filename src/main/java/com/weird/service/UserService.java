@@ -69,6 +69,16 @@ public interface UserService {
     boolean dustToCard(String cardName, String userName, String password) throws Exception;
 
     /**
+     * 将尘转换成指定卡包的随机闪
+     *
+     * @param packageName 卡包名
+     * @param userName    用户名
+     * @param password    密码
+     * @return 转换结果
+     */
+    String dustToRare(String packageName, String userName, String password) throws Exception;
+
+    /**
      * 修改不出货数量
      *
      * @param name     用户名

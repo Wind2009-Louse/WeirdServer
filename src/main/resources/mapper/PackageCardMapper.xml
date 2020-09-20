@@ -129,4 +129,11 @@
         )
         </foreach>
     </insert>
+
+    <select id="selectRare" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_card
+        where package_id = #{packageId} and (rare = "SR" or rare = "UR" or rare = "HR")
+    </select>
 </mapper>

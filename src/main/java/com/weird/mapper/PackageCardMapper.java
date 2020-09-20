@@ -63,4 +63,6 @@ public interface PackageCardMapper {
      * @return 创建数量
      */
     int insertByRareBatch(@Param("packageId") int packageId, @Param("rare") String rare, @Param("list") List<String> cardList);
+
+    List<PackageCardModel> selectRare(@Param("packageId") int packageId);
 }

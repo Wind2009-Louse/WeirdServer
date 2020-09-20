@@ -61,12 +61,11 @@ public class UserController {
     /**
      * 【管理端】修改用户持有的卡片数量
      *
-     * @param targetUser  用户名
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param newCount    新持有量
-     * @param name        操作用户名称
-     * @param password    操作用户密码
+     * @param targetUser 用户名
+     * @param cardName   卡片名
+     * @param newCount   新持有量
+     * @param name       操作用户名称
+     * @param password   操作用户密码
      * @return 是否修改成功
      */
     @RequestMapping("/weird_project/user/card/update")
@@ -137,12 +136,19 @@ public class UserController {
         }
     }
 
-    // TODO
+    /**
+     * 【玩家端】将尘转换成指定卡包的随机闪
+     *
+     * @param packageName 卡包名
+     * @param name        用户名
+     * @param password    密码
+     * @return 转换结果
+     */
     @RequestMapping("/weird_project/user/card/random")
-    public String dustToRare(@RequestMapping(value = "name") String name,
-                             @RequestMapping(value = "password") String password,
-                             @RequestMapping(value = "package") String packageName) throws Exception {
-        return "";
+    public String dustToRare(@RequestParam(value = "package") String packageName,
+                             @RequestParam(value = "name") String name,
+                             @RequestParam(value = "password") String password) throws Exception {
+        return userService.dustToRare(packageName, name, password);
     }
 
     /**
