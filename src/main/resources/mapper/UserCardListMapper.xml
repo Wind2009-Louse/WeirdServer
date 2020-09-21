@@ -81,14 +81,23 @@
         package_card.card_name,
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
-        where package_name like "%"||#{packageName}||"%"
-        and card_name like "%"||#{cardName}||"%"
-        <if test="rare != ''">
-            and rare = #{rare}
-        </if>
-        and (
-        rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
-        )
+        <where>
+            (
+                rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
+            )
+            <if test="packageName != null and packageName != ''">
+                and package_name like "%"||#{packageName}||"%"
+            </if>
+            <if test="cardName != null and cardName != ''">
+                and card_name like "%"||#{cardName}||"%"
+            </if>
+            <if test="rare != null and rare != ''">
+                and rare = #{rare}
+            </if>
+            <if test="cardPk != 0">
+                and card_pk = #{cardPk}
+            </if>
+        </where>
         order by package_card.package_id, package_card.rare, package_card.card_name
     </select>
 

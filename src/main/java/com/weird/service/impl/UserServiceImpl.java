@@ -8,6 +8,7 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
+import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
@@ -194,13 +195,13 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("无法合成[%s]！");
         }
 
-        int recordCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
-        if (recordCount <= 0) {
+        List<CardListDTO> records = userCardListMapper.selectCardListUser(null, null, null, cardModel.getCardPk());
+        if (records.size() <= 0) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
 
         // 根据稀有度判断更换次数是否用完
-        int needDust = 0;
+        int needDust;
         boolean isRare = false;
         if (NR_RARE.contains(cardModel.getRare())) {
             if (userModel.getWeeklyDustChangeN() >= 10) {
@@ -302,7 +303,7 @@ public class UserServiceImpl implements UserService {
             cardListModel.setCount(0);
         }
 
-        String result = "";
+        String result;
         if (cardListModel.getCount() >= 3) {
             dustCount += DustEnum.GET_RARE.getCount();
             result = String.format("你抽到了[%s](%s)，由于已达3张，直接转换为尘！", rareCard.getCardName(), rareCard.getRare());

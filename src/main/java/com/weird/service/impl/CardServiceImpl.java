@@ -113,7 +113,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(String packageName, String cardName, String rare) {
-        return userCardListMapper.selectCardListUser(packageName, cardName, rare);
+        return userCardListMapper.selectCardListUser(packageName, cardName, rare, 0);
     }
 
     /**

@@ -52,7 +52,8 @@ public interface UserCardListMapper {
      */
     List<CardListDTO> selectCardListUser(@Param("packageName") String packageName,
                                          @Param("cardName") String cardName,
-                                         @Param("rare") String rare);
+                                         @Param("rare") String rare,
+                                         @Param("cardPk") int cardPk);
 
     /**
      * 查找卡片持有情况
