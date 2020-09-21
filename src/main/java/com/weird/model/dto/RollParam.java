@@ -31,5 +31,5 @@ public class RollParam implements Serializable {
     /**
      * 卡片列表
      */
-    List<String> cards;
+    List<List<String>> cards;
 }

@@ -210,26 +210,28 @@ public class RollServiceImpl implements RollService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean roll(List<String> cardNames, String userName) throws Exception {
+        // 判断用户
+        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
+        if (userModel == null) {
+            throw new OperationException("找不到该用户：%s！", userName);
+        }
+        int userId = userModel.getUserId();
+
         // 判断输入
         List<PackageCardModel> cardModels = new LinkedList<>();
         int packageId = 0;
         for (String cardName : cardNames) {
             PackageCardModel card = packageCardMapper.selectByNameDistinct(cardName);
             if (card == null) {
-                throw new OperationException("找不到该卡片：%s！", cardName);
+                throw new OperationException("抽卡记录[%s]中找不到该卡片：%s！", cardNames, cardName);
             }
             if (packageId == 0) {
                 packageId = card.getPackageId();
             } else if (card.getPackageId() != packageId) {
-                throw new OperationException("卡片不在同一列表中！");
+                throw new OperationException("抽卡记录[%s]中卡片不在同一卡包！", cardNames);
             }
             cardModels.add(card);
         }
-        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
-        if (userModel == null) {
-            throw new OperationException("找不到该用户：%s！", userName);
-        }
-        int userId = userModel.getUserId();
 
         // 插入抽卡记录
         RollListModel rollModel = new RollListModel();

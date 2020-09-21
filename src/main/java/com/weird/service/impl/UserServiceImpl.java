@@ -193,6 +193,11 @@ public class UserServiceImpl implements UserService {
         if (cardModel == null) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
+        PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
+        if (packageModel == null || "LEGEND".equals(packageModel.getPackageName())) {
+            throw new OperationException("无法合成[%s]！");
+        }
+
         int recordCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
         if (recordCount <= 0) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
