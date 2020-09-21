@@ -148,6 +148,9 @@ public class UserController {
     public String dustToRare(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {
+        if ("LEGEND".equals(packageName)) {
+            throw new OperationException("LEGEND卡包无法操作！");
+        }
         return userService.dustToRare(packageName, name, password);
     }
 

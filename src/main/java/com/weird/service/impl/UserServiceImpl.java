@@ -108,13 +108,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addUser(String name) throws Exception {
-        List<UserDataModel> modelList = userDataMapper.selectByName(name);
+        UserDataModel modelList = userDataMapper.selectByNameDistinct(name);
         if (modelList != null) {
-            for (UserDataModel model : modelList) {
-                if (model.getUserName().equals(name)) {
-                    throw new OperationException("该用户：[%s]已存在！", name);
-                }
-            }
+            throw new OperationException("该用户：[%s]已存在！", name);
         }
 
         UserDataModel newModel = new UserDataModel();
@@ -193,6 +189,11 @@ public class UserServiceImpl implements UserService {
         if (cardModel == null) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
+        PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
+        if (packageModel == null || "LEGEND".equals(packageModel.getPackageName())) {
+            throw new OperationException("无法合成[%s]！");
+        }
+
         int recordCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
         if (recordCount <= 0) {
             throw new OperationException("找不到卡片：[%s]！", cardName);

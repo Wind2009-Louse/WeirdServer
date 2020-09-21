@@ -58,7 +58,7 @@ public class RollController {
     }
 
     /**
-     * 【管理端】发送抽卡信息
+     * 【管理端】批量发送抽卡信息
      *
      * @param param 参数
      * @return 抽卡是否成功
@@ -69,15 +69,37 @@ public class RollController {
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (param.getCards() == null || param.getCards().size() == 0){
+        if (param.getCards() == null) {
             throw new OperationException("抽卡列表为空！");
         }
 
-        if (rollService.roll(param.getCards(), param.getTarget())) {
-            return "记录成功!";
-        } else {
-            throw new OperationException("抽卡记录失败！");
+        StringBuilder totalException = new StringBuilder();
+        int successCount = 0;
+        for (List<String> list : param.getCards()) {
+            if (list == null || list.size() == 0) {
+                totalException.append("抽卡列表为空！\n");
+                continue;
+            }
+            try {
+                if (rollService.roll(list, param.getTarget())) {
+                    successCount++;
+                } else {
+                    totalException.append(String.format("抽卡记录[%s]记录失败！\n", list.toString()));
+                }
+            } catch (Exception e) {
+                totalException.append(e.getMessage());
+                totalException.append("\n");
+            }
+
         }
+
+        if (totalException.length() > 0) {
+            totalException.append(String.format("共成功记录%d个结果！", successCount));
+            return totalException.toString();
+        } else {
+            return "全部记录成功！";
+        }
+
     }
 
     /**

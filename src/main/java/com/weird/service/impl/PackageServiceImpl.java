@@ -126,7 +126,7 @@ public class PackageServiceImpl implements PackageService {
      * @param param 批量添加参数
      * @return 返回结果
      */
-    @Transactional
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     @Override
     public String addCardList(BatchAddCardParam param, List<String> allCardList) {
         PackageInfoModel packageInfoModel = packageInfoMapper.selectByNameDistinct(param.getPackageName());
