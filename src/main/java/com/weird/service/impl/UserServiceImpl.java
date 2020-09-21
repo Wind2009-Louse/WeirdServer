@@ -108,13 +108,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addUser(String name) throws Exception {
-        List<UserDataModel> modelList = userDataMapper.selectByName(name);
+        UserDataModel modelList = userDataMapper.selectByNameDistinct(name);
         if (modelList != null) {
-            for (UserDataModel model : modelList) {
-                if (model.getUserName().equals(name)) {
-                    throw new OperationException("该用户：[%s]已存在！", name);
-                }
-            }
+            throw new OperationException("该用户：[%s]已存在！", name);
         }
 
         UserDataModel newModel = new UserDataModel();
