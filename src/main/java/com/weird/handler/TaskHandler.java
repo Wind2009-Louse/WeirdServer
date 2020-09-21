@@ -39,7 +39,7 @@ public class TaskHandler {
     }
 
     @Async
-    @Scheduled(cron = "0 0 0 ? * 2")
+    @Scheduled(cron = "0 0 0 ? * 1")
     public void clearWeekly() throws Exception {
         log.info("【周常刷新】开始");
         int updateCount = taskService.updateWeekly();
@@ -47,7 +47,7 @@ public class TaskHandler {
     }
 
     @Async
-    @Scheduled(cron = "1 0 0 * * ?")
+    @Scheduled(cron = "30 0 0 * * ?")
     public void backupDB() throws Exception {
         log.info("【数据库备份】开始");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
