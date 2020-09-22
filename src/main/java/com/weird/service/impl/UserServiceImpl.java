@@ -1,13 +1,7 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.PackageCardMapper;
-import com.weird.mapper.PackageInfoMapper;
-import com.weird.mapper.UserCardListMapper;
-import com.weird.mapper.UserDataMapper;
-import com.weird.model.PackageCardModel;
-import com.weird.model.PackageInfoModel;
-import com.weird.model.UserCardListModel;
-import com.weird.model.UserDataModel;
+import com.weird.mapper.*;
+import com.weird.model.*;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.DustEnum;
@@ -45,6 +39,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     PackageInfoMapper packageInfoMapper;
+
+    @Autowired
+    RollListMapper rollListMapper;
+
+    @Autowired
+    RollDetailMapper rollDetailMapper;
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
@@ -250,9 +250,26 @@ public class UserServiceImpl implements UserService {
         }
         userDataMapper.updateByPrimaryKey(userModel);
 
+        RollListModel rollModel = new RollListModel();
+        rollModel.setRollPackageId(cardModel.getPackageId());
+        rollModel.setRollUserId(userModel.getUserId());
+        rollModel.setIsDisabled((byte) 0);
+        if (rollListMapper.insert(rollModel) <= 0) {
+            throw new OperationException("添加抽卡记录失败！");
+        }
+        RollDetailModel rollDetailModel = new RollDetailModel();
+        rollDetailModel.setRollId(rollModel.getRollId());
+        rollDetailModel.setCardPk(cardModel.getCardPk());
+        rollDetailModel.setIsDust((byte) 0);
+        if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
+            throw new OperationException("插入转换记录时出错！");
+        }
+
         // 清除缓存
+        RollServiceImpl.clearRollListCache();
         CardServiceImpl.clearCardListCache();
         log.warn("[{}]合成了一张[{}]", userName, cardName);
+
         return true;
     }
 
@@ -328,7 +345,23 @@ public class UserServiceImpl implements UserService {
             }
         }
 
+        RollListModel rollModel = new RollListModel();
+        rollModel.setRollPackageId(rareCard.getPackageId());
+        rollModel.setRollUserId(userModel.getUserId());
+        rollModel.setIsDisabled((byte) 0);
+        if (rollListMapper.insert(rollModel) <= 0) {
+            throw new OperationException("添加抽卡记录失败！");
+        }
+        RollDetailModel rollDetailModel = new RollDetailModel();
+        rollDetailModel.setRollId(rollModel.getRollId());
+        rollDetailModel.setCardPk(rareCard.getCardPk());
+        rollDetailModel.setIsDust((byte) 0);
+        if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
+            throw new OperationException("插入转换记录时出错！");
+        }
+
         // 清除缓存
+        RollServiceImpl.clearRollListCache();
         CardServiceImpl.clearCardListCache();
         log.warn("[{}]在[{}]随机抽到了一张[{}]({})",
                 userName,
