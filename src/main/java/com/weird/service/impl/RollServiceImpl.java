@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
@@ -138,7 +139,7 @@ public class RollServiceImpl implements RollService {
     /**
      * 更新数据后，手动清除抽卡记录列表缓存
      */
-    static void clearRollListCache() {
+    public static void clearRollListCache() {
         log.debug("抽卡记录列表缓存被清除");
         rollListCache.clear();
     }
@@ -148,6 +149,8 @@ public class RollServiceImpl implements RollService {
      *
      * @param packageName 卡包名
      * @param userName    用户名
+     * @param startTime   抽卡开始时间
+     * @param endTime     抽卡结束时间
      * @param page        页码
      * @param pageSize    页面大小
      * @return 结果列表
@@ -155,18 +158,34 @@ public class RollServiceImpl implements RollService {
     @Override
     public PageResult<RollListDTO> selectRollList(String packageName,
                                                   String userName,
+                                                  long startTime,
+                                                  long endTime,
                                                   int page,
                                                   int pageSize) throws Exception {
         // 命中缓存，直接返回
-        String key = String.format("{%s,%s,%d,%d}", packageName, userName, page, pageSize);
+        String key = String.format("{%s,%s,%d,%d,%d,%d}", packageName, userName, startTime, endTime, page, pageSize);
         log.debug("查询抽卡记录列表：{}", key);
         PageResult<RollListDTO> cache = rollListCache.get(key);
         if (cache != null) {
             return cache;
         }
 
+        SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate = null;
+        String startString = null;
+        if (startTime > 0) {
+            startDate = new Date(startTime * 1000);
+            startString = fm.format(startDate);
+        }
+        Date endDate = null;
+        String endString = null;
+        if (endTime > 0) {
+            endDate = new Date(endTime * 1000);
+            endString = fm.format(endDate);
+        }
+
         // 通过分页截取需要查询详细内容的部分
-        List<RollListDTO> allRollList = rollListMapper.selectByParam(packageName, userName);
+        List<RollListDTO> allRollList = rollListMapper.selectByParam(packageName, userName, startString, endString);
         PageResult<RollListDTO> resultList = new PageResult<>();
         resultList.addPageInfo(allRollList, page, pageSize);
         List<RollListDTO> rollList = resultList.getDataList();

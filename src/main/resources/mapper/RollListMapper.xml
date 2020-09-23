@@ -97,6 +97,12 @@
         where
         package_info.package_name like "%"||#{packageName}||"%"
         and user_data.user_name like "%"||#{userName}||"%"
+        <if test="startTime != null and startTime != ''">
+            and roll_list.db_created_time &gt;= #{startTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and roll_list.db_created_time &lt;= #{endTime}
+        </if>
         order by roll_list.db_created_time desc
     </select>
 

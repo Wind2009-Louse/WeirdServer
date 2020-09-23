@@ -209,7 +209,7 @@ public class CardServiceImpl implements CardService {
     /**
      * 更新数据后，手动清除卡片列表缓存
      */
-    static void clearCardListCache() {
+    public static void clearCardListCache() {
         log.debug("卡片列表数据缓存被清除");
         cardListCache.clear();
     }

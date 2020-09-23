@@ -20,5 +20,7 @@ public interface RollListMapper {
     int updateByPrimaryKey(RollListModel record);
 
     List<RollListDTO> selectByParam(@Param("packageName") String packageName,
-                                    @Param("userName") String userName);
+                                    @Param("userName") String userName,
+                                    @Param("startTime") String startTime,
+                                    @Param("endTime") String endTime);
 }

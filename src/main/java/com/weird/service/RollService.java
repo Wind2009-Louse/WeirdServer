@@ -11,12 +11,16 @@ public interface RollService {
      *
      * @param packageName 卡包名
      * @param userName    用户名
+     * @param startTime   抽卡开始时间
+     * @param endTime     抽卡结束时间
      * @param page        页码
      * @param pageSize    页面大小
      * @return 结果列表
      */
     PageResult<RollListDTO> selectRollList(String packageName,
                                            String userName,
+                                           long startTime,
+                                           long endTime,
                                            int page,
                                            int pageSize) throws Exception;
 

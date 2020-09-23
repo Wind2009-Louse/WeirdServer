@@ -114,8 +114,11 @@ public class RollController {
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
             @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "user", required = false, defaultValue = "") String userName) throws Exception {
-        return rollService.selectRollList(packageName, userName, page, pageSize);
+            @RequestParam(value = "user", required = false, defaultValue = "") String userName,
+            @RequestParam(value = "start", required = false, defaultValue = "0") long startTime,
+            @RequestParam(value = "end", required = false, defaultValue = "0") long endTime) throws Exception {
+        return rollService.selectRollList(packageName, userName, startTime, endTime,
+                page, pageSize);
     }
 
     /**

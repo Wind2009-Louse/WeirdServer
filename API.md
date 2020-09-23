@@ -1253,7 +1253,7 @@
 ## 【ALL】查询抽卡结果
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/roll/list?package=&user=&page=1
+> http://127.0.0.1:15163/weird_project/roll/list?package=&user=&page=1&start=1600853029&end=0
 
 #### 请求方式
 > GET
@@ -1268,6 +1268,8 @@
 | package     | - | 选填 | 卡包名，模糊搜索 |
 | user     | - | 选填 | 用户名，模糊搜索 |
 | page     | 1 | 选填 | 页码 |
+| start     | 1600853029 | 选填 | 抽卡开始时间（10位时间戳） |
+| end     | 0 | 选填 | 抽卡结束时间（10位时间戳） |
 
 
 

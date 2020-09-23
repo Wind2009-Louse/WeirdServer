@@ -1,6 +1,9 @@
 package com.weird.handler;
 
+import com.weird.service.RollService;
 import com.weird.service.TaskService;
+import com.weird.service.impl.CardServiceImpl;
+import com.weird.service.impl.RollServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -35,7 +38,8 @@ public class TaskHandler {
         log.info("【日常刷新】开始");
         int updateCount = taskService.updateDaily();
         log.info("【日常刷新】更新{}条数据", updateCount);
-
+        RollServiceImpl.clearRollListCache();
+        CardServiceImpl.clearCardListCache();
     }
 
     @Async
