@@ -115,7 +115,8 @@ public class RollServiceImpl implements RollService {
         // 非正常抽卡不算月见黑
         if (cardModels.size() == 3) {
             if (awarded) {
-                userModel.setNonawardCount(0);
+                int nonawardCount = userModel.getNonawardCount();
+                userModel.setNonawardCount(nonawardCount - nonawardCount % 100);
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() + 1);
             }
