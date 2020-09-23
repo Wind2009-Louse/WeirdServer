@@ -841,6 +841,55 @@
 ```
 
 
+## 【管理端】批量修改用户持有的卡片数量
+
+#### 接口URL
+> http://127.0.0.1:15163/weird_project/user/card/update
+
+#### 请求方式
+> POST
+
+#### Content-Type
+> json
+
+
+
+
+
+
+#### 请求Body参数
+
+```javascript
+{
+	"name": "admin",
+	"password": "e10adc3949ba59abbe56e057f20f883e",
+	"target": "烧鸡",
+	"counts": {
+		"喔喔雏鸡": 1,
+		"喔喔公鸡": 3,
+		"狱落鸟": 1
+	}
+}
+```
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 200,
+	"data": "[烧鸡]的卡片[喔喔雏鸡]的数量没有变化！\n成功2条数据，失败1条数据。"
+}
+```
+
+
 ## 【管理端】修改用户的尘数
 
 #### 接口URL

@@ -5,6 +5,7 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
+import com.weird.model.dto.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
@@ -14,11 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,7 +79,7 @@ public class CardServiceImpl implements CardService {
             if (count == 0) {
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
-            log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, 0, count);
+            log.warn("添加[{}]的[{}]数量（{}->{}）", userName, cardName, 0, count);
             model = new UserCardListModel();
             model.setUserId(userId);
             model.setCardPk(cardPk);
@@ -88,6 +87,92 @@ public class CardServiceImpl implements CardService {
             clearCardListCache();
             return userCardListMapper.insert(model) > 0;
         }
+    }
+
+    /**
+     * 批量修改用户持有的卡片数量
+     *
+     * @param param 参数
+     * @return 修改结果
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String updateCardCountBatch(BatchUpdateUserCardParam param) throws Exception {
+        UserDataModel userModel = userDataMapper.selectByNameDistinct(param.getTarget());
+        if (userModel == null) {
+            throw new OperationException("找不到该用户:[%s]！", param.getTarget());
+        }
+        int userId = userModel.getUserId();
+        String userName = userModel.getUserName();
+        StringBuilder sb = new StringBuilder();
+
+        List<UserCardListModel> insertList = new LinkedList<>();
+        List<UserCardListModel> updateList = new LinkedList<>();
+        int successCount = 0;
+        int failCount = 0;
+
+        for (Map.Entry<String, Integer> entry : param.getCounts().entrySet()) {
+            if (StringUtils.isEmpty(entry.getKey()) || entry.getValue() == null) {
+                sb.append("数据为空！\n");
+                continue;
+            }
+            if (entry.getValue() <= 0 || entry.getValue() >= 4) {
+                sb.append(String.format("[%s]的持有量应在0-3！\n", entry.getKey()));
+                continue;
+            }
+            PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(entry.getKey());
+            if (cardModel == null) {
+                sb.append(String.format("找不到该卡片：[%s]！\n", entry.getKey()));
+                failCount++;
+                continue;
+            }
+            int cardPk = cardModel.getCardPk();
+            String cardName = cardModel.getCardName();
+
+            UserCardListModel model = userCardListMapper.selectByUserCard(userId, cardPk);
+            if (model != null) {
+                if (entry.getValue().equals(model.getCount())) {
+                    sb.append(String.format("[%s]的卡片[%s]的数量没有变化！\n", userName, cardName));
+                    failCount++;
+                    continue;
+                }
+                log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, model.getCount(), entry.getValue());
+                model.setCount(entry.getValue());
+                updateList.add(model);
+            } else {
+                if (entry.getValue() == 0) {
+                    sb.append(String.format("[%s]的卡片[%s]的数量没有变化！\n", userName, cardName));
+                    failCount++;
+                    continue;
+                }
+                log.warn("添加[{}]的[{}]数量（{}->{}）", userName, cardName, 0, entry.getValue());
+                model = new UserCardListModel();
+                model.setUserId(userId);
+                model.setCardPk(cardPk);
+                model.setCount(entry.getValue());
+                insertList.add(model);
+            }
+        }
+
+        if (insertList.size() + updateList.size() > 0) {
+            clearCardListCache();
+            if (insertList.size() > 0){
+                int success = userCardListMapper.insertBatch(insertList);
+                successCount += success;
+                failCount += (insertList.size() - success);
+            }
+            for (UserCardListModel updateModel : updateList){
+                if (userCardListMapper.update(updateModel) > 0){
+                    successCount ++;
+                } else {
+                    failCount++;
+                }
+            }
+        }
+        sb.append(String.format("成功%d条数据，失败%d条数据。", successCount, failCount));
+
+        clearCardListCache();
+        return sb.toString();
     }
 
     /**

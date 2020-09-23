@@ -1,5 +1,6 @@
 package com.weird.service;
 
+import com.weird.model.dto.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
@@ -16,6 +17,14 @@ public interface CardService {
      * @return 是否修改成功
      */
     boolean updateCardCount(String userName, String cardName, int count) throws Exception;
+
+    /**
+     * 批量修改用户持有的卡片数量
+     *
+     * @param param 参数
+     * @return 修改结果
+     */
+    String updateCardCountBatch(BatchUpdateUserCardParam param) throws Exception;
 
     /**
      * 管理端根据条件筛选所有卡片

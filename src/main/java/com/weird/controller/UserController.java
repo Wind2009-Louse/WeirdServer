@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.model.dto.BatchUpdateUserCardParam;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.CardService;
@@ -7,9 +8,7 @@ import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -68,7 +67,7 @@ public class UserController {
      * @param password   操作用户密码
      * @return 是否修改成功
      */
-    @RequestMapping("/weird_project/user/card/update")
+    @GetMapping("/weird_project/user/card/update")
     public String updateUserCardCount(
             @RequestParam(value = "target") String targetUser,
             @RequestParam(value = "card") String cardName,
@@ -85,6 +84,15 @@ public class UserController {
         } else {
             throw new OperationException("修改失败！");
         }
+    }
+
+    @PostMapping("/weird_project/user/card/update")
+    public String updateUserCardCountList(@RequestBody BatchUpdateUserCardParam param) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        return cardService.updateCardCountBatch(param);
     }
 
     /**

@@ -76,4 +76,12 @@ public interface UserCardListMapper {
      * @return 卡片拥有数量
      */
     int selectCardOwnCount(@Param("cardPk") int cardPk);
+
+    /**
+     * 批量插入记录
+     *
+     * @param list 记录
+     * @return 插入数量
+     */
+    int insertBatch(@Param("list") List<UserCardListModel> list);
 }
