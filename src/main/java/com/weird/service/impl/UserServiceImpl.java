@@ -192,7 +192,7 @@ public class UserServiceImpl implements UserService {
         }
         PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
         if (packageModel == null || "LEGEND".equals(packageModel.getPackageName())) {
-            throw new OperationException("无法合成[%s]！");
+            throw new OperationException("无法合成[%s]！", cardName);
         }
 
         List<CardListDTO> records = userCardListMapper.selectCardListUser(null, null, null, cardModel.getCardPk());
