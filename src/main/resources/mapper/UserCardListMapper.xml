@@ -119,7 +119,7 @@
         inner join user_card_list on package_card.card_pk = user_card_list.card_pk
         inner join user_data on user_data.user_id = user_card_list.user_id
         where
-        user_data.is_admin = 0
+        user_data.is_admin = 0 and user_card_list.count > 0
         and package_name like "%"||#{packageName}||"%"
         and card_name like "%"||#{cardName}||"%"
         <if test="rare != ''">
