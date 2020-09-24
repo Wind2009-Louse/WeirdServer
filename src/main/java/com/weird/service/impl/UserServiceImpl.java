@@ -289,6 +289,7 @@ public class UserServiceImpl implements UserService {
         if (userModel == null) {
             throw new OperationException("登录失败！");
         }
+        int dustCount = userModel.getDustCount();
         if (userModel.getNonawardCount() < 100) {
             if (userModel.getDustCount() < DustEnum.TO_RANDOM.getCount()) {
                 throw new OperationException("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, userModel.getDustCount());
@@ -296,8 +297,8 @@ public class UserServiceImpl implements UserService {
             if (userModel.getWeeklyDustChangeR() > 0) {
                 throw new OperationException("[%s]本周的随机合成次数已用完！", userName);
             }
+            dustCount -= DustEnum.TO_RANDOM.getCount();
         }
-        int dustCount = userModel.getDustCount() - DustEnum.TO_RANDOM.getCount();
 
         // 随机指定卡片
         PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
@@ -332,9 +333,9 @@ public class UserServiceImpl implements UserService {
         }
 
         // 更新
+        userModel.setDustCount(dustCount);
         if (userModel.getNonawardCount() < 100) {
             userModel.setWeeklyDustChangeR(1);
-            userModel.setDustCount(dustCount);
         } else {
             userModel.setNonawardCount(userModel.getNonawardCount() - 100);
         }
