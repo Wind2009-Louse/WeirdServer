@@ -1,4 +1,4 @@
-package com.weird.mapper;
+package com.weird.mapper.main;
 
 import com.weird.model.CardHistoryModel;
 import com.weird.model.dto.CardHistoryDTO;
@@ -21,7 +21,7 @@ public interface CardHistoryMapper {
      * @param packageIndexList 卡包编号ID列表
      * @param cardName 卡片名
      * @param rare 稀有度
-     * @return
+     * @return 卡片ID列表
      */
     List<Integer> selectCardPk(
             @Param("packages") List<Integer> packageIndexList,

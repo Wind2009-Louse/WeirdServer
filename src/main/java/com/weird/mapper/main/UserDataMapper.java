@@ -1,4 +1,4 @@
-package com.weird.mapper;
+package com.weird.mapper.main;
 
 import com.weird.model.UserDataModel;
 import org.apache.ibatis.annotations.Param;

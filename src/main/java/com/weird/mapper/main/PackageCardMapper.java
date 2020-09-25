@@ -1,4 +1,4 @@
-package com.weird.mapper;
+package com.weird.mapper.main;
 
 import com.weird.model.PackageCardModel;
 import org.apache.ibatis.annotations.Param;

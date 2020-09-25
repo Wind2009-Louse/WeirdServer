@@ -1,4 +1,4 @@
-package com.weird.mapper;
+package com.weird.mapper.main;
 
 import com.weird.model.UserCardListModel;
 import com.weird.model.dto.CardListDTO;

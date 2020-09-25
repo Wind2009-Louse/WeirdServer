@@ -1,6 +1,6 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.*;
+import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.UserDataDTO;

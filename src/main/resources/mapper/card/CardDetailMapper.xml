@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.card.CardDetailMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.CardDetailModel">
+        <result column="id" jdbcType="INTEGER" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="type" jdbcType="VARCHAR" property="type"/>
+        <result column="atk" jdbcType="VARCHAR" property="atk"/>
+        <result column="def" jdbcType="VARCHAR" property="def"/>
+        <result column="level" jdbcType="VARCHAR" property="level"/>
+        <result column="race" jdbcType="VARCHAR" property="race"/>
+        <result column="attribute" jdbcType="VARCHAR" property="attribute"/>
+        <result column="desc" jdbcType="VARCHAR" property="desc"/>
+    </resultMap>
+    <select id="getDetailByName" resultMap="BaseResultMap">
+        select datas.id id,
+        filter_texts.name name,
+        datas.type type,
+        datas.atk atk,
+        datas.def def,
+        datas.level level,
+        datas.race race,
+        datas.attribute attribute,
+        filter_texts.desc desc
+        from datas inner join (
+        select id, name, desc from texts
+        where name = #{name}) filter_texts on datas.id = filter_texts.id
+    </select>
+</mapper>

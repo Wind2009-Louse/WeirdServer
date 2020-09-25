@@ -1,6 +1,6 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.*;
+import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;

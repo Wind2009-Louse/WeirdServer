@@ -1,6 +1,6 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.*;
+import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
@@ -171,17 +171,13 @@ public class RollServiceImpl implements RollService {
         }
 
         SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date startDate = null;
         String startString = null;
         if (startTime > 0) {
-            startDate = new Date(startTime * 1000);
-            startString = fm.format(startDate);
+            startString = fm.format(new Date(startTime * 1000));
         }
-        Date endDate = null;
         String endString = null;
         if (endTime > 0) {
-            endDate = new Date(endTime * 1000);
-            endString = fm.format(endDate);
+            endString = fm.format(new Date(endTime * 1000));
         }
 
         // 通过分页截取需要查询详细内容的部分

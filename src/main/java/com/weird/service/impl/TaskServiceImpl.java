@@ -1,6 +1,6 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.UserDataMapper;
+import com.weird.mapper.main.UserDataMapper;
 import com.weird.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
