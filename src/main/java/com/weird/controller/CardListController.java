@@ -10,6 +10,7 @@ import com.weird.service.CardDetailService;
 import com.weird.service.CardService;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
+import com.weird.utils.CardDetailUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -97,7 +98,11 @@ public class CardListController {
         result.addPageInfo(dtoList, page, pageSize);
         if (pageSize < 100) {
             for (CardListDTO data : result.getDataList()) {
-                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
+                if (detail != null) {
+                    data.setDesc(CardDetailUtil.getResult(detail));
+                    data.setPicId(detail.getId());
+                }
             }
         }
         return result;
@@ -126,7 +131,11 @@ public class CardListController {
         result.addPageInfo(dtoList, page, pageSize);
         if (pageSize < 100) {
             for (CardListDTO data : result.getDataList()) {
-                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
+                if (detail != null) {
+                    data.setDesc(CardDetailUtil.getResult(detail));
+                    data.setPicId(detail.getId());
+                }
             }
         }
         return result;
@@ -156,7 +165,11 @@ public class CardListController {
         result.addPageInfo(dtoList, page, pageSize);
         if (pageSize < 100) {
             for (CardOwnListDTO data : result.getDataList()) {
-                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
+                if (detail != null) {
+                    data.setDesc(CardDetailUtil.getResult(detail));
+                    data.setPicId(detail.getId());
+                }
             }
         }
         return result;
@@ -184,8 +197,16 @@ public class CardListController {
         result.addPageInfo(dtoList, page, pageSize);
         if (pageSize < 100) {
             for (CardHistoryDTO data : result.getDataList()) {
-                data.setOldDesc(cardDetailService.selectDetailsByName(data.getOldName()));
-                data.setNewDesc(cardDetailService.selectDetailsByName(data.getNewName()));
+                CardDetailModel oldModel = cardDetailService.selectDetailsByName(data.getOldName());
+                CardDetailModel newModel = cardDetailService.selectDetailsByName(data.getNewName());
+                if (oldModel != null) {
+                    data.setOldDesc(CardDetailUtil.getResult(oldModel));
+                    data.setOldPicId(oldModel.getId());
+                }
+                if (newModel != null) {
+                    data.setNewDesc(CardDetailUtil.getResult(newModel));
+                    data.setNewPicId(newModel.getId());
+                }
             }
         }
         return result;

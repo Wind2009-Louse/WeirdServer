@@ -7,6 +7,8 @@ import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.service.CardDetailService;
 import com.weird.service.RollService;
+import com.weird.utils.CacheUtil;
+import com.weird.utils.CardDetailUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -15,9 +17,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
+import static com.weird.utils.CacheUtil.clearCardListCache;
+import static com.weird.utils.CacheUtil.clearRollListCache;
 
 @Service
 @Slf4j
@@ -133,19 +139,6 @@ public class RollServiceImpl implements RollService {
     }
 
     /**
-     * 抽卡记录列表缓存，避免频繁查全表
-     */
-    static Map<String, PageResult<RollListDTO>> rollListCache = new HashMap<>();
-
-    /**
-     * 更新数据后，手动清除抽卡记录列表缓存
-     */
-    public static void clearRollListCache() {
-        log.debug("抽卡记录列表缓存被清除");
-        rollListCache.clear();
-    }
-
-    /**
      * 根据卡包名和用户名查找抽卡结果
      *
      * @param packageName 卡包名
@@ -166,7 +159,7 @@ public class RollServiceImpl implements RollService {
         // 命中缓存，直接返回
         String key = String.format("{%s,%s,%d,%d,%d,%d}", packageName, userName, startTime, endTime, page, pageSize);
         log.debug("查询抽卡记录列表：{}", key);
-        PageResult<RollListDTO> cache = rollListCache.get(key);
+        PageResult<RollListDTO> cache = CacheUtil.rollListCache.get(key);
         if (cache != null) {
             return cache;
         }
@@ -206,7 +199,11 @@ public class RollServiceImpl implements RollService {
                 RollDetailDTO detailDTO = new RollDetailDTO();
                 detailDTO.setCardName(cardModel.getCardName());
                 detailDTO.setRare(cardModel.getRare());
-                detailDTO.setDesc(cardDetailService.selectDetailsByName(cardModel.getCardName()));
+                CardDetailModel descModel = cardDetailService.selectDetailsByName(cardModel.getCardName());
+                if (descModel != null) {
+                    detailDTO.setDesc(CardDetailUtil.getResult(descModel));
+                    detailDTO.setPicId(descModel.getId());
+                }
                 cardResult.add(detailDTO);
             }
             rollListDTO.setRollResult(cardResult);
@@ -214,7 +211,7 @@ public class RollServiceImpl implements RollService {
 
         // 返回结果
         resultList.setDataList(rollList);
-        rollListCache.put(key, resultList);
+        CacheUtil.rollListCache.put(key, resultList);
         return resultList;
     }
 

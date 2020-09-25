@@ -10,6 +10,7 @@ import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
+import com.weird.utils.CacheUtil;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,8 +18,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.weird.utils.CacheUtil.clearCardListCache;
 
 @Service
 @Slf4j
@@ -156,14 +162,14 @@ public class CardServiceImpl implements CardService {
 
         if (insertList.size() + updateList.size() > 0) {
             clearCardListCache();
-            if (insertList.size() > 0){
+            if (insertList.size() > 0) {
                 int success = userCardListMapper.insertBatch(insertList);
                 successCount += success;
                 failCount += (insertList.size() - success);
             }
-            for (UserCardListModel updateModel : updateList){
-                if (userCardListMapper.update(updateModel) > 0){
-                    successCount ++;
+            for (UserCardListModel updateModel : updateList) {
+                if (userCardListMapper.update(updateModel) > 0) {
+                    successCount++;
                 } else {
                     failCount++;
                 }
@@ -201,18 +207,6 @@ public class CardServiceImpl implements CardService {
         return userCardListMapper.selectCardListUser(packageName, cardName, rare, 0);
     }
 
-    /**
-     * 卡片列表缓存，避免频繁联表查询
-     */
-    static Map<String, List<CardOwnListDTO>> cardListCache = new HashMap<>();
-
-    /**
-     * 更新数据后，手动清除卡片列表缓存
-     */
-    public static void clearCardListCache() {
-        log.debug("卡片列表数据缓存被清除");
-        cardListCache.clear();
-    }
 
     /**
      * 根据条件筛选拥有的卡片
@@ -227,10 +221,10 @@ public class CardServiceImpl implements CardService {
     public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
         String key = String.format("{%s,%s,%s,%s}", packageName, cardName, rare, userName);
         log.debug("查询卡片列表：{}", key);
-        List<CardOwnListDTO> cache = cardListCache.get(key);
+        List<CardOwnListDTO> cache = CacheUtil.cardListCache.get(key);
         if (cache == null) {
             cache = userCardListMapper.selectCardOwnList(packageName, cardName, rare, userName);
-            cardListCache.put(key, cache);
+            CacheUtil.cardListCache.put(key, cache);
         }
         return cache;
     }

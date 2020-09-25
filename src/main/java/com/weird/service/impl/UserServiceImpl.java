@@ -19,6 +19,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import static com.weird.utils.CacheUtil.clearCardListCache;
+import static com.weird.utils.CacheUtil.clearRollListCache;
+
 /**
  * 用户Service实现
  *
@@ -266,8 +269,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 清除缓存
-        RollServiceImpl.clearRollListCache();
-        CardServiceImpl.clearCardListCache();
+        clearRollListCache();
+        clearCardListCache();
         log.warn("[{}]合成了一张[{}]", userName, cardName);
 
         return true;
@@ -368,8 +371,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 清除缓存
-        RollServiceImpl.clearRollListCache();
-        CardServiceImpl.clearCardListCache();
+        clearRollListCache();
+        clearCardListCache();
         log.warn("[{}]在[{}]随机抽到了一张[{}]({})",
                 userName,
                 packageName,

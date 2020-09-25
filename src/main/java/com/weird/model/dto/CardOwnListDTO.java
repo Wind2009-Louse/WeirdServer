@@ -22,6 +22,11 @@ public class CardOwnListDTO implements Serializable {
     String cardName;
 
     /**
+     * 卡图Id
+     */
+    int picId;
+
+    /**
      * 描述
      */
     String desc;

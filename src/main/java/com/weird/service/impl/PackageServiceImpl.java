@@ -17,9 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.weird.service.impl.CardServiceImpl.clearCardListCache;
-import static com.weird.service.impl.RollServiceImpl.clearRollListCache;
+import static com.weird.utils.CacheUtil.clearCardListCache;
+import static com.weird.utils.CacheUtil.clearRollListCache;
 
+/**
+ * 卡包Service实现
+ *
+ * @author Nidhogg
+ */
 @Service
 @Slf4j
 public class PackageServiceImpl implements PackageService {

@@ -1,5 +1,7 @@
 package com.weird.service;
 
+import com.weird.model.CardDetailModel;
+
 /**
  * 卡片详细Service
  *
@@ -13,5 +15,5 @@ public interface CardDetailService {
      * @param name 卡名
      * @return 卡片描述
      */
-    String selectDetailsByName(String name);
+    CardDetailModel selectDetailsByName(String name);
 }
