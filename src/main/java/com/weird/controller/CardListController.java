@@ -1,10 +1,12 @@
 package com.weird.controller;
 
+import com.weird.model.CardDetailModel;
 import com.weird.model.dto.BatchAddCardParam;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.CardDetailService;
 import com.weird.service.CardService;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
@@ -30,6 +32,9 @@ public class CardListController {
 
     @Autowired
     CardService cardService;
+
+    @Autowired
+    CardDetailService cardDetailService;
 
     final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
@@ -90,6 +95,11 @@ public class CardListController {
         List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
+        if (pageSize < 100) {
+            for (CardListDTO data : result.getDataList()) {
+                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+            }
+        }
         return result;
     }
 
@@ -114,6 +124,11 @@ public class CardListController {
         List<CardListDTO> dtoList = cardService.selectListUser(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
+        if (pageSize < 100) {
+            for (CardListDTO data : result.getDataList()) {
+                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+            }
+        }
         return result;
     }
 
@@ -139,6 +154,11 @@ public class CardListController {
         List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
         PageResult<CardOwnListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
+        if (pageSize < 100) {
+            for (CardOwnListDTO data : result.getDataList()) {
+                data.setDesc(cardDetailService.selectDetailsByName(data.getCardName()));
+            }
+        }
         return result;
     }
 
@@ -162,6 +182,12 @@ public class CardListController {
         List<CardHistoryDTO> dtoList = cardService.selectHistory(packageName, cardName, rare);
         PageResult<CardHistoryDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
+        if (pageSize < 100) {
+            for (CardHistoryDTO data : result.getDataList()) {
+                data.setOldDesc(cardDetailService.selectDetailsByName(data.getOldName()));
+                data.setNewDesc(cardDetailService.selectDetailsByName(data.getNewName()));
+            }
+        }
         return result;
     }
 

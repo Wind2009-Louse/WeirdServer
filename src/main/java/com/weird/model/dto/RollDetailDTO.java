@@ -15,6 +15,11 @@ public class RollDetailDTO implements Serializable {
     String cardName;
 
     /**
+     * 描述
+     */
+    String desc;
+
+    /**
      * 稀有度
      */
     String rare;

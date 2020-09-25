@@ -29,9 +29,19 @@ public class CardHistoryDTO implements Serializable {
     String oldName;
 
     /**
+     * 旧描述
+     */
+    String oldDesc;
+
+    /**
      * 卡片现名
      */
     String newName;
+
+    /**
+     * 新描述
+     */
+    String newDesc;
 
     /**
      * 更改日期

@@ -20,9 +20,4 @@ public class HomeHandler {
     public String homePage() {
         return "Hello!\n你好！\nこんにちは";
     }
-
-    @RequestMapping("weird_project/test")
-    public String test(@RequestParam("name") String name) {
-        return cardDetailService.selectDetailsByName(name);
-    }
 }

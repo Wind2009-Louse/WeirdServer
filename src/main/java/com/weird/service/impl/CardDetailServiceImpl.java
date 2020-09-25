@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +26,7 @@ public class CardDetailServiceImpl implements CardDetailService {
 
     Map<String, String> cache = new HashMap<>();
 
-    final Map<Integer, String> cardTypes = new HashMap<Integer, String>() {{
+    final Map<Integer, String> cardTypes = new LinkedHashMap<Integer, String>() {{
         put(0x1, "怪兽");
         put(0x2, "魔法");
         put(0x4, "陷阱");
@@ -51,7 +52,7 @@ public class CardDetailServiceImpl implements CardDetailService {
         put(0x2000000, "特殊召唤");
         put(0x4000000, "连接");
     }};
-    final Map<Integer, String> cardRaces = new HashMap<Integer, String>() {{
+    final Map<Integer, String> cardRaces = new LinkedHashMap<Integer, String>() {{
         put(0x1, "战士族");
         put(0x2, "魔法师族");
         put(0x4, "天使族");
@@ -78,7 +79,7 @@ public class CardDetailServiceImpl implements CardDetailService {
         put(0x800000, "幻龙族");
         put(0x1000000, "电子界族");
     }};
-    final Map<Integer, String> cardAttributes = new HashMap<Integer, String>() {{
+    final Map<Integer, String> cardAttributes = new LinkedHashMap<Integer, String>() {{
         put(0x1, "地");
         put(0x2, "水");
         put(0x4, "炎");
@@ -87,7 +88,7 @@ public class CardDetailServiceImpl implements CardDetailService {
         put(0x20, "暗");
         put(0x40, "神");
     }};
-    final Map<Integer, String> linkMarkers = new HashMap<Integer, String>() {{
+    final Map<Integer, String> linkMarkers = new LinkedHashMap<Integer, String>() {{
         put(0x40, "[↖]");
         put(0x80, "[↑]");
         put(0x100, "[↗]");
@@ -110,6 +111,7 @@ public class CardDetailServiceImpl implements CardDetailService {
         if (result != null) {
             return result;
         }
+        log.info("查找[{}]的描述", name);
         List<CardDetailModel> list = cardDetailMapper.getDetailByName(name);
         if (list == null || list.size() <= 0) {
             result = "";

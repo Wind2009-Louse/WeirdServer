@@ -5,6 +5,7 @@ import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
+import com.weird.service.CardDetailService;
 import com.weird.service.RollService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
@@ -28,9 +29,6 @@ public class RollServiceImpl implements RollService {
     RollDetailMapper rollDetailMapper;
 
     @Autowired
-    PackageInfoMapper packageInfoMapper;
-
-    @Autowired
     PackageCardMapper packageCardMapper;
 
     @Autowired
@@ -38,6 +36,9 @@ public class RollServiceImpl implements RollService {
 
     @Autowired
     UserCardListMapper userCardListMapper;
+
+    @Autowired
+    CardDetailService cardDetailService;
 
     final List<String> NR_RARE = Arrays.asList("N", "R");
 
@@ -205,6 +206,7 @@ public class RollServiceImpl implements RollService {
                 RollDetailDTO detailDTO = new RollDetailDTO();
                 detailDTO.setCardName(cardModel.getCardName());
                 detailDTO.setRare(cardModel.getRare());
+                detailDTO.setDesc(cardDetailService.selectDetailsByName(cardModel.getCardName()));
                 cardResult.add(detailDTO);
             }
             rollListDTO.setRollResult(cardResult);
