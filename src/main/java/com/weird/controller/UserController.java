@@ -6,6 +6,7 @@ import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -156,8 +157,8 @@ public class UserController {
     public String dustToRare(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "name") String name,
                              @RequestParam(value = "password") String password) throws Exception {
-        if ("LEGEND".equals(packageName)) {
-            throw new OperationException("LEGEND卡包无法操作！");
+        if (PackageUtil.canNotRoll(packageName)) {
+            throw new OperationException("SP卡包无法由玩家合成卡片！");
         }
         return userService.dustToRare(packageName, name, password);
     }

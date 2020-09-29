@@ -120,10 +120,12 @@ public class CardServiceImpl implements CardService {
         for (Map.Entry<String, Integer> entry : param.getCounts().entrySet()) {
             if (StringUtils.isEmpty(entry.getKey()) || entry.getValue() == null) {
                 sb.append("数据为空！\n");
+                failCount++;
                 continue;
             }
-            if (entry.getValue() <= 0 || entry.getValue() >= 4) {
+            if (entry.getValue() < 0 || entry.getValue() >= 4) {
                 sb.append(String.format("[%s]的持有量应在0-3！\n", entry.getKey()));
+                failCount++;
                 continue;
             }
             PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(entry.getKey());

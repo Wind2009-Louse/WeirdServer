@@ -9,6 +9,7 @@ import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -194,7 +195,7 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
         PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
-        if (packageModel == null || "LEGEND".equals(packageModel.getPackageName())) {
+        if (packageModel == null || PackageUtil.canNotRoll(packageModel.getPackageName())) {
             throw new OperationException("无法合成[%s]！", cardName);
         }
 
