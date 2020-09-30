@@ -7,17 +7,13 @@ import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.service.CardDetailService;
 import com.weird.service.RollService;
-import com.weird.utils.CacheUtil;
-import com.weird.utils.CardDetailUtil;
-import com.weird.utils.OperationException;
-import com.weird.utils.PageResult;
+import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,8 +41,6 @@ public class RollServiceImpl implements RollService {
 
     @Autowired
     CardDetailService cardDetailService;
-
-    final List<String> NR_RARE = Arrays.asList("N", "R");
 
     /**
      * 将抽卡内容添加到用户上
@@ -86,7 +80,7 @@ public class RollServiceImpl implements RollService {
             int ownCount = cardCountModel.getCount();
             if (ownCount >= 3) {
                 rollDetailModel.setIsDust((byte) 1);
-                if (NR_RARE.contains(card.getRare())) {
+                if (PackageUtil.NR_LIST.contains(card.getRare())) {
                     addDust += DustEnum.GET_NR.getCount();
                 } else {
                     addDust += DustEnum.GET_RARE.getCount();
@@ -96,7 +90,7 @@ public class RollServiceImpl implements RollService {
             }
 
             // 月见黑
-            if (!NR_RARE.contains(card.getRare())) {
+            if (!PackageUtil.NR_LIST.contains(card.getRare())) {
                 awarded = true;
             }
 
@@ -333,7 +327,7 @@ public class RollServiceImpl implements RollService {
             PackageCardModel cardModel = cardModels.get(index);
             // 抽的是尘，减尘
             if (rollDetail.getIsDust() == 1) {
-                if (NR_RARE.contains(cardModel.getRare())) {
+                if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
                     dustCount -= DustEnum.GET_NR.getCount();
                 } else {
                     dustCount -= DustEnum.GET_RARE.getCount();

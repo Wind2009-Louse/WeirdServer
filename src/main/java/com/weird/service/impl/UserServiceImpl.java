@@ -15,7 +15,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -52,7 +51,6 @@ public class UserServiceImpl implements UserService {
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
-    final List<String> NR_RARE = Arrays.asList("N", "R");
 
     /**
      * 根据用户名查找用户列表
@@ -207,7 +205,7 @@ public class UserServiceImpl implements UserService {
         // 根据稀有度判断更换次数是否用完
         int needDust;
         boolean isRare = false;
-        if (NR_RARE.contains(cardModel.getRare())) {
+        if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
             if (userModel.getWeeklyDustChangeN() >= 10) {
                 throw new OperationException("[%s]的每周NR更换次数已用完！", userName);
             }

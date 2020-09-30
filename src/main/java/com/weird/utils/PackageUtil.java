@@ -1,5 +1,8 @@
 package com.weird.utils;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * 卡包处理
  *
@@ -7,6 +10,10 @@ package com.weird.utils;
  * @date 2020.9.29
  */
 public class PackageUtil {
+    static public List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
+
+    static public List<String> NR_LIST = Arrays.asList("N", "R");
+
     /**
      * 判断该卡包是否可以由玩家抽取
      *
