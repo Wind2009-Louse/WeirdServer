@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * 抽卡结果的显示
+ * @author Nidhogg
  */
 @Data
 public class RollDetailDTO implements Serializable {

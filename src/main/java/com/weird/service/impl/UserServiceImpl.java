@@ -9,12 +9,12 @@ import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -51,7 +51,6 @@ public class UserServiceImpl implements UserService {
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
-    final List<String> NR_RARE = Arrays.asList("N", "R");
 
     /**
      * 根据用户名查找用户列表
@@ -194,7 +193,7 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
         PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
-        if (packageModel == null || "LEGEND".equals(packageModel.getPackageName())) {
+        if (packageModel == null || PackageUtil.canNotRoll(packageModel.getPackageName())) {
             throw new OperationException("无法合成[%s]！", cardName);
         }
 
@@ -206,7 +205,7 @@ public class UserServiceImpl implements UserService {
         // 根据稀有度判断更换次数是否用完
         int needDust;
         boolean isRare = false;
-        if (NR_RARE.contains(cardModel.getRare())) {
+        if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
             if (userModel.getWeeklyDustChangeN() >= 10) {
                 throw new OperationException("[%s]的每周NR更换次数已用完！", userName);
             }
