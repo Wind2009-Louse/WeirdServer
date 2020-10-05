@@ -1,6 +1,7 @@
 package com.weird.mapper.main;
 
 import com.weird.model.PackageInfoModel;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -32,4 +33,20 @@ public interface PackageInfoMapper {
      * @return 卡包列表
      */
     List<PackageInfoModel> selectByName(String packageName);
+
+    /**
+     * 清除原有的排序号
+     *
+     * @return 更改数量
+     */
+    int clearOrder();
+
+    /**
+     * 更新排序号
+     *
+     * @param packageId 卡包号
+     * @param orderNum 排序号
+     * @return
+     */
+    int updateOrder(@Param("packageId") int packageId, @Param("orderNum") int orderNum);
 }

@@ -55,6 +55,7 @@ public class PackageServiceImpl implements PackageService {
      * @return 是否添加成功
      */
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addPackage(String name) throws Exception {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(name);
@@ -75,6 +76,7 @@ public class PackageServiceImpl implements PackageService {
      * @return 是否更新成功
      */
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updatePackageName(String oldName, String newName) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(oldName);
         if (oldPackage == null) {
@@ -228,6 +230,7 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean exchangeCardName(String name1, String name2, int isShow) throws Exception {
         // 查找是否能否更新
         PackageCardModel cardModel1 = packageCardMapper.selectByNameDistinct(name1);
@@ -277,5 +280,28 @@ public class PackageServiceImpl implements PackageService {
             return true;
         }
         return false;
+    }
+
+    /**
+     * 对卡包进行排序
+     *
+     * @param packageList 卡包ID列表
+     * @return 排序结果
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String sort(List<Integer> packageList) throws OperationException {
+        int orderNum = 1;
+        for (Integer packageId : packageList) {
+            if (packageId == null) {
+                continue;
+            }
+            int count = packageInfoMapper.updateOrder(packageId, orderNum);
+            if (count <= 0) {
+                throw new OperationException("找不到卡包ID：[%d]！", packageId);
+            }
+            orderNum ++;
+        }
+        return "修改排序成功！";
     }
 }

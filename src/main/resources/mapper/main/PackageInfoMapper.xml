@@ -68,6 +68,7 @@
         <include refid="Base_Column_List"/>
         from package_info
         where package_name = #{packageName}
+        order by order_num
     </select>
 
     <select id="selectByName" resultMap="BaseResultMap">
@@ -75,5 +76,17 @@
         <include refid="Base_Column_List"/>
         from package_info
         where package_name like "%"||#{packageName}||"%"
+        order by order_num
     </select>
+
+    <update id="clearOrder">
+        update package_info
+        set order_num = 0
+    </update>
+
+    <update id="updateOrder">
+        update package_info
+        set order_num = #{orderNum}
+        where package_id = #{packageId}
+    </update>
 </mapper>

@@ -1,14 +1,13 @@
 package com.weird.controller;
 
 import com.weird.model.PackageInfoModel;
+import com.weird.model.dto.PackageSortParam;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -98,4 +97,13 @@ public class PackageController {
     }
 
 
+    @PostMapping("/weird_project/package/sort")
+    public String sortPackage(@RequestBody PackageSortParam param) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        return packageService.sort(param.getPackageIndexList());
+    }
 }

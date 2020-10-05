@@ -2,6 +2,7 @@ package com.weird.service;
 
 import com.weird.model.PackageInfoModel;
 import com.weird.model.dto.BatchAddCardParam;
+import com.weird.utils.OperationException;
 
 import java.util.List;
 
@@ -74,4 +75,12 @@ public interface PackageService {
      * @return 是否修改成功
      */
     boolean exchangeCardName(String name1, String name2, int isShow) throws Exception;
+
+    /**
+     * 对卡包进行排序
+     *
+     * @param packageList 卡包ID列表
+     * @return 排序结果
+     */
+    String sort(List<Integer> packageList) throws OperationException;
 }
