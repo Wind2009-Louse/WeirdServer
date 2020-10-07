@@ -78,13 +78,9 @@ public class RollServiceImpl implements RollService {
 
             // 变尘
             int ownCount = cardCountModel.getCount();
-            if (ownCount >= 3) {
+            if (ownCount >= 3 && PackageUtil.NR_LIST.contains(card.getRare())) {
                 rollDetailModel.setIsDust((byte) 1);
-                if (PackageUtil.NR_LIST.contains(card.getRare())) {
-                    addDust += DustEnum.GET_NR.getCount();
-                } else {
-                    addDust += DustEnum.GET_RARE.getCount();
-                }
+                addDust += DustEnum.GET_NR.getCount();
             } else {
                 cardCountModel.setCount(ownCount + 1);
             }

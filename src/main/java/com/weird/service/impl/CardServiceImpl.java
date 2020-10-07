@@ -11,6 +11,7 @@ import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.service.CardService;
 import com.weird.utils.CacheUtil;
+import com.weird.utils.PackageUtil;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,10 +56,6 @@ public class CardServiceImpl implements CardService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateCardCount(String userName, String cardName, int count) throws Exception {
-        if (count > 3 || count < 0) {
-            throw new OperationException("修改卡片数量错误，应在0~3内！");
-        }
-
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null) {
             throw new OperationException("找不到该用户:[%s]！", userName);
@@ -67,6 +64,10 @@ public class CardServiceImpl implements CardService {
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel == null) {
             throw new OperationException("找不到该卡片：[%s]！", cardName);
+        }
+
+        if (count < 0 || (count > 3 && PackageUtil.NR_LIST.contains(cardModel.getRare()))) {
+            throw new OperationException("修改[%s]数量错误，应在0~3内！", cardName);
         }
 
         int userId = userModel.getUserId();
@@ -123,14 +124,14 @@ public class CardServiceImpl implements CardService {
                 failCount++;
                 continue;
             }
-            if (entry.getValue() < 0 || entry.getValue() >= 4) {
-                sb.append(String.format("[%s]的持有量应在0-3！\n", entry.getKey()));
-                failCount++;
-                continue;
-            }
             PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(entry.getKey());
             if (cardModel == null) {
                 sb.append(String.format("找不到该卡片：[%s]！\n", entry.getKey()));
+                failCount++;
+                continue;
+            }
+            if (entry.getValue() < 0 || (entry.getValue() >= 4 && PackageUtil.NR_LIST.contains(cardModel.getRare()))) {
+                sb.append(String.format("[%s]的持有量应在0-3！\n", entry.getKey()));
                 failCount++;
                 continue;
             }

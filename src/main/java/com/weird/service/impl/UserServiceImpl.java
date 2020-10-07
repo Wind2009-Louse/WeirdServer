@@ -233,7 +233,7 @@ public class UserServiceImpl implements UserService {
             cardListModel.setCardPk(cardModel.getCardPk());
             cardListModel.setCount(0);
         }
-        if (cardListModel.getCount() >= 3) {
+        if (cardListModel.getCount() >= 3 && PackageUtil.NR_LIST.contains(cardModel.getRare())) {
             throw new OperationException("[%s]当前已拥有3张[%s]，无法再合成！", userName, cardName);
         }
 
@@ -325,14 +325,8 @@ public class UserServiceImpl implements UserService {
             cardListModel.setCount(0);
         }
 
-        String result;
-        if (cardListModel.getCount() >= 3) {
-            dustCount += DustEnum.GET_RARE.getCount();
-            result = String.format("你抽到了[%s](%s)，由于已达3张，直接转换为尘！", rareCard.getCardName(), rareCard.getRare());
-        } else {
-            cardListModel.setCount(cardListModel.getCount() + 1);
-            result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
-        }
+        cardListModel.setCount(cardListModel.getCount() + 1);
+        String result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
 
         // 更新
         userModel.setDustCount(dustCount);
