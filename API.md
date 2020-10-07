@@ -1608,7 +1608,7 @@
 ## 【玩家端】随机卡包抽闪
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/user/card/random?name=小白鼠&password=e10adc3949ba59abbe56e057f20f883e&package=联合之力
+> http://127.0.0.1:15163/weird_project/user/card/random?name=小白鼠&password=e10adc3949ba59abbe56e057f20f883e&package=联合之力&dustFirst=
 
 #### 请求方式
 > GET
@@ -1623,6 +1623,7 @@
 | name     | 小白鼠 | 必填 | 操作用户名称 |
 | password     | e10adc3949ba59abbe56e057f20f883e | 必填 | 操作用户密码 |
 | package     | 联合之力 | 必填 | 卡包名 |
+| dustFirst     | - | 选填 | 是否优先用尘进行合成，默认为0，大于0则为真 |
 
 
 

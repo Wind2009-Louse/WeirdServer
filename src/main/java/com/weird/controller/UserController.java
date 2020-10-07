@@ -181,16 +181,18 @@ public class UserController {
      * @param packageName 卡包名
      * @param name        用户名
      * @param password    密码
+     * @param dustFirst   优先使用尘进行合成
      * @return 转换结果
      */
     @RequestMapping("/weird_project/user/card/random")
     public String dustToRare(@RequestParam(value = "package") String packageName,
                              @RequestParam(value = "name") String name,
-                             @RequestParam(value = "password") String password) throws Exception {
+                             @RequestParam(value = "password") String password,
+                             @RequestParam(value = "dustFirst", required = false, defaultValue = "0") int dustFirst) throws Exception {
         if (PackageUtil.canNotRoll(packageName)) {
             throw new OperationException("SP卡包无法由玩家合成卡片！");
         }
-        return userService.dustToRare(packageName, name, password);
+        return userService.dustToRare(packageName, name, password, dustFirst);
     }
 
     /**

@@ -281,25 +281,26 @@ public class UserServiceImpl implements UserService {
      * @param packageName 卡包名
      * @param userName    用户名
      * @param password    密码
+     * @param dustFirst   优先使用尘
      * @return 转换结果
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String dustToRare(String packageName, String userName, String password) throws Exception {
+    public String dustToRare(String packageName, String userName, String password, int dustFirst) throws Exception {
         // 玩家权限验证
         UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
         if (userModel == null) {
             throw new OperationException("登录失败！");
         }
+
         int dustCount = userModel.getDustCount();
         if (userModel.getNonawardCount() < 100) {
             if (userModel.getDustCount() < DustEnum.TO_RANDOM.getCount()) {
-                throw new OperationException("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, userModel.getDustCount());
+                throw new OperationException("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, dustCount);
             }
             if (userModel.getWeeklyDustChangeR() > 0) {
                 throw new OperationException("[%s]本周的随机合成次数已用完！", userName);
             }
-            dustCount -= DustEnum.TO_RANDOM.getCount();
         }
 
         // 随机指定卡片
@@ -329,11 +330,21 @@ public class UserServiceImpl implements UserService {
         String result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
 
         // 更新
-        userModel.setDustCount(dustCount);
-        if (userModel.getNonawardCount() < 100) {
-            userModel.setWeeklyDustChangeR(1);
+        dustCount -= DustEnum.GET_RARE.getCount();
+        if (dustFirst > 0) {
+            if (dustCount >= 0) {
+                userModel.setDustCount(dustCount);
+                userModel.setWeeklyDustChangeR(1);
+            } else {
+                userModel.setNonawardCount(userModel.getNonawardCount() - 100);
+            }
         } else {
-            userModel.setNonawardCount(userModel.getNonawardCount() - 100);
+            if (userModel.getNonawardCount() >= 100) {
+                userModel.setNonawardCount(userModel.getNonawardCount() - 100);
+            } else {
+                userModel.setDustCount(dustCount);
+                userModel.setWeeklyDustChangeR(1);
+            }
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
             throw new OperationException("更新用户数据错误！");

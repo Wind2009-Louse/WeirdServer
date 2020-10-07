@@ -2,3 +2,8 @@ target/
 .idea/
 log/
 backup/
+.settings/
+.vscode/
+.classpath
+.factorypath
+.project

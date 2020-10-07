@@ -75,9 +75,10 @@ public interface UserService {
      * @param packageName 卡包名
      * @param userName    用户名
      * @param password    密码
+     * @param dustFirst   优先使用尘
      * @return 转换结果
      */
-    String dustToRare(String packageName, String userName, String password) throws Exception;
+    String dustToRare(String packageName, String userName, String password, int dustFirst) throws Exception;
 
     /**
      * 修改不出货数量
