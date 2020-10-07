@@ -1,5 +1,6 @@
 package com.weird.service;
 
+import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 
@@ -95,4 +96,12 @@ public interface UserService {
      * @return 是否更改成功
      */
     boolean updateDuelPoint(String name, int newCount) throws Exception;
+
+    /**
+     * 交换两个用户持有的卡片
+     *
+     * @param dto 参数
+     * @return 是否交换成功
+     */
+    String swapCard(CardSwapDTO dto) throws Exception;
 }

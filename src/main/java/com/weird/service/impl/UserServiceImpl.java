@@ -3,6 +3,7 @@ package com.weird.service.impl;
 import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
@@ -162,7 +163,6 @@ public class UserServiceImpl implements UserService {
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
         }
-
 
         log.warn("[{}]的尘被修改：（{}->{}）", name, model.getDustCount(), newCount);
         model.setDustCount(newCount);
@@ -415,5 +415,97 @@ public class UserServiceImpl implements UserService {
         model.setDuelPoint(newCount);
         userDataMapper.updateByPrimaryKey(model);
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String swapCard(CardSwapDTO dto) throws Exception {
+        // 判断用户是否存在
+        UserDataModel userA = userDataMapper.selectByNameDistinct(dto.getUserA());
+        if (userA == null) {
+            throw new OperationException("找不到用户：[%s]！", dto.getUserA());
+        }
+        UserDataModel userB = userDataMapper.selectByNameDistinct(dto.getUserB());
+        if (userB == null) {
+            throw new OperationException("找不到用户：[%s]！", dto.getUserB());
+        }
+
+        // 判断卡片是否存在
+        PackageCardModel cardA = packageCardMapper.selectByNameDistinct(dto.getCardA());
+        if (cardA == null) {
+            throw new OperationException("找不到该卡片：[%s]！", dto.getCardA());
+        }
+        PackageCardModel cardB = packageCardMapper.selectByNameDistinct(dto.getCardB());
+        if (cardB == null) {
+            throw new OperationException("找不到该卡片：[%s]！", dto.getCardB());
+        }
+        boolean cardRareA = PackageUtil.NR_LIST.contains(cardA.getRare());
+        boolean cardRareB = PackageUtil.NR_LIST.contains(cardB.getRare());
+        if (cardRareA != cardRareB) {
+            throw new OperationException("两张卡片的稀有程度不同，无法交换！");
+        }
+
+        // 判断用户是否持有对应卡片
+        UserCardListModel userACardA = userCardListMapper.selectByUserCard(userA.getUserId(), cardA.getCardPk());
+        if (userACardA == null || userACardA.getCount() <= 0) {
+            throw new OperationException("用户[%s]不拥有[%s]！", dto.getUserA(), dto.getCardA());
+        }
+        UserCardListModel userBCardB = userCardListMapper.selectByUserCard(userB.getUserId(), cardB.getCardPk());
+        if (userBCardB == null || userBCardB.getCount() <= 0) {
+            throw new OperationException("用户[%s]不拥有[%s]！", dto.getUserB(), dto.getCardB());
+        }
+
+        // 交换
+        userACardA.setCount(userACardA.getCount() - 1);
+        userBCardB.setCount(userBCardB.getCount() - 1);
+
+        UserCardListModel userACardB = userCardListMapper.selectByUserCard(userA.getUserId(), cardB.getCardPk());
+        boolean existA = true;
+        if (userACardB == null) {
+            existA = false;
+            userACardB = new UserCardListModel();
+            userACardB.setUserId(userA.getUserId());
+            userACardB.setCardPk(cardB.getCardPk());
+            userACardB.setCount(0);
+        }
+        userACardB.setCount(userACardB.getCount() + 1);
+
+        UserCardListModel userBCardA = userCardListMapper.selectByUserCard(userB.getUserId(), cardA.getCardPk());
+        boolean existB = true;
+        if (userBCardA == null) {
+            existB = false;
+            userBCardA = new UserCardListModel();
+            userBCardA.setUserId(userB.getUserId());
+            userBCardA.setCardPk(cardA.getCardPk());
+            userBCardA.setCount(0);
+        }
+        userBCardA.setCount(userBCardA.getCount() + 1);
+
+        if (userCardListMapper.update(userACardA) <= 0
+                || userCardListMapper.update(userBCardB) <= 0) {
+            throw new OperationException("交换数量更新失败！");
+        }
+        if (existA) {
+            if (userCardListMapper.update(userACardB) <= 0) {
+                throw new OperationException("交换数量更新失败！");
+            }
+        } else {
+            if (userCardListMapper.insert(userACardB) <= 0) {
+                throw new OperationException("交换数量添加失败！");
+            }
+        }
+        if (existB) {
+            if (userCardListMapper.update(userBCardA) <= 0) {
+                throw new OperationException("交换数量更新失败！");
+            }
+        } else {
+            if (userCardListMapper.insert(userBCardA) <= 0) {
+                throw new OperationException("交换数量添加失败！");
+            }
+        }
+
+        clearCardListCache();
+        log.warn("[{}]的[{}]、[{}]的[{}]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB());
+        return "交换成功！";
     }
 }

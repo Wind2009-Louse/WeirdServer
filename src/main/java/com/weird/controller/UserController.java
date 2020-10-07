@@ -1,6 +1,7 @@
 package com.weird.controller;
 
 import com.weird.model.dto.BatchUpdateUserCardParam;
+import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.CardService;
@@ -87,6 +88,12 @@ public class UserController {
         }
     }
 
+    /**
+     * 【管理端】批量修改用户持有的卡片数量
+     *
+     * @param param 参数
+     * @return 是否修改成功
+     */
     @PostMapping("/weird_project/user/card/update")
     public String updateUserCardCountList(@RequestBody BatchUpdateUserCardParam param) throws Exception {
         // 管理权限验证
@@ -94,6 +101,29 @@ public class UserController {
             throw new OperationException("权限不足！");
         }
         return cardService.updateCardCountBatch(param);
+    }
+
+    /**
+     * 【管理端】交换两个用户持有的卡片
+     *
+     * @param dto 参数
+     * @return 是否交换成功
+     */
+    @PostMapping("/weird_project/user/card/swap")
+    public String swapUserCard(@RequestBody CardSwapDTO dto) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(dto.getName(), dto.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        if (dto.getUserA().equals(dto.getUserB())) {
+            throw new OperationException("不能更换同一个用户的卡！");
+        }
+
+        if (dto.getCardA().equals(dto.getCardB())) {
+            throw new OperationException("不能更换相同的卡！");
+        }
+        return userService.swapCard(dto);
     }
 
     /**

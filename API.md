@@ -1283,6 +1283,53 @@
 ```
 
 
+## 【管理端】交换两个玩家持有的卡片
+
+#### 接口URL
+> http://127.0.0.1:15163/weird_project/user/card/swap
+
+#### 请求方式
+> POST
+
+#### Content-Type
+> json
+
+
+
+
+
+
+#### 请求Body参数
+
+```javascript
+{
+	"name": "admin",
+	"password": "e10adc3949ba59abbe56e057f20f883e",
+	"userA": "虱子",
+	"cardA": "王魂调和",
+	"userB": "小修",
+	"cardB": "蔷薇刻印"
+}
+```
+
+#### 成功响应示例
+```javascript
+{
+	"code": 200,
+	"data": "修改成功！"
+}
+```
+
+
+#### 错误响应示例
+```javascript
+{
+	"code": 500,
+	"data": "权限不足！"
+}
+```
+
+
 ## 【管理端】修改用户的尘数
 
 #### 接口URL

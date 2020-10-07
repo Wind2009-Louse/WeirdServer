@@ -23,8 +23,6 @@ public class CardDetailServiceImpl implements CardDetailService {
     @Autowired
     CardDetailMapper cardDetailMapper;
 
-    static public Map<String, String> cache = new HashMap<>();
-
     /**
      * 根据卡名返回卡片详情
      *
@@ -34,11 +32,15 @@ public class CardDetailServiceImpl implements CardDetailService {
     @Override
     public CardDetailModel selectDetailsByName(String name) {
         log.info("查找[{}]的描述", name);
-        List<CardDetailModel> list = cardDetailMapper.getDetailByName(name);
-        if (list == null || list.size() <= 0) {
+        try {
+            List<CardDetailModel> list = cardDetailMapper.getDetailByName(name);
+            if (list == null || list.size() <= 0) {
+                return null;
+            } else {
+                return list.get(0);
+            }
+        } catch (Exception e) {
             return null;
-        } else {
-            return list.get(0);
         }
     }
 
