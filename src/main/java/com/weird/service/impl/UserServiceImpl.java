@@ -206,9 +206,6 @@ public class UserServiceImpl implements UserService {
         int needDust;
         boolean isRare = false;
         if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
-            if (userModel.getWeeklyDustChangeN() >= 10) {
-                throw new OperationException("[%s]的每周NR更换次数已用完！", userName);
-            }
             needDust = DustEnum.TO_NR.getCount();
         } else {
             isRare = true;
