@@ -67,7 +67,7 @@ public class CacheUtil {
     /**
      * 抽卡记录列表缓存，避免频繁查全表
      */
-    public static Map<String, List<RollListDTO>> rollListCache = ExpiringMap.builder()
+    public static ExpiringMap<String, List<RollListDTO>> rollListCache = ExpiringMap.builder()
             .maxSize(200)
             .expirationPolicy(ExpirationPolicy.ACCESSED).build();
 
