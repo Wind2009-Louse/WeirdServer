@@ -31,7 +31,6 @@ public class CardDetailServiceImpl implements CardDetailService {
      */
     @Override
     public CardDetailModel selectDetailsByName(String name) {
-        log.info("查找[{}]的描述", name);
         try {
             List<CardDetailModel> list = cardDetailMapper.getDetailByName(name);
             if (list == null || list.size() <= 0) {

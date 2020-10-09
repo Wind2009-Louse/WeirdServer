@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
-import static com.weird.utils.CacheUtil.clearCardListCache;
-import static com.weird.utils.CacheUtil.clearRollListCache;
+import static com.weird.utils.CacheUtil.clearCardOwnListCache;
+import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
 
 /**
  * 卡包Service实现
@@ -89,8 +89,8 @@ public class PackageServiceImpl implements PackageService {
 
         oldPackage.setPackageName(newName);
         log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
-        clearCardListCache();
-        clearRollListCache();
+        clearCardOwnListCache();
+        clearRollListWithDetailCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
     }
 
@@ -222,8 +222,8 @@ public class PackageServiceImpl implements PackageService {
                 cardHistoryMapper.insert(cardHistory);
             }
 
-            clearCardListCache();
-            clearRollListCache();
+            clearCardOwnListCache();
+            clearRollListWithDetailCache();
             return true;
         }
         return false;
@@ -275,8 +275,8 @@ public class PackageServiceImpl implements PackageService {
                 cardHistoryMapper.insert(cardHistory2);
             }
 
-            clearCardListCache();
-            clearRollListCache();
+            clearCardOwnListCache();
+            clearRollListWithDetailCache();
             return true;
         }
         return false;

@@ -18,8 +18,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import static com.weird.utils.CacheUtil.clearCardListCache;
-import static com.weird.utils.CacheUtil.clearRollListCache;
+import static com.weird.utils.CacheUtil.clearCardOwnListCache;
+import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
 
 @Service
 @Slf4j
@@ -147,9 +147,9 @@ public class RollServiceImpl implements RollService {
                                                   int page,
                                                   int pageSize) throws Exception {
         // 命中缓存，直接返回
-        String key = String.format("{%s,%s,%d,%d,%d,%d}", packageName, userName, startTime, endTime, page, pageSize);
-        log.debug("查询抽卡记录列表：{}", key);
-        PageResult<RollListDTO> cache = CacheUtil.rollListCache.get(key);
+        String totalKey = String.format("{%s,%s,%d,%d,%d,%d}", packageName, userName, startTime, endTime, page, pageSize);
+        log.debug("查询抽卡记录列表：{}", totalKey);
+        PageResult<RollListDTO> cache = CacheUtil.getRollListWithDetailCache(totalKey);
         if (cache != null) {
             return cache;
         }
@@ -165,7 +165,13 @@ public class RollServiceImpl implements RollService {
         }
 
         // 通过分页截取需要查询详细内容的部分
-        List<RollListDTO> allRollList = rollListMapper.selectByParam(packageName, userName, startString, endString);
+        String subKey = String.format("{%s,%s,%d,%d}", packageName, userName, startTime, endTime);
+        List<RollListDTO> allRollList = CacheUtil.getRollListCache(subKey);
+        if (allRollList == null) {
+            allRollList = rollListMapper.selectByParam(packageName, userName, startString, endString);
+            CacheUtil.putRollListCache(subKey, allRollList);
+        }
+
         PageResult<RollListDTO> resultList = new PageResult<>();
         resultList.addPageInfo(allRollList, page, pageSize);
         List<RollListDTO> rollList = resultList.getDataList();
@@ -201,7 +207,7 @@ public class RollServiceImpl implements RollService {
 
         // 返回结果
         resultList.setDataList(rollList);
-        CacheUtil.rollListCache.put(key, resultList);
+        CacheUtil.putRollListWithDetailCache(totalKey, resultList);
         return resultList;
     }
 
@@ -256,8 +262,8 @@ public class RollServiceImpl implements RollService {
         }
         sb.append(String.format("当前尘=%d，月见黑=%d", userModel.getDustCount(), userModel.getNonawardCount()));
         log.warn(sb.toString());
-        clearCardListCache();
-        clearRollListCache();
+        clearCardOwnListCache();
+        clearRollListWithDetailCache();
 
         return true;
     }
@@ -311,8 +317,8 @@ public class RollServiceImpl implements RollService {
         }
         if (newStatus == 0) {
             addCards(userModel, cardModels, 0);
-            clearCardListCache();
-            clearRollListCache();
+            clearCardOwnListCache();
+            clearRollListWithDetailCache();
             return true;
         }
 
@@ -349,8 +355,8 @@ public class RollServiceImpl implements RollService {
             throw new OperationException("更新用户信息失败！");
         }
 
-        clearCardListCache();
-        clearRollListCache();
+        clearCardOwnListCache();
+        clearRollListWithDetailCache();
         return true;
     }
 }

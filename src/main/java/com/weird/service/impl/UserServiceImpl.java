@@ -20,8 +20,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-import static com.weird.utils.CacheUtil.clearCardListCache;
-import static com.weird.utils.CacheUtil.clearRollListCache;
+import static com.weird.utils.CacheUtil.clearCardOwnListCache;
+import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
 
 /**
  * 用户Service实现
@@ -265,8 +265,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 清除缓存
-        clearRollListCache();
-        clearCardListCache();
+        clearRollListWithDetailCache();
+        clearCardOwnListCache();
         log.warn("[{}]合成了一张[{}]", userName, cardName);
 
         return true;
@@ -372,8 +372,8 @@ public class UserServiceImpl implements UserService {
         }
 
         // 清除缓存
-        clearRollListCache();
-        clearCardListCache();
+        clearRollListWithDetailCache();
+        clearCardOwnListCache();
         log.warn("[{}]在[{}]随机抽到了一张[{}]({})",
                 userName,
                 packageName,
@@ -512,7 +512,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        clearCardListCache();
+        clearCardOwnListCache();
         log.warn("[{}]的[{}]、[{}]的[{}]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB());
         return "交换成功！";
     }

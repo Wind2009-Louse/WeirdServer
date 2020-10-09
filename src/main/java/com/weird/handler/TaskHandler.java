@@ -36,8 +36,8 @@ public class TaskHandler {
         log.info("【日常刷新】开始");
         int updateCount = taskService.updateDaily();
         log.info("【日常刷新】更新{}条数据", updateCount);
-        CacheUtil.clearRollListCache();
-        CacheUtil.clearCardListCache();
+        CacheUtil.clearRollListWithDetailCache();
+        CacheUtil.clearCardOwnListCache();
     }
 
     @Async
