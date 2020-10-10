@@ -1,5 +1,6 @@
 package com.weird.model.dto;
 
+import com.weird.model.Trimable;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.util.List;
  * @date 2020.9.17
  */
 @Data
-public class BatchAddCardParam implements Serializable {
+public class BatchAddCardParam implements Serializable, Trimable {
     /**
      * 用户名
      */

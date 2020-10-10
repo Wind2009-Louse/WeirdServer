@@ -1,5 +1,6 @@
 package com.weird.model.dto;
 
+import com.weird.model.Trimable;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.util.List;
  * @date 2020.10.5
  */
 @Data
-public class PackageSortParam implements Serializable {
+public class PackageSortParam implements Serializable, Trimable {
     /**
      * 用户名
      */

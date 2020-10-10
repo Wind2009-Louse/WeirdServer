@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.dto.RollParam;
 import com.weird.model.enums.LoginTypeEnum;
@@ -19,6 +20,7 @@ import java.util.List;
  * @author Nidhogg
  */
 @RestController
+@TrimArgs
 public class RollController {
     @Autowired
     RollService rollService;

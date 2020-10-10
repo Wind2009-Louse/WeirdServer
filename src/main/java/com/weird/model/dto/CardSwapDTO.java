@@ -1,6 +1,9 @@
 package com.weird.model.dto;
 
+import com.weird.model.Trimable;
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 卡片交换DTO
@@ -9,7 +12,7 @@ import lombok.Data;
  * @date 2020.10.7
  */
 @Data
-public class CardSwapDTO {
+public class CardSwapDTO implements Serializable, Trimable {
     /**
      * 用户名
      */

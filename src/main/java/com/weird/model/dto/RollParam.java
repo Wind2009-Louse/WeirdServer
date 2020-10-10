@@ -1,5 +1,6 @@
 package com.weird.model.dto;
 
+import com.weird.model.Trimable;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,7 +13,7 @@ import java.util.List;
  * @date 2020.9.18
  */
 @Data
-public class RollParam implements Serializable {
+public class RollParam implements Serializable, Trimable {
     /**
      * 操作用户名称
      */

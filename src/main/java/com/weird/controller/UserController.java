@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
@@ -20,6 +21,7 @@ import java.util.List;
  * @author Nidhogg
  */
 @RestController
+@TrimArgs
 public class UserController {
     @Autowired
     UserService userService;

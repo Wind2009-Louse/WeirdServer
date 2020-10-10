@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.aspect.TrimArgs;
 import com.weird.model.CardDetailModel;
 import com.weird.model.dto.BatchAddCardParam;
 import com.weird.model.dto.CardHistoryDTO;
@@ -24,6 +25,7 @@ import java.util.*;
  * @author Nidhogg
  */
 @RestController
+@TrimArgs
 public class CardListController {
     @Autowired
     UserService userService;
