@@ -195,6 +195,7 @@ public class RollServiceImpl implements RollService {
                 RollDetailDTO detailDTO = new RollDetailDTO();
                 detailDTO.setCardName(cardModel.getCardName());
                 detailDTO.setRare(cardModel.getRare());
+                detailDTO.setIsDust(rollCardModel.getIsDust());
                 CardDetailModel descModel = cardDetailService.selectDetailsByName(cardModel.getCardName());
                 if (descModel != null) {
                     detailDTO.setDesc(CardDetailUtil.getResult(descModel));
