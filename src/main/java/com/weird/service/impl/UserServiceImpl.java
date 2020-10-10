@@ -12,7 +12,6 @@ import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -71,6 +70,7 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 根据用户名查找用户
+     *
      * @param name 用户名
      * @return 用户
      */
@@ -395,6 +395,46 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 将多余的闪卡换成尘
+     *
+     * @param userName 用户名
+     * @param password 密码
+     * @param cardName 卡片名称
+     * @param count    转换的数量
+     * @return 是否转换成功
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public int rareToDust(String userName, String password, String cardName, int count) throws Exception {
+        UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
+        if (userModel == null) {
+            throw new OperationException("登录失败！");
+        }
+
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
+        if (cardModel == null) {
+            throw new OperationException("找不到卡片：[%s]！", cardName);
+        }
+        if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
+            throw new OperationException("NR卡无法分解！");
+        }
+
+        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), cardModel.getCardPk());
+        if (cardListModel == null || (cardListModel.getCount() - count < 3)) {
+            throw new OperationException("拥有的[%s]不足以分解！", cardName);
+        }
+        int newDustCount = count * DustEnum.GET_RARE.getCount();
+        cardListModel.setCount(cardListModel.getCount() - count);
+        userModel.setDustCount(userModel.getDustCount() + newDustCount);
+
+        userDataMapper.updateByPrimaryKey(userModel);
+        userCardListMapper.update(cardListModel);
+        clearCardOwnListCache();
+        log.warn("[{}]分解了{}张[{}]", userName, count, cardName);
+        return newDustCount;
+    }
+
+    /**
      * 修改不出货数量
      *
      * @param name     用户名
@@ -436,6 +476,12 @@ public class UserServiceImpl implements UserService {
         return true;
     }
 
+    /**
+     * 交换两个用户持有的卡片
+     *
+     * @param dto 参数
+     * @return 是否交换成功
+     */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public String swapCard(CardSwapDTO dto) throws Exception {

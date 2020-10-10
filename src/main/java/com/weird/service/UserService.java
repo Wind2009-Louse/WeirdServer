@@ -6,6 +6,12 @@ import com.weird.model.enums.LoginTypeEnum;
 
 import java.util.List;
 
+/**
+ * 用户Service
+ *
+ * @author Nidhogg
+ * @date 2020.9.4
+ */
 public interface UserService {
     /**
      * 根据用户名查找用户列表
@@ -17,6 +23,7 @@ public interface UserService {
 
     /**
      * 根据用户名查找用户
+     *
      * @param name 用户名
      * @return 用户
      */
@@ -86,6 +93,18 @@ public interface UserService {
      * @return 转换结果
      */
     String dustToRare(String packageName, String userName, String password, int dustFirst) throws Exception;
+
+
+    /**
+     * 将多余的闪卡换成尘
+     *
+     * @param userName 用户名
+     * @param password 密码
+     * @param cardName 卡片名称
+     * @param count    转换的数量
+     * @return 是否转换成功
+     */
+    int rareToDust(String userName, String password, String cardName, int count) throws Exception;
 
     /**
      * 修改不出货数量

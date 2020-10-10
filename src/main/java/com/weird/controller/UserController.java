@@ -198,6 +198,27 @@ public class UserController {
     }
 
     /**
+     * 【玩家端】将溢出的闪卡合成尘
+     *
+     * @param userName 用户名
+     * @param password 密码
+     * @param cardName 卡名
+     * @param count    要转换的数量
+     * @return 转换结果
+     */
+    @RequestMapping("/weird_project/user/card/todust")
+    public String rareToDust(@RequestParam(value = "name") String userName,
+                             @RequestParam(value = "password") String password,
+                             @RequestParam(value = "card") String cardName,
+                             @RequestParam(value = "count") int count) throws Exception {
+        if (count <= 0) {
+            throw new OperationException("转换数量应大于0！");
+        }
+        int dustCount = userService.rareToDust(userName, password, cardName, count);
+        return String.format("共获得%d尘！", dustCount);
+    }
+
+    /**
      * 【管理端】修改用户不出货数量
      *
      * @param targetUser 用户名
