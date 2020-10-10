@@ -15,6 +15,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -50,16 +51,26 @@ public class TaskHandler {
 
     @Async
     @Scheduled(cron = "30 0 0 * * ?")
-    public void backupDB() throws Exception {
+    public void backupDataBase() throws Exception {
         log.info("【数据库备份】开始");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-        String dateString = formatter.format(new Date());
+        Date currentDate = new Date();
+        String newDateString = formatter.format(currentDate);
+
+        Calendar oldDateCalender = Calendar.getInstance();
+        oldDateCalender.setTime(currentDate);
+        oldDateCalender.add(Calendar.DATE, -14);
+        String oldDateString = formatter.format(oldDateCalender.getTime());
+        if (Files.deleteIfExists(Paths.get(String.format("backup/data-%s.db", oldDateString)))) {
+            log.info("【数据库备份】清除{}时备份的数据库", oldDateString);
+        }
+
         File dir = new File("backup");
         if (!dir.exists()) {
             dir.mkdir();
         }
         Path source = Paths.get("data.db");
-        Files.copy(source, new FileOutputStream(String.format("backup/data.db-%s", dateString)));
+        Files.copy(source, new FileOutputStream(String.format("backup/data-%s.db", newDateString)));
         log.info("【数据库备份】结束");
     }
 }
