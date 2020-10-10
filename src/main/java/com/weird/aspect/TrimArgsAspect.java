@@ -32,10 +32,16 @@ public class TrimArgsAspect {
     }
 
     private Object trim(Object object) throws IllegalAccessException {
-        if ("java.lang.String".equals(object.getClass().getTypeName())) {
+        if (object instanceof String) {
             // 对String进行Trim
             String originArg = (String) object;
             object = originArg.trim();
+        } else if (object instanceof java.util.List) {
+            java.util.List list = (java.util.List) object;
+            for (int index = 0; index < list.size(); ++index) {
+                Object subObject = trim(list.get(index));
+                list.set(index, subObject);
+            }
         } else {
             // 对继承了Trimable接口的类进行Trim
             for (Class<?> interFace : object.getClass().getInterfaces()) {

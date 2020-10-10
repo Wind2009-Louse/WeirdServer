@@ -12,6 +12,7 @@ import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,13 +70,23 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 根据用户名查找用户
+     * @param name 用户名
+     * @return 用户
+     */
+    @Override
+    public UserDataDTO getUserByName(String name) {
+        return BeanConverter.convert(userDataMapper.selectByNameDistinct(name), UserDataDTO.class);
+    }
+
+    /**
      * 根据用户ID查找用户
      *
      * @param id 用户ID
      * @return 用户
      */
     @Override
-    public UserDataDTO getNameById(int id) {
+    public UserDataDTO getUserById(int id) {
         UserDataModel model = userDataMapper.selectByPrimaryKey(id);
         if (model == null) {
             return null;

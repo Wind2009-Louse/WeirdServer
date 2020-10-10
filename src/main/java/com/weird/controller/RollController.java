@@ -71,6 +71,9 @@ public class RollController {
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
+        if (userService.getUserByName(param.getTarget()) == null) {
+            throw new OperationException("找不到该用户：[%s]！", param.getTarget());
+        }
         if (param.getCards() == null) {
             throw new OperationException("抽卡列表为空！");
         }

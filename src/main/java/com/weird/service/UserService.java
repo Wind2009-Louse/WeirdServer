@@ -16,12 +16,19 @@ public interface UserService {
     List<UserDataDTO> getListByName(String name);
 
     /**
+     * 根据用户名查找用户
+     * @param name 用户名
+     * @return 用户
+     */
+    UserDataDTO getUserByName(String name);
+
+    /**
      * 根据用户ID查找用户
      *
      * @param id 用户ID
      * @return 用户
      */
-    UserDataDTO getNameById(int id);
+    UserDataDTO getUserById(int id);
 
     /**
      * 根据用户名和密码检查登录类型
