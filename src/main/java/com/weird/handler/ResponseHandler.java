@@ -7,6 +7,7 @@ import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -43,7 +44,7 @@ public class ResponseHandler implements ResponseBodyAdvice {
     @ResponseBody
     @ExceptionHandler(Exception.class)
     public ResultModel<String> customException(Exception e) {
-        if (!(e instanceof OperationException)) {
+        if (!(e instanceof OperationException || e instanceof MissingServletRequestParameterException)) {
             e.printStackTrace();
         }
         log.error(e.getMessage());
