@@ -17,6 +17,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * AppConfig
+ * @author fxbin
+ */
 @Configuration
 @EnableWebMvc
 @ComponentScan(value = "com.weird", includeFilters = {
@@ -25,8 +29,7 @@ import java.util.List;
 public class AppConfig implements WebMvcConfigurer {
     @Bean
     public HttpMessageConverter<String> responseBodyConverter() {
-        StringHttpMessageConverter converter = new StringHttpMessageConverter(StandardCharsets.UTF_8);
-        return converter;
+        return new StringHttpMessageConverter(StandardCharsets.UTF_8);
     }
 
     /**
