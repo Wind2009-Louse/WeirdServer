@@ -5,7 +5,7 @@ import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
-import com.weird.service.CardDetailService;
+import com.weird.service.CardPreviewService;
 import com.weird.service.RollService;
 import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +40,7 @@ public class RollServiceImpl implements RollService {
     UserCardListMapper userCardListMapper;
 
     @Autowired
-    CardDetailService cardDetailService;
+    CardPreviewService cardPreviewService;
 
     /**
      * 将抽卡内容添加到用户上
@@ -185,8 +185,8 @@ public class RollServiceImpl implements RollService {
             }
 
             List<RollDetailDTO> cardResult = new LinkedList<>();
-            // 根据ID查询卡名和稀有度
             for (RollDetailModel rollCardModel : cardList) {
+                // 根据ID查询卡名和稀有度
                 int cardPk = rollCardModel.getCardPk();
                 PackageCardModel cardModel = packageCardMapper.selectByPrimaryKey(cardPk);
                 if (cardModel == null) {
@@ -196,10 +196,14 @@ public class RollServiceImpl implements RollService {
                 detailDTO.setCardName(cardModel.getCardName());
                 detailDTO.setRare(cardModel.getRare());
                 detailDTO.setIsDust(rollCardModel.getIsDust());
-                CardDetailModel descModel = cardDetailService.selectDetailsByName(cardModel.getCardName());
-                if (descModel != null) {
-                    detailDTO.setDesc(CardDetailUtil.getResult(descModel));
-                    detailDTO.setPicId(descModel.getId());
+
+                // 根据卡名查询效果详细
+                if (rollList.size() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
+                    CardPreviewModel previewModel = cardPreviewService.selectPreviewByName(cardModel.getCardName());
+                    if (previewModel != null) {
+                        detailDTO.setDesc(CardPreviewUtil.getPreview(previewModel));
+                        detailDTO.setPicId(previewModel.getId());
+                    }
                 }
                 cardResult.add(detailDTO);
             }

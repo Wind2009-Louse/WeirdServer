@@ -19,9 +19,9 @@ import java.util.Map;
 @Slf4j
 public class CacheUtil {
     /**
-     * 卡片详情缓存
+     * 卡片预览缓存
      */
-    public static Map<String, String> DetailCache = new HashMap<>();
+    public static Map<String, String> PreviewCache = new HashMap<>();
 
     /**
      * 卡片持有列表缓存，避免频繁联表查询

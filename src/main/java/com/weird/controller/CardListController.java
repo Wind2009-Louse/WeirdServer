@@ -1,20 +1,21 @@
 package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
-import com.weird.model.CardDetailModel;
+import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.BatchAddCardParam;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.enums.LoginTypeEnum;
-import com.weird.service.CardDetailService;
+import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;
-import com.weird.utils.CardDetailUtil;
+import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -37,7 +38,7 @@ public class CardListController {
     CardService cardService;
 
     @Autowired
-    CardDetailService cardDetailService;
+    CardPreviewService cardPreviewService;
 
     final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
@@ -98,12 +99,12 @@ public class CardListController {
         List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < 100) {
+        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardListDTO data : result.getDataList()) {
-                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
-                if (detail != null) {
-                    data.setDesc(CardDetailUtil.getResult(detail));
-                    data.setPicId(detail.getId());
+                CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
+                if (preview != null) {
+                    data.setDesc(CardPreviewUtil.getPreview(preview));
+                    data.setPicId(preview.getId());
                 }
             }
         }
@@ -131,12 +132,12 @@ public class CardListController {
         List<CardListDTO> dtoList = cardService.selectListUser(packageName, cardName, rare);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < 100) {
+        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardListDTO data : result.getDataList()) {
-                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
-                if (detail != null) {
-                    data.setDesc(CardDetailUtil.getResult(detail));
-                    data.setPicId(detail.getId());
+                CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
+                if (preview != null) {
+                    data.setDesc(CardPreviewUtil.getPreview(preview));
+                    data.setPicId(preview.getId());
                 }
             }
         }
@@ -165,12 +166,12 @@ public class CardListController {
         List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
         PageResult<CardOwnListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < 100) {
+        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardOwnListDTO data : result.getDataList()) {
-                CardDetailModel detail = cardDetailService.selectDetailsByName(data.getCardName());
-                if (detail != null) {
-                    data.setDesc(CardDetailUtil.getResult(detail));
-                    data.setPicId(detail.getId());
+                CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
+                if (preview != null) {
+                    data.setDesc(CardPreviewUtil.getPreview(preview));
+                    data.setPicId(preview.getId());
                 }
             }
         }
@@ -197,17 +198,17 @@ public class CardListController {
         List<CardHistoryDTO> dtoList = cardService.selectHistory(packageName, cardName, rare);
         PageResult<CardHistoryDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < 100) {
+        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardHistoryDTO data : result.getDataList()) {
-                CardDetailModel oldModel = cardDetailService.selectDetailsByName(data.getOldName());
-                CardDetailModel newModel = cardDetailService.selectDetailsByName(data.getNewName());
-                if (oldModel != null) {
-                    data.setOldDesc(CardDetailUtil.getResult(oldModel));
-                    data.setOldPicId(oldModel.getId());
+                CardPreviewModel oldPreview = cardPreviewService.selectPreviewByName(data.getOldName());
+                CardPreviewModel newPreview = cardPreviewService.selectPreviewByName(data.getNewName());
+                if (oldPreview != null) {
+                    data.setOldDesc(CardPreviewUtil.getPreview(oldPreview));
+                    data.setOldPicId(oldPreview.getId());
                 }
-                if (newModel != null) {
-                    data.setNewDesc(CardDetailUtil.getResult(newModel));
-                    data.setNewPicId(newModel.getId());
+                if (newPreview != null) {
+                    data.setNewDesc(CardPreviewUtil.getPreview(newPreview));
+                    data.setNewPicId(newPreview.getId());
                 }
             }
         }
@@ -270,48 +271,26 @@ public class CardListController {
 
         // 空参数判断
         StringBuilder sb = new StringBuilder();
-        if (param.getNList() == null) {
-            sb.append("N卡列表为NULL！\n");
-        }
-        if (param.getRList() == null) {
-            sb.append("R卡列表为NULL！\n");
-        }
-        if (param.getSrList() == null) {
-            sb.append("SR卡列表为NULL！\n");
-        }
-        if (param.getUrList() == null) {
-            sb.append("UR卡列表为NULL！");
-        }
-        if (param.getHrList() == null) {
-            sb.append("HR卡列表为NULL！");
+        Map<String, List<String>> checkList = new LinkedHashMap<>();
+        checkList.put("N卡", param.getNList());
+        checkList.put("R卡", param.getRList());
+        checkList.put("SR卡", param.getSrList());
+        checkList.put("UR卡", param.getUrList());
+        checkList.put("HR卡", param.getHrList());
+        for (Map.Entry<String, List<String>> entry : checkList.entrySet()) {
+            if (entry.getValue() == null) {
+                sb.append(String.format("%s列表为NULL!", entry.getKey()));
+                continue;
+            }
+            for (String card : entry.getValue()) {
+                if (StringUtils.isEmpty(card)) {
+                    sb.append(String.format("%s中存在卡片名字为空！\n", entry.getKey()));
+                    break;
+                }
+            }
         }
         if (sb.length() > 0) {
             throw new OperationException(sb.toString());
-        }
-        for (String nCard : param.getNList()) {
-            if (nCard == null || nCard.length() == 0) {
-                throw new OperationException("N卡中存在卡片名字为空！");
-            }
-        }
-        for (String rCard : param.getRList()) {
-            if (rCard == null || rCard.length() == 0) {
-                throw new OperationException("R卡中存在卡片名字为空！");
-            }
-        }
-        for (String srCard : param.getSrList()) {
-            if (srCard == null || srCard.length() == 0) {
-                throw new OperationException("SR卡中存在卡片名字为空！");
-            }
-        }
-        for (String urCard : param.getUrList()) {
-            if (urCard == null || urCard.length() == 0) {
-                throw new OperationException("UR卡中存在卡片名字为空！");
-            }
-        }
-        for (String hrCard : param.getUrList()) {
-            if (hrCard == null || hrCard.length() == 0) {
-                throw new OperationException("UR卡中存在卡片名字为空！");
-            }
         }
 
         // 重名判断
@@ -390,7 +369,6 @@ public class CardListController {
      * @param name      操作用户名称
      * @param password  操作用户密码
      * @return 是否修改成功
-     * @throws Exception
      */
     @RequestMapping("/weird_project/card/exchange")
     public String exchangeName(

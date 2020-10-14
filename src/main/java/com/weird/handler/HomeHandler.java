@@ -1,15 +1,14 @@
 package com.weird.handler;
 
-import com.weird.service.CardDetailService;
+import com.weird.service.CardPreviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class HomeHandler {
     @Autowired
-    CardDetailService cardDetailService;
+    CardPreviewService cardPreviewService;
 
     /**
      * 首页

@@ -1,6 +1,6 @@
 package com.weird.service;
 
-import com.weird.model.CardDetailModel;
+import com.weird.model.CardPreviewModel;
 
 /**
  * 卡片详细Service
@@ -8,12 +8,12 @@ import com.weird.model.CardDetailModel;
  * @author Nidhogg
  * @date 2020.9.25
  */
-public interface CardDetailService {
+public interface CardPreviewService {
     /**
      * 根据卡名返回描述
      *
      * @param name 卡名
      * @return 卡片描述
      */
-    CardDetailModel selectDetailsByName(String name);
+    CardPreviewModel selectPreviewByName(String name);
 }

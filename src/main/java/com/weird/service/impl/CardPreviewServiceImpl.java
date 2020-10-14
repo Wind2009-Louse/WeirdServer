@@ -1,15 +1,13 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.card.CardDetailMapper;
-import com.weird.model.CardDetailModel;
-import com.weird.service.CardDetailService;
+import com.weird.mapper.card.CardPreviewMapper;
+import com.weird.model.CardPreviewModel;
+import com.weird.service.CardPreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 卡片详细Service
@@ -19,9 +17,9 @@ import java.util.Map;
  */
 @Service
 @Slf4j
-public class CardDetailServiceImpl implements CardDetailService {
+public class CardPreviewServiceImpl implements CardPreviewService {
     @Autowired
-    CardDetailMapper cardDetailMapper;
+    CardPreviewMapper cardPreviewMapper;
 
     /**
      * 根据卡名返回卡片详情
@@ -30,9 +28,9 @@ public class CardDetailServiceImpl implements CardDetailService {
      * @return 卡片描述
      */
     @Override
-    public CardDetailModel selectDetailsByName(String name) {
+    public CardPreviewModel selectPreviewByName(String name) {
         try {
-            List<CardDetailModel> list = cardDetailMapper.getDetailByName(name);
+            List<CardPreviewModel> list = cardPreviewMapper.getPreviewByName(name);
             if (list == null || list.size() <= 0) {
                 return null;
             } else {

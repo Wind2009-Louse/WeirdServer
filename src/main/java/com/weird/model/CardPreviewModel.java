@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @date 2020.9.25
  */
 @Data
-public class CardDetailModel implements Serializable {
+public class CardPreviewModel implements Serializable {
     /**
      * 卡片ID
      */

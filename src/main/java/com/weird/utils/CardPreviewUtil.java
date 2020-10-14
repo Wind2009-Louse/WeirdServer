@@ -1,19 +1,23 @@
 package com.weird.utils;
 
-import com.weird.model.CardDetailModel;
+import com.weird.model.CardPreviewModel;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
- * 卡片效果工具
+ * 卡片预览工具
  *
  * @author Nidhogg
  * @date 2020.9.25
  */
-public class CardDetailUtil {
-    static Map<Integer, String> cardTypes = new LinkedHashMap<Integer, String>() {{
-        put(0x1, "怪兽");
+public class CardPreviewUtil {
+    public static int HIDE_PREVIEW_COUNT = 100;
+
+    static int MONSTER_TYPE = 0x1;
+    static int LINK_TYPE = 0x4000000;
+    static Map<Integer, String> CARD_TYPES = new LinkedHashMap<Integer, String>() {{
+        put(MONSTER_TYPE, "怪兽");
         put(0x2, "魔法");
         put(0x4, "陷阱");
         put(0x10, "通常");
@@ -36,9 +40,9 @@ public class CardDetailUtil {
         put(0x800000, "超量");
         put(0x1000000, "灵摆");
         put(0x2000000, "特殊召唤");
-        put(0x4000000, "连接");
+        put(LINK_TYPE, "连接");
     }};
-    static Map<Integer, String> cardRaces = new LinkedHashMap<Integer, String>() {{
+    static Map<Integer, String> CARD_RACES = new LinkedHashMap<Integer, String>() {{
         put(0x1, "战士族");
         put(0x2, "魔法师族");
         put(0x4, "天使族");
@@ -65,7 +69,7 @@ public class CardDetailUtil {
         put(0x800000, "幻龙族");
         put(0x1000000, "电子界族");
     }};
-    static Map<Integer, String> cardAttributes = new LinkedHashMap<Integer, String>() {{
+    static Map<Integer, String> CARD_ATTRIBUTES = new LinkedHashMap<Integer, String>() {{
         put(0x1, "地");
         put(0x2, "水");
         put(0x4, "炎");
@@ -74,7 +78,7 @@ public class CardDetailUtil {
         put(0x20, "暗");
         put(0x40, "神");
     }};
-    static Map<Integer, String> linkMarkers = new LinkedHashMap<Integer, String>() {{
+    static Map<Integer, String> LINK_MARKERS = new LinkedHashMap<Integer, String>() {{
         put(0x40, "[↖]");
         put(0x80, "[↑]");
         put(0x100, "[↗]");
@@ -85,11 +89,11 @@ public class CardDetailUtil {
         put(0x4, "[↘]");
     }};
 
-    public static String getResult(CardDetailModel model) {
+    public static String getPreview(CardPreviewModel model) {
         if (model == null) {
             return "";
         }
-        String result = CacheUtil.DetailCache.get(model.getName());
+        String result = CacheUtil.PreviewCache.get(model.getName());
         if (result != null) {
             return result;
         }
@@ -102,12 +106,12 @@ public class CardDetailUtil {
         sb.append("]\n");
 
         // 种类
-        mapAppend(cardTypes, model.getType(), "/", sb);
+        mapAppend(CARD_TYPES, model.getType(), "/", sb);
 
         // 怪兽资料
-        if ((model.getType() & 0x1) != 0) {
+        if ((model.getType() & MONSTER_TYPE) != 0) {
             // 等阶link
-            if ((model.getType() & 0x4000000) != 0) {
+            if ((model.getType() & LINK_TYPE) != 0) {
                 sb.append(" Link-");
                 sb.append(model.getLevel());
             } else {
@@ -117,20 +121,20 @@ public class CardDetailUtil {
 
             // 属性/种族
             sb.append(" ");
-            mapAppend(cardAttributes, model.getAttribute(), "&", sb);
+            mapAppend(CARD_ATTRIBUTES, model.getAttribute(), "&", sb);
             sb.append("/");
-            mapAppend(cardRaces, model.getRace(), "&", sb);
+            mapAppend(CARD_RACES, model.getRace(), "&", sb);
             sb.append(" ");
 
-            // ATKDEF
+            // ATK/DEF
             if (model.getAtk() < 0) {
                 sb.append(" ");
             } else {
                 sb.append(model.getAtk());
             }
             sb.append("/");
-            if ((model.getType() & 0x4000000) != 0) {
-                mapAppend(linkMarkers, model.getDef(), "", sb);
+            if ((model.getType() & LINK_TYPE) != 0) {
+                mapAppend(LINK_MARKERS, model.getDef(), "", sb);
             } else {
                 if (model.getDef() < 0) {
                     sb.append("?");
@@ -143,7 +147,7 @@ public class CardDetailUtil {
         sb.append(model.getDesc());
 
         result = sb.toString();
-        CacheUtil.DetailCache.put(model.getName(), result);
+        CacheUtil.PreviewCache.put(model.getName(), result);
         return result;
     }
 
