@@ -343,15 +343,19 @@ public class UserServiceImpl implements UserService {
             if (dustCount >= 0) {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
+                log.warn("[{}]使用150尘roll闪。", userName);
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
+                log.warn("[{}]使用月见黑roll闪。", userName);
             }
         } else {
             if (userModel.getNonawardCount() >= 100) {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
+                log.warn("[{}]使用月见黑roll闪。", userName);
             } else {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
+                log.warn("[{}]使用150尘roll闪。", userName);
             }
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
