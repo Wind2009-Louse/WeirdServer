@@ -338,7 +338,7 @@ public class UserServiceImpl implements UserService {
         String result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
 
         // 更新
-        dustCount -= DustEnum.GET_RARE.getCount();
+        dustCount -= DustEnum.TO_RANDOM.getCount();
         if (dustFirst > 0) {
             if (dustCount >= 0) {
                 userModel.setDustCount(dustCount);
