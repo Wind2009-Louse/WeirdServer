@@ -2,10 +2,7 @@ package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
-import com.weird.model.dto.BatchAddCardParam;
-import com.weird.model.dto.CardHistoryDTO;
-import com.weird.model.dto.CardListDTO;
-import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.dto.*;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
@@ -28,78 +25,48 @@ import java.util.*;
 @RestController
 @TrimArgs
 public class CardListController {
+    final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
     @Autowired
     UserService userService;
-
     @Autowired
     PackageService packageService;
-
     @Autowired
     CardService cardService;
-
     @Autowired
     CardPreviewService cardPreviewService;
-
-    final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
 
     /**
      * 【ALL】全卡片搜索
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param page        页码
-     * @param pageSize    页面大小
-     * @param name        操作用户名称
-     * @param password    操作用户密码
+     * @param param 参数
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/list")
-    public PageResult<CardListDTO> searchCardList(
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
-            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
-            @RequestParam(value = "name", required = false, defaultValue = "") String name,
-            @RequestParam(value = "password", required = false, defaultValue = "") String password) throws Exception {
+    public PageResult<CardListDTO> searchCardList(@RequestBody SearchCardParam param) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
-            return searchCardListUser(packageName, cardName, rare, page, pageSize);
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            return searchCardListUser(param);
         } else {
-            return searchCardListAdmin(packageName, cardName, rare, page, pageSize, name, password);
+            return searchCardListAdmin(param);
         }
     }
 
     /**
      * 【管理端】全卡片搜索
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param page        页码
-     * @param pageSize    页面大小
-     * @param name        操作用户名称
-     * @param password    操作用户密码
+     * @param param 参数
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/list/admin")
-    public PageResult<CardListDTO> searchCardListAdmin(
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
-            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
-            @RequestParam(value = "name") String name,
-            @RequestParam(value = "password") String password) throws Exception {
+    public PageResult<CardListDTO> searchCardListAdmin(@RequestBody SearchCardParam param) throws Exception {
         // 管理权限验证
-        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        List<CardListDTO> dtoList = cardService.selectListAdmin(packageName, cardName, rare);
+        List<CardListDTO> dtoList = cardService.selectListAdmin(param);
         PageResult<CardListDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
+        result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
+        if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardListDTO data : result.getDataList()) {
                 CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
                 if (preview != null) {
@@ -114,25 +81,15 @@ public class CardListController {
     /**
      * 【玩家端】全已知卡片搜索
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param page        页码
-     * @param pageSize    页面大小
+     * @param param 参数
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/list/user")
-    public PageResult<CardListDTO> searchCardListUser(
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
-            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize
-    ) throws Exception {
-        List<CardListDTO> dtoList = cardService.selectListUser(packageName, cardName, rare);
+    public PageResult<CardListDTO> searchCardListUser(@RequestBody SearchCardParam param) throws Exception {
+        List<CardListDTO> dtoList = cardService.selectListUser(param);
         PageResult<CardListDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
+        result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
+        if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardListDTO data : result.getDataList()) {
                 CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
                 if (preview != null) {
@@ -181,24 +138,15 @@ public class CardListController {
     /**
      * 【ALL】查询卡片更改的历史纪录
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param page        页码
-     * @param pageSize    页面大小
+     * @param param 参数
      * @return 查询结果
      */
     @RequestMapping("/weird_project/card/history")
-    public PageResult<CardHistoryDTO> searchHistory(
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
-            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize
-    ) throws Exception {
-        List<CardHistoryDTO> dtoList = cardService.selectHistory(packageName, cardName, rare);
+    public PageResult<CardHistoryDTO> searchHistory(@RequestBody SearchHistoryParam param) throws Exception {
+        List<CardHistoryDTO> dtoList = cardService.selectHistory(param.getPackageName(), param.getCardName(), param.getRareList());
         PageResult<CardHistoryDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
+        result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
+        if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardHistoryDTO data : result.getDataList()) {
                 CardPreviewModel oldPreview = cardPreviewService.selectPreviewByName(data.getOldName());
                 CardPreviewModel newPreview = cardPreviewService.selectPreviewByName(data.getNewName());

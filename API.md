@@ -2,30 +2,32 @@
 ## 【管理端】全卡片搜索
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/list/admin?name=admin&password=1&package=&card=&rare=&page=1&pagesize=
+> http://127.0.0.1:15163/weird_project/card/list/admin
 
 #### 请求方式
-> GET
+> POST
 
 #### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| name     | admin | 必填 | 操作用户名称 |
-| password     | 1 | 必填 | 操作用户密码 |
-| package     | - | 选填 | 卡包名，模糊匹配 |
-| card     | - | 选填 | 卡片名，模糊匹配 |
-| rare     | - | 选填 | 稀有度，精确匹配 |
-| page     | 1 | 选填 | 页码 |
-| pagesize     | - | 选填 | 页面大小，默认20 |
+> json
 
 
 
 
 
+
+#### 请求Body参数
+
+```javascript
+{
+    "name": "admin",
+    "password": "",
+    "packageName": "",
+    "cardName": "",
+    "rareList": ["UR","SR"],
+    "page": 1,
+    "pageSize": 10
+}
+```
 
 #### 成功响应示例
 ```javascript
@@ -195,28 +197,30 @@
 ## 【玩家端】已知卡片搜索
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/list/user?package=&card=&rare=&page=&pagesize=
+> http://127.0.0.1:15163/weird_project/card/list/user
 
 #### 请求方式
-> GET
+> POST
 
 #### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| package     | - | 选填 | 卡包名，模糊匹配 |
-| card     | - | 选填 | 卡片名，模糊匹配 |
-| rare     | - | 选填 | 稀有度，精确匹配 |
-| page     | - | 选填 | 页码 |
-| pagesize     | - | 选填 | 页面大小，默认20 |
+> json
 
 
 
 
 
+
+#### 请求Body参数
+
+```javascript
+{
+    "packageName": "",
+    "cardName": "",
+    "rareList": ["UR","SR"],
+    "page": 1,
+    "pageSize": 10
+}
+```
 
 #### 成功响应示例
 ```javascript
@@ -386,30 +390,30 @@
 ## 【ALL】卡片列表搜索
 根据传入的账户信息，判断是否为管理员。若是管理员，则返回全卡列表， 否则返回已知卡片列表
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/list?name=admin&password=1&package=&card=&rare=&page=1&pagesize=
+> http://127.0.0.1:15163/weird_project/card/list
 
 #### 请求方式
-> GET
+> POST
 
 #### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| name     | admin | 选填 | 操作用户名称 |
-| password     | 1 | 选填 | 操作用户密码 |
-| package     | - | 选填 | 卡包名，模糊匹配 |
-| card     | - | 选填 | 卡片名，模糊匹配 |
-| rare     | - | 选填 | 稀有度，精确匹配 |
-| page     | 1 | 选填 | 页码 |
-| pagesize     | - | 选填 | 页面大小，默认20 |
+> json
 
 
 
 
 
+
+#### 请求Body参数
+
+```javascript
+{
+    "packageName": "",
+    "cardName": "",
+    "rareList": ["UR","SR"],
+    "page": 1,
+    "pageSize": 10
+}
+```
 
 #### 成功响应示例
 ```javascript
@@ -421,16 +425,22 @@
 			{
 				"cardName": "义豪灵蜥",
 				"packageName": "再造的世界",
+				"desc": "",
+				"picId": 0,
 				"rare": "N"
 			},
 			{
 				"cardName": "巨歧蜥·魔蜥义豪",
 				"packageName": "再造的世界",
+				"desc": "",
+				"picId": 0,
 				"rare": "N"
 			},
 			{
 				"cardName": "歧蜥·魔蜥义豪",
 				"packageName": "再造的世界",
+				"desc": "",
+				"picId": 0,
 				"rare": "N"
 			},
 			{

@@ -26,8 +26,11 @@
         select card_pk
         from card_history
         <where>
-            <if test="rare != null and rare != ''">
-                rare = #{rare}
+            <if test="rareList != null and rareList.size > 0">
+                rare in
+                <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="packages != null">
                 and package_id in

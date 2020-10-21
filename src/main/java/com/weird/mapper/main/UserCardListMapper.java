@@ -35,24 +35,24 @@ public interface UserCardListMapper {
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param rareList    稀有度列表
      * @return 查询结果
      */
     List<CardListDTO> selectCardListAdmin(@Param("packageName") String packageName,
                                           @Param("cardName") String cardName,
-                                          @Param("rare") String rare);
+                                          @Param("rareList") List<String> rareList);
 
     /**
      * 客户端查找卡片
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param rareList    稀有度列表
      * @return 查询结果
      */
     List<CardListDTO> selectCardListUser(@Param("packageName") String packageName,
                                          @Param("cardName") String cardName,
-                                         @Param("rare") String rare,
+                                         @Param("rareList") List<String> rareList,
                                          @Param("cardPk") int cardPk);
 
     /**

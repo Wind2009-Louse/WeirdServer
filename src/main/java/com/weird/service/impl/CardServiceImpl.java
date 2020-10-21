@@ -5,10 +5,7 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
-import com.weird.model.dto.BatchUpdateUserCardParam;
-import com.weird.model.dto.CardHistoryDTO;
-import com.weird.model.dto.CardListDTO;
-import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.dto.*;
 import com.weird.service.CardService;
 import com.weird.utils.CacheUtil;
 import com.weird.utils.OperationException;
@@ -187,27 +184,23 @@ public class CardServiceImpl implements CardService {
     /**
      * 管理端根据条件筛选所有卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param param 参数
      * @return 查询结果
      */
     @Override
-    public List<CardListDTO> selectListAdmin(String packageName, String cardName, String rare) {
-        return userCardListMapper.selectCardListAdmin(packageName, cardName, rare);
+    public List<CardListDTO> selectListAdmin(SearchCardParam param) {
+        return userCardListMapper.selectCardListAdmin(param.getPackageName(), param.getCardName(), param.getRareList());
     }
 
     /**
      * 玩家端根据条件筛选所有卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param param 参数
      * @return 查询结果
      */
     @Override
-    public List<CardListDTO> selectListUser(String packageName, String cardName, String rare) {
-        return userCardListMapper.selectCardListUser(packageName, cardName, rare, 0);
+    public List<CardListDTO> selectListUser(SearchCardParam param) {
+        return userCardListMapper.selectCardListUser(param.getPackageName(), param.getCardName(), param.getRareList(), 0);
     }
 
 
@@ -237,11 +230,11 @@ public class CardServiceImpl implements CardService {
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param rareList    稀有度列表
      * @return 查询结果
      */
     @Override
-    public List<CardHistoryDTO> selectHistory(String packageName, String cardName, String rare) {
+    public List<CardHistoryDTO> selectHistory(String packageName, String cardName, List<String> rareList) {
         List<Integer> packageIndexList;
         if (packageName.length() > 0) {
             List<PackageInfoModel> packageList = packageInfoMapper.selectByName(packageName);
@@ -249,7 +242,7 @@ public class CardServiceImpl implements CardService {
         } else {
             packageIndexList = null;
         }
-        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardName, rare);
+        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardName, rareList);
         if (cardIndexList.size() == 0) {
             return Collections.emptyList();
         } else {

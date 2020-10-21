@@ -1,9 +1,6 @@
 package com.weird.service;
 
-import com.weird.model.dto.BatchUpdateUserCardParam;
-import com.weird.model.dto.CardHistoryDTO;
-import com.weird.model.dto.CardListDTO;
-import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.dto.*;
 
 import java.util.List;
 
@@ -29,22 +26,18 @@ public interface CardService {
     /**
      * 管理端根据条件筛选所有卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param param 参数
      * @return 查询结果
      */
-    List<CardListDTO> selectListAdmin(String packageName, String cardName, String rare);
+    List<CardListDTO> selectListAdmin(SearchCardParam param) ;
 
     /**
      * 玩家端根据条件筛选所有卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param param 参数
      * @return 查询结果
      */
-    List<CardListDTO> selectListUser(String packageName, String cardName, String rare);
+    List<CardListDTO> selectListUser(SearchCardParam param);
 
     /**
      * 根据条件筛选拥有的卡片
@@ -62,8 +55,8 @@ public interface CardService {
      *
      * @param packageName 卡包名
      * @param cardName    卡片名
-     * @param rare        稀有度
+     * @param rareList    稀有度列表
      * @return 查询结果
      */
-    List<CardHistoryDTO> selectHistory(String packageName, String cardName, String rare);
+    List<CardHistoryDTO> selectHistory(String packageName, String cardName, List<String> rareList);
 }
