@@ -895,28 +895,30 @@
 ## 【ALL】卡片修改记录搜索
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/history?package=&card=&rare=&page=&pagesize=
+> http://127.0.0.1:15163/weird_project/card/history
 
 #### 请求方式
-> GET
+> POST
 
 #### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| package     | - | 选填 | 卡包名，模糊搜索 |
-| card     | - | 选填 | 卡片名，模糊搜索 |
-| rare     | - | 选填 | 稀有度，精确搜索，留空为所有稀有度 |
-| page     | - | 选填 | 页码 |
-| pagesize     | - | 选填 | 页面大小，默认20 |
+> json
 
 
 
 
 
+
+#### 请求Body参数
+
+```javascript
+{
+    "packageName": "",
+    "cardName": "",
+    "rareList": ["SR","HR"],
+    "page": 1,
+    "pageSize": 20
+}
+```
 
 #### 成功响应示例
 ```javascript
