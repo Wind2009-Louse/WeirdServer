@@ -19,13 +19,13 @@ public interface CardHistoryMapper {
      * 根据参数查找修改过的卡片Pk
      *
      * @param packageIndexList 卡包编号ID列表
-     * @param cardName         卡片名
+     * @param cardNameList     卡片名列表
      * @param rareList         稀有度
      * @return 卡片ID列表
      */
     List<Integer> selectCardPk(
             @Param("packages") List<Integer> packageIndexList,
-            @Param("card") String cardName,
+            @Param("cardNameList") List<String> cardNameList,
             @Param("rareList") List<String> rareList
     );
 

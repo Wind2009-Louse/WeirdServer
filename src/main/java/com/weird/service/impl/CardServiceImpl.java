@@ -249,7 +249,8 @@ public class CardServiceImpl implements CardService {
         } else {
             packageIndexList = null;
         }
-        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardName, rareList);
+        List<String> cardNameList = cardPreviewMapper.blurSearch(cardName);
+        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardNameList, rareList);
         if (cardIndexList.size() == 0) {
             return Collections.emptyList();
         } else {

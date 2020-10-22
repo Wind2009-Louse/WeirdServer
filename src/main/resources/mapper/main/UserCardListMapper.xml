@@ -69,13 +69,13 @@
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         where package_name like "%"||#{packageName}||"%"
-        <if test="cardNameList != null and cardNameList.size > 0">
+        <if test="cardNameList != null and cardNameList.size() > 0">
             and card_name in
             <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="rareList != null and rareList.size > 0">
+        <if test="rareList != null and rareList.size() > 0">
             and rare in
             <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
@@ -96,13 +96,13 @@
             <if test="packageName != null and packageName != ''">
                 and package_name like "%"||#{packageName}||"%"
             </if>
-            <if test="cardNameList != null and cardNameList.size > 0">
+            <if test="cardNameList != null and cardNameList.size() > 0">
                 and card_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-            <if test="rareList != null and rareList.size > 0">
+            <if test="rareList != null and rareList.size() > 0">
                 and rare in
                 <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
@@ -135,13 +135,13 @@
         where
         user_data.is_admin = 0 and user_card_list.count > 0
         and package_name like "%"||#{packageName}||"%"
-        <if test="cardNameList != null and cardNameList.size > 0">
+        <if test="cardNameList != null and cardNameList.size() > 0">
             and card_name in
             <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>
-        <if test="rareList != null and rareList.size > 0">
+        <if test="rareList != null and rareList.size() > 0">
             and rare in
             <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
                 #{item}

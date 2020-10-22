@@ -26,7 +26,7 @@
         select card_pk
         from card_history
         <where>
-            <if test="rareList != null and rareList.size > 0">
+            <if test="rareList != null and rareList.size() > 0">
                 rare in
                 <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
@@ -38,9 +38,21 @@
                     #{packageId}
                 </foreach>
             </if>
-            and
-                (old_name like "%"||#{card}||"%"
-            or new_name like "%"||#{card}||"%")
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (
+                    old_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                or
+                    new_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+
+            </if>
+
         </where>
         order by db_created_time desc
     </select>
