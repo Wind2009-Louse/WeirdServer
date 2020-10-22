@@ -2,6 +2,7 @@ package com.weird.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
+import lombok.ToString;
 
 import java.io.Serializable;
 import java.util.List;
@@ -13,6 +14,7 @@ import java.util.List;
  * @date 2020.10.21
  */
 @Data
+@ToString
 public class SearchCardParam implements Serializable {
     /**
      * 卡包名
@@ -25,6 +27,12 @@ public class SearchCardParam implements Serializable {
      */
     @JsonProperty(defaultValue = "")
     String cardName;
+
+    /**
+     * 目标用户
+     */
+    @JsonProperty(defaultValue = "")
+    String targetUser;
 
     /**
      * 稀有度

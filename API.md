@@ -663,29 +663,33 @@
 ## 【ALL】全卡片拥有情况搜索
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/ownlist?package=&card=&rare=&target=&page=&pagesize=
+> http://127.0.0.1:15163/weird_project/card/ownlist
 
 #### 请求方式
-> GET
+> POST
 
 #### Content-Type
-> form-data
-
-#### 请求Query参数
-
-| 参数        | 示例值   | 是否必填   |  参数描述  |
-| :--------   | :-----  | :-----  | :----  |
-| package     | - | 选填 | 卡包名，模糊搜索 |
-| card     | - | 选填 | 卡片名，模糊搜索 |
-| rare     | - | 选填 | 稀有度，精确搜索 |
-| target     | - | 选填 | 用户名，模糊搜索 |
-| page     | - | 选填 | 页码 |
-| pagesize     | - | 选填 | 页面大小，默认20 |
+> json
 
 
 
 
 
+
+#### 请求Body参数
+
+```javascript
+{
+	"packageName": "",
+	"cardName": "人造人",
+	"targetUser": "虱子",
+	"rareList": [
+		"SR"
+	],
+	"page": 1,
+	"pageSize": 10
+}
+```
 
 #### 成功响应示例
 ```javascript

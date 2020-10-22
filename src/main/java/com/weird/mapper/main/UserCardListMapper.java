@@ -33,40 +33,40 @@ public interface UserCardListMapper {
     /**
      * 管理端查找卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rareList    稀有度列表
+     * @param packageName  卡包名
+     * @param cardNameList 卡片名列表
+     * @param rareList     稀有度列表
      * @return 查询结果
      */
     List<CardListDTO> selectCardListAdmin(@Param("packageName") String packageName,
-                                          @Param("cardName") String cardName,
+                                          @Param("cardNameList") List<String> cardNameList,
                                           @Param("rareList") List<String> rareList);
 
     /**
      * 客户端查找卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rareList    稀有度列表
+     * @param packageName  卡包名
+     * @param cardNameList 卡片名列表
+     * @param rareList     稀有度列表
      * @return 查询结果
      */
     List<CardListDTO> selectCardListUser(@Param("packageName") String packageName,
-                                         @Param("cardName") String cardName,
+                                         @Param("cardNameList") List<String> cardNameList,
                                          @Param("rareList") List<String> rareList,
                                          @Param("cardPk") int cardPk);
 
     /**
      * 查找卡片持有情况
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param userName    用户名
-     * @return 查询结果
+     * @param packageName  卡包名
+     * @param cardNameList 卡片名列表
+     * @param rareList     稀有度列表
+     * @param userName     用户名
+     * @return
      */
     List<CardOwnListDTO> selectCardOwnList(@Param("packageName") String packageName,
-                                           @Param("cardName") String cardName,
-                                           @Param("rare") String rare,
+                                           @Param("cardNameList") List<String> cardNameList,
+                                           @Param("rareList") List<String> rareList,
                                            @Param("userName") String userName);
 
     /**

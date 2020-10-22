@@ -30,4 +30,13 @@
         select id, name, desc from texts
         where name = #{name}) filter_texts on datas.id = filter_texts.id
     </select>
+
+    <select id="blurSearch" resultType="java.lang.String">
+        select distinct texts.name
+        from texts
+        where
+            texts.name like "%"||#{word}||"%"
+        or
+            texts.desc like "%"||#{word}||"%"
+    </select>
 </mapper>

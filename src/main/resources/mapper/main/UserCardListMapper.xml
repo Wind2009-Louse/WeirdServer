@@ -69,7 +69,12 @@
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         where package_name like "%"||#{packageName}||"%"
-        and card_name like "%"||#{cardName}||"%"
+        <if test="cardNameList != null and cardNameList.size > 0">
+            and card_name in
+            <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="rareList != null and rareList.size > 0">
             and rare in
             <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
@@ -91,8 +96,11 @@
             <if test="packageName != null and packageName != ''">
                 and package_name like "%"||#{packageName}||"%"
             </if>
-            <if test="cardName != null and cardName != ''">
-                and card_name like "%"||#{cardName}||"%"
+            <if test="cardNameList != null and cardNameList.size > 0">
+                and card_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="rareList != null and rareList.size > 0">
                 and rare in
@@ -127,9 +135,17 @@
         where
         user_data.is_admin = 0 and user_card_list.count > 0
         and package_name like "%"||#{packageName}||"%"
-        and card_name like "%"||#{cardName}||"%"
-        <if test="rare != ''">
-            and rare = #{rare}
+        <if test="cardNameList != null and cardNameList.size > 0">
+            and card_name in
+            <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="rareList != null and rareList.size > 0">
+            and rare in
+            <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
         and user_name like "%"||#{userName}||"%"
         order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name

@@ -19,4 +19,12 @@ public interface CardPreviewMapper {
      * @return 效果Model
      */
     List<CardPreviewModel> getPreviewByName(@Param("name") String name);
+
+    /**
+     * 根据关键词从卡名和效果中查找符合条件的卡片
+     *
+     * @param  word 关键词
+     * @return 卡名列表
+     */
+    List<String> blurSearch(@Param("word") String word);
 }

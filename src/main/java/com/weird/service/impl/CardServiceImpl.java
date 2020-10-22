@@ -1,5 +1,7 @@
 package com.weird.service.impl;
 
+import com.alibaba.druid.support.json.JSONUtils;
+import com.weird.mapper.card.CardPreviewMapper;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
@@ -41,6 +43,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     CardHistoryMapper cardHistoryMapper;
+
+    @Autowired
+    CardPreviewMapper cardPreviewMapper;
 
     /**
      * 修改用户持有的卡片数量
@@ -189,7 +194,8 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param) {
-        return userCardListMapper.selectCardListAdmin(param.getPackageName(), param.getCardName(), param.getRareList());
+        List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
+        return userCardListMapper.selectCardListAdmin(param.getPackageName(), nameList, param.getRareList());
     }
 
     /**
@@ -200,26 +206,27 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param) {
-        return userCardListMapper.selectCardListUser(param.getPackageName(), param.getCardName(), param.getRareList(), 0);
+        List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
+        return userCardListMapper.selectCardListUser(param.getPackageName(), nameList, param.getRareList(), 0);
     }
 
 
     /**
      * 根据条件筛选拥有的卡片
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param userName    用户名
+     * @param param 参数
      * @return 查询结果
      */
     @Override
-    public List<CardOwnListDTO> selectList(String packageName, String cardName, String rare, String userName) {
-        String key = String.format("{%s,%s,%s,%s}", packageName, cardName, rare, userName);
+    public List<CardOwnListDTO> selectList(SearchCardParam param) {
+        param.setName("");
+        param.setPassword("");
+        String key = param.toString();
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
-            cache = userCardListMapper.selectCardOwnList(packageName, cardName, rare, userName);
+            List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
+            cache = userCardListMapper.selectCardOwnList(param.getPackageName(), nameList, param.getRareList(), param.getTargetUser());
             CacheUtil.putCardOwnListCache(key, cache);
         }
         return cache;

@@ -41,4 +41,14 @@ public class CardPreviewServiceImpl implements CardPreviewService {
         }
     }
 
+    /**
+     * 根据关键词从卡名和效果中查找符合条件的卡片
+     *
+     * @param  word 关键词
+     * @return 卡名列表
+     */
+    @Override
+    public List<String> blurSearch(String word) {
+        return cardPreviewMapper.blurSearch(word);
+    }
 }

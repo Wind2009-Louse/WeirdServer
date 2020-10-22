@@ -104,26 +104,15 @@ public class CardListController {
     /**
      * 【ALL】全卡片拥有情况搜索
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rare        稀有度
-     * @param targetUser  用户名
-     * @param page        页码
-     * @param pageSize    页面大小
+     * @param param 参数
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/card/ownlist")
-    public PageResult<CardOwnListDTO> searchCardOwnList(
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "card", required = false, defaultValue = "") String cardName,
-            @RequestParam(value = "rare", required = false, defaultValue = "") String rare,
-            @RequestParam(value = "target", required = false, defaultValue = "") String targetUser,
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize) throws Exception {
-        List<CardOwnListDTO> dtoList = cardService.selectList(packageName, cardName, rare, targetUser);
+    public PageResult<CardOwnListDTO> searchCardOwnList(@RequestBody SearchCardParam param) throws Exception {
+        List<CardOwnListDTO> dtoList = cardService.selectList(param);
         PageResult<CardOwnListDTO> result = new PageResult<>();
-        result.addPageInfo(dtoList, page, pageSize);
-        if (pageSize < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
+        result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
+        if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
             for (CardOwnListDTO data : result.getDataList()) {
                 CardPreviewModel preview = cardPreviewService.selectPreviewByName(data.getCardName());
                 if (preview != null) {
