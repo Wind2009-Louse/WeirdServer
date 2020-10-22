@@ -76,7 +76,7 @@
                 #{item}
             </foreach>
         </if>
-        order by package_card.package_id, package_card.rare, package_card.card_name
+        order by package_info.order_num, package_card.rare, package_card.card_name
     </select>
 
     <select id="selectCardListUser" resultMap="CardListDTO" useCache="false">
@@ -104,7 +104,7 @@
                 and card_pk = #{cardPk}
             </if>
         </where>
-        order by package_card.package_id, package_card.rare, package_card.card_name
+        order by package_info.order_num, package_card.rare, package_card.card_name
     </select>
 
     <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">
@@ -132,7 +132,7 @@
             and rare = #{rare}
         </if>
         and user_name like "%"||#{userName}||"%"
-        order by package_card.package_id, package_card.rare, package_card.card_name, user_data.user_name
+        order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 
     <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="true">
