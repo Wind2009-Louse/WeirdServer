@@ -2,7 +2,7 @@ package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
 import com.weird.model.PackageInfoModel;
-import com.weird.model.dto.PackageSortParam;
+import com.weird.model.param.PackageSortParam;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.PackageService;
 import com.weird.service.UserService;

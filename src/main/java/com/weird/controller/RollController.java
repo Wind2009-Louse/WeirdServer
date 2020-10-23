@@ -2,7 +2,7 @@ package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RollListDTO;
-import com.weird.model.dto.RollParam;
+import com.weird.model.param.RollParam;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.RollService;
 import com.weird.service.UserService;

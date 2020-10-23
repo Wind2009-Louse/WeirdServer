@@ -1,6 +1,7 @@
 package com.weird.aspect;
 
-import com.weird.model.dto.*;
+import com.weird.model.param.SearchCardParam;
+import com.weird.model.param.SearchHistoryParam;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;

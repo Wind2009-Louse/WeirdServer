@@ -1,6 +1,9 @@
 package com.weird.service;
 
 import com.weird.model.dto.*;
+import com.weird.model.param.BatchUpdateUserCardParam;
+import com.weird.model.param.SearchCardParam;
+import com.weird.model.param.SearchHistoryParam;
 
 import java.util.List;
 

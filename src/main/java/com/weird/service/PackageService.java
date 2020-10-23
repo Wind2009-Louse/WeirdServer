@@ -1,7 +1,7 @@
 package com.weird.service;
 
 import com.weird.model.PackageInfoModel;
-import com.weird.model.dto.BatchAddCardParam;
+import com.weird.model.param.BatchAddCardParam;
 import com.weird.utils.OperationException;
 
 import java.util.List;

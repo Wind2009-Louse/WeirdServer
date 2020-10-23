@@ -1,4 +1,4 @@
-package com.weird.model.dto;
+package com.weird.model.param;
 
 import lombok.Data;
 

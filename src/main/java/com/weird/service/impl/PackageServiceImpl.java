@@ -7,7 +7,7 @@ import com.weird.mapper.main.PackageInfoMapper;
 import com.weird.model.CardHistoryModel;
 import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
-import com.weird.model.dto.BatchAddCardParam;
+import com.weird.model.param.BatchAddCardParam;
 import com.weird.service.PackageService;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;

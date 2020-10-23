@@ -1,7 +1,7 @@
 package com.weird.aspect;
 
-import com.weird.model.dto.SearchCardParam;
-import com.weird.model.dto.SearchHistoryParam;
+import com.weird.model.param.SearchCardParam;
+import com.weird.model.param.SearchHistoryParam;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

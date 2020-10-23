@@ -1,7 +1,7 @@
 package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
-import com.weird.model.dto.BatchUpdateUserCardParam;
+import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
