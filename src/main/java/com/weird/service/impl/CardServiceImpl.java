@@ -194,7 +194,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
-        return userCardListMapper.selectCardListAdmin(param.getPackageName(), cardList, param.getRareList());
+        return userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
     }
 
     /**
@@ -206,7 +206,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
-        return userCardListMapper.selectCardListUser(param.getPackageName(), cardList, param.getRareList(), 0);
+        return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), 0);
     }
 
 
@@ -225,7 +225,7 @@ public class CardServiceImpl implements CardService {
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
-            cache = userCardListMapper.selectCardOwnList(param.getPackageName(), cardList, param.getRareList(), param.getTargetUser());
+            cache = userCardListMapper.selectCardOwnList(param.getPackageNameList(), cardList, param.getRareList(), param.getTargetUserList());
             CacheUtil.putCardOwnListCache(key, cache);
         }
         return cache;

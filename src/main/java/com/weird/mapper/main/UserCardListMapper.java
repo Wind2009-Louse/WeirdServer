@@ -33,24 +33,25 @@ public interface UserCardListMapper {
     /**
      * 管理端查找卡片
      *
-     * @param packageName  卡包名
-     * @param cardNameList 卡片名列表
-     * @param rareList     稀有度列表
+     * @param packageNameList 卡包名列表
+     * @param cardNameList    卡片名列表
+     * @param rareList        稀有度列表
      * @return 查询结果
      */
-    List<CardListDTO> selectCardListAdmin(@Param("packageName") String packageName,
+    List<CardListDTO> selectCardListAdmin(@Param("packageNameList") List<String> packageNameList,
                                           @Param("cardNameList") List<String> cardNameList,
                                           @Param("rareList") List<String> rareList);
 
     /**
      * 客户端查找卡片
      *
-     * @param packageName  卡包名
-     * @param cardNameList 卡片名列表
-     * @param rareList     稀有度列表
+     * @param packageNameList 卡包名列表
+     * @param cardNameList    卡片名列表
+     * @param rareList        稀有度列表
+     * @param cardPk          不包括在内的卡片ID
      * @return 查询结果
      */
-    List<CardListDTO> selectCardListUser(@Param("packageName") String packageName,
+    List<CardListDTO> selectCardListUser(@Param("packageNameList") List<String> packageNameList,
                                          @Param("cardNameList") List<String> cardNameList,
                                          @Param("rareList") List<String> rareList,
                                          @Param("cardPk") int cardPk);
@@ -58,16 +59,16 @@ public interface UserCardListMapper {
     /**
      * 查找卡片持有情况
      *
-     * @param packageName  卡包名
-     * @param cardNameList 卡片名列表
-     * @param rareList     稀有度列表
-     * @param userName     用户名
+     * @param packageNameList 卡包名列表
+     * @param cardNameList    卡片名列表
+     * @param rareList        稀有度列表
+     * @param userNameList    用户名列表
      * @return
      */
-    List<CardOwnListDTO> selectCardOwnList(@Param("packageName") String packageName,
+    List<CardOwnListDTO> selectCardOwnList(@Param("packageNameList") List<String> packageNameList,
                                            @Param("cardNameList") List<String> cardNameList,
                                            @Param("rareList") List<String> rareList,
-                                           @Param("userName") String userName);
+                                           @Param("userNameList") List<String> userNameList);
 
     /**
      * 查找卡片的拥有数量

@@ -19,13 +19,16 @@
 
 ```javascript
 {
-    "name": "admin",
-    "password": "",
-    "packageName": "",
-    "cardName": "",
-    "rareList": ["UR","SR"],
-    "page": 1,
-    "pageSize": 10
+	"name": "admin",
+	"password": "",
+	"packageNameList": [],
+	"cardName": "",
+	"rareList": [
+		"UR",
+		"SR"
+	],
+	"page": 1,
+	"pageSize": 10
 }
 ```
 
@@ -214,11 +217,14 @@
 
 ```javascript
 {
-    "packageName": "",
-    "cardName": "",
-    "rareList": ["UR","SR"],
-    "page": 1,
-    "pageSize": 10
+	"packageNameList": [],
+	"cardName": "",
+	"rareList": [
+		"UR",
+		"SR"
+	],
+	"page": 1,
+	"pageSize": 10
 }
 ```
 
@@ -407,11 +413,14 @@
 
 ```javascript
 {
-    "packageName": "",
-    "cardName": "",
-    "rareList": ["UR","SR"],
-    "page": 1,
-    "pageSize": 10
+	"packageNameList": [],
+	"cardName": "",
+	"rareList": [
+		"UR",
+		"SR"
+	],
+	"page": 1,
+	"pageSize": 10
 }
 ```
 
@@ -680,11 +689,12 @@
 
 ```javascript
 {
-	"packageName": "",
+	"packageNameList": [],
 	"cardName": "人造人",
-	"targetUser": "虱子",
+	"targetUserList": [],
 	"rareList": [
-		"SR"
+		"SR",
+		"UR"
 	],
 	"page": 1,
 	"pageSize": 10

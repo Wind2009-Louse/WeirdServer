@@ -53,14 +53,14 @@ public class SearchParamFixAspect {
             object = (Object) historyParam;
         } else if (object instanceof SearchCardParam) {
             SearchCardParam cardParam = (SearchCardParam) object;
-            if (cardParam.getPackageName() == null) {
-                cardParam.setPackageName("");
+            if (cardParam.getPackageNameList() == null) {
+                cardParam.setPackageNameList(new LinkedList<>());
             }
             if (cardParam.getCardName() == null) {
                 cardParam.setCardName("");
             }
-            if (cardParam.getTargetUser() == null) {
-                cardParam.setTargetUser("");
+            if (cardParam.getTargetUserList() == null) {
+                cardParam.setTargetUserList(new LinkedList<>());
             }
             if (cardParam.getRareList() == null) {
                 cardParam.setRareList(new LinkedList<>());

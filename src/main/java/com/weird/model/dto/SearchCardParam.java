@@ -19,8 +19,7 @@ public class SearchCardParam implements Serializable {
     /**
      * 卡包名
      */
-    @JsonProperty(defaultValue = "")
-    String packageName;
+    List<String> packageNameList;
 
     /**
      * 卡片名
@@ -31,8 +30,7 @@ public class SearchCardParam implements Serializable {
     /**
      * 目标用户
      */
-    @JsonProperty(defaultValue = "")
-    String targetUser;
+    List<String> targetUserList;
 
     /**
      * 稀有度

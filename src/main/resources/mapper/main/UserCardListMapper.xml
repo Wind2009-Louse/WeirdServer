@@ -68,19 +68,26 @@
         package_card.card_name,
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
-        where package_name like "%"||#{packageName}||"%"
-        <if test="cardNameList != null and cardNameList.size() > 0">
-            and card_name in
-            <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="rareList != null and rareList.size() > 0">
-            and rare in
-            <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
+        <where>
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                and package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and card_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="rareList != null and rareList.size() > 0">
+                and rare in
+                <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
         order by package_info.order_num, package_card.rare, package_card.card_name
     </select>
 
@@ -93,8 +100,11 @@
             (
             rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
             )
-            <if test="packageName != null and packageName != ''">
-                and package_name like "%"||#{packageName}||"%"
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                and package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
             <if test="cardNameList != null and cardNameList.size() > 0">
                 and card_name in
@@ -134,7 +144,12 @@
         inner join user_data on user_data.user_id = user_card_list.user_id
         where
         user_data.is_admin = 0 and user_card_list.count > 0
-        and package_name like "%"||#{packageName}||"%"
+        <if test="packageNameList != null and packageNameList.size() > 0">
+            and package_name in
+            <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         <if test="cardNameList != null and cardNameList.size() > 0">
             and card_name in
             <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
@@ -147,7 +162,12 @@
                 #{item}
             </foreach>
         </if>
-        and user_name like "%"||#{userName}||"%"
+        <if test="userNameList != null and userNameList.size() > 0">
+            and user_name in
+            <foreach collection="userNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
         order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 
