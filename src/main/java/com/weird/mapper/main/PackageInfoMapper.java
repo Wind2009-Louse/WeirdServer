@@ -35,6 +35,14 @@ public interface PackageInfoMapper {
     List<PackageInfoModel> selectByName(String packageName);
 
     /**
+     * 根据卡包名列表搜索卡包列表ID
+     *
+     * @param packageNameList 卡包名列表
+     * @return 卡包列表ID
+     */
+    List<Integer> selectByNameList(@Param("packageNameList") List<String> packageNameList);
+
+    /**
      * 清除原有的排序号
      *
      * @return 更改数量
@@ -45,7 +53,7 @@ public interface PackageInfoMapper {
      * 更新排序号
      *
      * @param packageId 卡包号
-     * @param orderNum 排序号
+     * @param orderNum  排序号
      * @return
      */
     int updateOrder(@Param("packageId") int packageId, @Param("orderNum") int orderNum);

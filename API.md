@@ -926,11 +926,14 @@
 
 ```javascript
 {
-    "packageName": "",
-    "cardName": "",
-    "rareList": ["SR","HR"],
-    "page": 1,
-    "pageSize": 20
+	"packageNameList": [],
+	"cardName": "",
+	"rareList": [
+		"SR",
+		"HR"
+	],
+	"page": 1,
+	"pageSize": 20
 }
 ```
 

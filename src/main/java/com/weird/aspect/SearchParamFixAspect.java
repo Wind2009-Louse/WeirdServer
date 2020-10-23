@@ -35,8 +35,8 @@ public class SearchParamFixAspect {
     private Object fix(Object object) throws IllegalAccessException {
         if (object instanceof SearchHistoryParam) {
             SearchHistoryParam historyParam = (SearchHistoryParam) object;
-            if (historyParam.getPackageName() == null) {
-                historyParam.setPackageName("");
+            if (historyParam.getPackageNameList() == null) {
+                historyParam.setPackageNameList(new LinkedList<>());
             }
             if (historyParam.getCardName() == null) {
                 historyParam.setCardName("");

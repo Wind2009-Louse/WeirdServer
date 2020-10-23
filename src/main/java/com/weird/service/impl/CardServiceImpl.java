@@ -3,10 +3,11 @@ package com.weird.service.impl;
 import com.weird.mapper.card.CardPreviewMapper;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
-import com.weird.model.PackageInfoModel;
 import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
-import com.weird.model.dto.*;
+import com.weird.model.dto.CardHistoryDTO;
+import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
@@ -18,13 +19,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 
@@ -45,9 +46,6 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     CardHistoryMapper cardHistoryMapper;
-
-    @Autowired
-    CardPreviewMapper cardPreviewMapper;
 
     /**
      * 修改用户持有的卡片数量
@@ -244,11 +242,10 @@ public class CardServiceImpl implements CardService {
     @Override
     public List<CardHistoryDTO> selectHistory(SearchHistoryParam param, List<String> cardList) {
         List<Integer> packageIndexList;
-        if (param.getPackageName().length() > 0) {
-            List<PackageInfoModel> packageList = packageInfoMapper.selectByName(param.getPackageName());
-            packageIndexList = packageList.stream().map(PackageInfoModel::getPackageId).collect(Collectors.toList());
-        } else {
+        if (CollectionUtils.isEmpty(param.getPackageNameList())) {
             packageIndexList = null;
+        } else {
+            packageIndexList = packageInfoMapper.selectByNameList(param.getPackageNameList());
         }
         List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardList, param.getRareList());
         if (cardIndexList.size() == 0) {

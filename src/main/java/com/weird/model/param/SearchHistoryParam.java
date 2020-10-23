@@ -16,7 +16,7 @@ public class SearchHistoryParam implements Serializable {
     /**
      * 卡包名
      */
-    String packageName;
+    List<String> packageNameList;
 
     /**
      * 卡片名

@@ -79,6 +79,20 @@
         order by order_num
     </select>
 
+    <select id="selectByNameList" resultType="java.lang.Integer">
+        select package_id
+        from package_info
+        <where>
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by order_num
+    </select>
+
     <update id="clearOrder">
         update package_info
         set order_num = 0
