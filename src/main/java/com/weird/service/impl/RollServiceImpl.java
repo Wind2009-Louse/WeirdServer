@@ -22,6 +22,12 @@ import java.util.List;
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
 
+/**
+ * RollService实现
+ *
+ * @author Nidhogg
+ * @date 2020.9.5
+ */
 @Service
 @Slf4j
 public class RollServiceImpl implements RollService {

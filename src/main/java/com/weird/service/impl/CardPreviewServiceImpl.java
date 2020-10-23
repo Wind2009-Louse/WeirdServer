@@ -6,6 +6,7 @@ import com.weird.service.CardPreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
@@ -33,12 +34,13 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     public CardPreviewModel selectPreviewByName(String name) {
         try {
             List<CardPreviewModel> list = cardPreviewMapper.getPreviewByName(name);
-            if (list == null || list.size() <= 0) {
+            if (CollectionUtils.isEmpty(list)) {
                 return null;
             } else {
                 return list.get(0);
             }
         } catch (Exception e) {
+            log.error("查询卡片[{}]效果时出现错误：{}", name, e.getMessage());
             return null;
         }
     }
@@ -46,7 +48,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     /**
      * 根据关键词从卡名和效果中查找符合条件的卡片
      *
-     * @param  word 关键词
+     * @param word 关键词
      * @return 卡名列表
      */
     @Override
