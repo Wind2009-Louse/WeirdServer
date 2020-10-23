@@ -3,8 +3,9 @@ package com.weird.controller;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RollListDTO;
-import com.weird.model.param.RollParam;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.param.RollParam;
+import com.weird.model.param.SearchRollParam;
 import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
@@ -111,21 +112,13 @@ public class RollController {
     /**
      * 【ALL】查询抽卡结果
      *
-     * @param page     当前页码
-     * @param userName 抽卡用户名
+     * @param param 参数
      * @return 抽卡结果
      */
     @RequestMapping("/weird_project/roll/list")
     @SearchParamFix
-    public PageResult<RollListDTO> getRollList(
-            @RequestParam(value = "page", required = false, defaultValue = "1") int page,
-            @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,
-            @RequestParam(value = "package", required = false, defaultValue = "") String packageName,
-            @RequestParam(value = "user", required = false, defaultValue = "") String userName,
-            @RequestParam(value = "start", required = false, defaultValue = "0") long startTime,
-            @RequestParam(value = "end", required = false, defaultValue = "0") long endTime) throws Exception {
-        return rollService.selectRollList(packageName, userName, startTime, endTime,
-                page, pageSize);
+    public PageResult<RollListDTO> getRollList(@RequestBody SearchRollParam param) throws Exception {
+        return rollService.selectRollList(param);
     }
 
     /**

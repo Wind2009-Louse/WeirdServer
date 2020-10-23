@@ -5,6 +5,7 @@ import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
+import com.weird.model.param.SearchRollParam;
 import com.weird.service.CardPreviewService;
 import com.weird.service.RollService;
 import com.weird.utils.*;
@@ -131,23 +132,13 @@ public class RollServiceImpl implements RollService {
     /**
      * 根据卡包名和用户名查找抽卡结果
      *
-     * @param packageName 卡包名
-     * @param userName    用户名
-     * @param startTime   抽卡开始时间
-     * @param endTime     抽卡结束时间
-     * @param page        页码
-     * @param pageSize    页面大小
+     * @param param 参数
      * @return 结果列表
      */
     @Override
-    public PageResult<RollListDTO> selectRollList(String packageName,
-                                                  String userName,
-                                                  long startTime,
-                                                  long endTime,
-                                                  int page,
-                                                  int pageSize) throws Exception {
+    public PageResult<RollListDTO> selectRollList(SearchRollParam param) throws Exception {
         // 命中缓存，直接返回
-        String totalKey = String.format("{%s,%s,%d,%d,%d,%d}", packageName, userName, startTime, endTime, page, pageSize);
+        String totalKey = param.toString();
         log.debug("查询抽卡记录列表：{}", totalKey);
         PageResult<RollListDTO> cache = CacheUtil.getRollListWithDetailCache(totalKey);
         if (cache != null) {
@@ -156,19 +147,23 @@ public class RollServiceImpl implements RollService {
 
         SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String startString = null;
-        if (startTime > 0) {
-            startString = fm.format(new Date(startTime * 1000));
+        if (param.getStartTime() > 0) {
+            startString = fm.format(new Date(param.getStartTime() * 1000));
         }
         String endString = null;
-        if (endTime > 0) {
-            endString = fm.format(new Date(endTime * 1000));
+        if (param.getEndTime() > 0) {
+            endString = fm.format(new Date(param.getEndTime() * 1000));
         }
 
         // 通过分页截取需要查询详细内容的部分
-        String subKey = String.format("{%s,%s,%d,%d}", packageName, userName, startTime, endTime);
+        int page = param.getPage();
+        int pageSize = param.getPageSize();
+        param.setPage(0);
+        param.setPageSize(0);
+        String subKey = param.toString();
         List<RollListDTO> allRollList = CacheUtil.getRollListCache(subKey);
         if (allRollList == null) {
-            allRollList = rollListMapper.selectByParam(packageName, userName, startString, endString);
+            allRollList = rollListMapper.selectByParam(param.getPackageNameList(), param.getUserNameList(), startString, endString);
             CacheUtil.putRollListCache(subKey, allRollList);
         }
 

@@ -94,15 +94,26 @@
         from
         roll_list inner join user_data on roll_list.roll_user_id = user_data.user_id
         inner join package_info on roll_list.roll_package_id = package_info.package_id
-        where
-        package_info.package_name like "%"||#{packageName}||"%"
-        and user_data.user_name like "%"||#{userName}||"%"
-        <if test="startTime != null and startTime != ''">
-            and roll_list.db_created_time &gt;= #{startTime}
-        </if>
-        <if test="endTime != null and endTime != ''">
-            and roll_list.db_created_time &lt;= #{endTime}
-        </if>
+        <where>
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                package_info.package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userNameList != null and userNameList.size() > 0">
+                and user_data.user_name in
+                <foreach collection="userNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and roll_list.db_created_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and roll_list.db_created_time &lt;= #{endTime}
+            </if>
+        </where>
         order by roll_list.db_created_time desc
     </select>
 

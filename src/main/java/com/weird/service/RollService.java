@@ -1,6 +1,7 @@
 package com.weird.service;
 
 import com.weird.model.dto.RollListDTO;
+import com.weird.model.param.SearchRollParam;
 import com.weird.utils.PageResult;
 
 import java.util.List;
@@ -9,20 +10,10 @@ public interface RollService {
     /**
      * 根据卡包名和用户名查找抽卡结果
      *
-     * @param packageName 卡包名
-     * @param userName    用户名
-     * @param startTime   抽卡开始时间
-     * @param endTime     抽卡结束时间
-     * @param page        页码
-     * @param pageSize    页面大小
+     * @param param 参数
      * @return 结果列表
      */
-    PageResult<RollListDTO> selectRollList(String packageName,
-                                           String userName,
-                                           long startTime,
-                                           long endTime,
-                                           int page,
-                                           int pageSize) throws Exception;
+    PageResult<RollListDTO> selectRollList(SearchRollParam param) throws Exception;
 
     /**
      * 抽卡处理
