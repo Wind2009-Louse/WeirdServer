@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.param.RollParam;
@@ -115,6 +116,7 @@ public class RollController {
      * @return 抽卡结果
      */
     @RequestMapping("/weird_project/roll/list")
+    @SearchParamFix
     public PageResult<RollListDTO> getRollList(
             @RequestParam(value = "page", required = false, defaultValue = "1") int page,
             @RequestParam(value = "pagesize", required = false, defaultValue = "20") int pageSize,

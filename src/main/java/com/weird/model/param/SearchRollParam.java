@@ -8,22 +8,32 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * 修改历史查询参数
+ * 搜索抽卡结果参数
  *
  * @author Nidhogg
- * @date 2020.10.21
+ * @date 2020.10.23
  */
 @Data
-public class SearchHistoryParam implements Serializable, Fixable {
+public class SearchRollParam implements Serializable, Fixable {
     /**
-     * 卡包名
+     * 卡包名列表
      */
     List<String> packageNameList;
 
     /**
-     * 卡片名
+     * 用户名列表
      */
-    String cardName;
+    List<String> userNameList;
+
+    /**
+     * 开始时间
+     */
+    long startTime;
+
+    /**
+     * 结束时间
+     */
+    long endTime;
 
     /**
      * 当前页码
@@ -35,21 +45,13 @@ public class SearchHistoryParam implements Serializable, Fixable {
      */
     int pageSize;
 
-    /**
-     * 稀有度列表
-     */
-    List<String> rareList;
-
     @Override
     public void fix() {
         if (this.packageNameList == null) {
             this.packageNameList = new LinkedList<>();
         }
-        if (this.cardName == null) {
-            this.cardName = "";
-        }
-        if (this.rareList == null) {
-            this.rareList = new LinkedList<>();
+        if (this.userNameList == null) {
+            this.userNameList = new LinkedList<>();
         }
         if (this.page == 0) {
             this.page = 1;

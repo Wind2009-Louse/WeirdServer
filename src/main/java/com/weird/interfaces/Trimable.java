@@ -1,4 +1,4 @@
-package com.weird.model;
+package com.weird.interfaces;
 
 /**
  * 需要对参数进行Trim操作的类

@@ -1,6 +1,6 @@
 package com.weird.aspect;
 
-import com.weird.model.Trimable;
+import com.weird.interfaces.Trimable;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;

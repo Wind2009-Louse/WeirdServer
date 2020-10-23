@@ -1,13 +1,12 @@
 package com.weird.aspect;
 
-import com.weird.model.param.SearchCardParam;
-import com.weird.model.param.SearchHistoryParam;
+import com.weird.interfaces.Fixable;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
 
-import java.util.LinkedList;
+import java.lang.reflect.Field;
 
 /**
  * 修复结构体中的null参数
@@ -32,46 +31,18 @@ public class SearchParamFixAspect {
         return point.proceed(args);
     }
 
-    private Object fix(Object object) throws IllegalAccessException {
-        if (object instanceof SearchHistoryParam) {
-            SearchHistoryParam historyParam = (SearchHistoryParam) object;
-            if (historyParam.getPackageNameList() == null) {
-                historyParam.setPackageNameList(new LinkedList<>());
+    private Object fix(Object object) {
+        // 对继承了Fixable接口的类进行Fix操作
+        for (Class<?> interFace : object.getClass().getInterfaces()) {
+            if (interFace.equals(Fixable.class)) {
+                Field[] fields = object.getClass().getDeclaredFields();
+                for (Field field : fields) {
+                    boolean flag = field.isAccessible();
+                    field.setAccessible(true);
+                    ((Fixable) object).fix();
+                    field.setAccessible(flag);
+                }
             }
-            if (historyParam.getCardName() == null) {
-                historyParam.setCardName("");
-            }
-            if (historyParam.getRareList() == null) {
-                historyParam.setRareList(new LinkedList<>());
-            }
-            if (historyParam.getPage() == 0) {
-                historyParam.setPage(1);
-            }
-            if (historyParam.getPageSize() == 0) {
-                historyParam.setPageSize(20);
-            }
-            object = (Object) historyParam;
-        } else if (object instanceof SearchCardParam) {
-            SearchCardParam cardParam = (SearchCardParam) object;
-            if (cardParam.getPackageNameList() == null) {
-                cardParam.setPackageNameList(new LinkedList<>());
-            }
-            if (cardParam.getCardName() == null) {
-                cardParam.setCardName("");
-            }
-            if (cardParam.getTargetUserList() == null) {
-                cardParam.setTargetUserList(new LinkedList<>());
-            }
-            if (cardParam.getRareList() == null) {
-                cardParam.setRareList(new LinkedList<>());
-            }
-            if (cardParam.getPage() == 0) {
-                cardParam.setPage(1);
-            }
-            if (cardParam.getPageSize() == 0) {
-                cardParam.setPageSize(20);
-            }
-            object = (Object) cardParam;
         }
 
         return object;

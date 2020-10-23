@@ -1,6 +1,6 @@
 package com.weird.model.dto;
 
-import com.weird.model.Trimable;
+import com.weird.interfaces.Trimable;
 import lombok.Data;
 
 import java.io.Serializable;

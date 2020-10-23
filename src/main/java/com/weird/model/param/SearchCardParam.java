@@ -1,10 +1,12 @@
 package com.weird.model.param;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.weird.interfaces.Fixable;
 import lombok.Data;
 import lombok.ToString;
 
 import java.io.Serializable;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -15,7 +17,7 @@ import java.util.List;
  */
 @Data
 @ToString
-public class SearchCardParam implements Serializable {
+public class SearchCardParam implements Serializable, Fixable {
     /**
      * 卡包名
      */
@@ -58,4 +60,26 @@ public class SearchCardParam implements Serializable {
      * 操作用户密码
      */
     String password;
+
+    @Override
+    public void fix() {
+        if (this.packageNameList == null) {
+            this.packageNameList = new LinkedList<>();
+        }
+        if (this.cardName == null) {
+            this.cardName = "";
+        }
+        if (this.targetUserList == null) {
+            this.targetUserList = new LinkedList<>();
+        }
+        if (this.rareList == null) {
+            this.rareList = new LinkedList<>();
+        }
+        if (this.page == 0) {
+            this.page = 1;
+        }
+        if (this.pageSize == 0) {
+            this.pageSize = 20;
+        }
+    }
 }
