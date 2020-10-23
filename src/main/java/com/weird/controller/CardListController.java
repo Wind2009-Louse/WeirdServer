@@ -65,7 +65,8 @@ public class CardListController {
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        List<CardListDTO> dtoList = cardService.selectListAdmin(param);
+        List<String> cardList = cardPreviewService.blurSearch(param.getCardName());
+        List<CardListDTO> dtoList = cardService.selectListAdmin(param, cardList);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
         if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
@@ -88,7 +89,8 @@ public class CardListController {
      */
     @RequestMapping("/weird_project/card/list/user")
     public PageResult<CardListDTO> searchCardListUser(@RequestBody SearchCardParam param) throws Exception {
-        List<CardListDTO> dtoList = cardService.selectListUser(param);
+        List<String> cardList = cardPreviewService.blurSearch(param.getCardName());
+        List<CardListDTO> dtoList = cardService.selectListUser(param, cardList);
         PageResult<CardListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
         if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
@@ -111,7 +113,8 @@ public class CardListController {
      */
     @RequestMapping("/weird_project/card/ownlist")
     public PageResult<CardOwnListDTO> searchCardOwnList(@RequestBody SearchCardParam param) throws Exception {
-        List<CardOwnListDTO> dtoList = cardService.selectList(param);
+        List<String> cardList = cardPreviewService.blurSearch(param.getCardName());
+        List<CardOwnListDTO> dtoList = cardService.selectList(param, cardList);
         PageResult<CardOwnListDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
         if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
@@ -134,7 +137,8 @@ public class CardListController {
      */
     @RequestMapping("/weird_project/card/history")
     public PageResult<CardHistoryDTO> searchHistory(@RequestBody SearchHistoryParam param) throws Exception {
-        List<CardHistoryDTO> dtoList = cardService.selectHistory(param.getPackageName(), param.getCardName(), param.getRareList());
+        List<String> nameList = cardPreviewService.blurSearch(param.getCardName());
+        List<CardHistoryDTO> dtoList = cardService.selectHistory(param, nameList);
         PageResult<CardHistoryDTO> result = new PageResult<>();
         result.addPageInfo(dtoList, param.getPage(), param.getPageSize());
         if (param.getPageSize() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {

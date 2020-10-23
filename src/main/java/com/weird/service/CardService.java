@@ -26,34 +26,36 @@ public interface CardService {
     /**
      * 管理端根据条件筛选所有卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
-    List<CardListDTO> selectListAdmin(SearchCardParam param);
+    List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList);
 
     /**
      * 玩家端根据条件筛选所有卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
-    List<CardListDTO> selectListUser(SearchCardParam param);
+    List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList);
 
     /**
      * 根据条件筛选拥有的卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
-    List<CardOwnListDTO> selectList(SearchCardParam param);
+    List<CardOwnListDTO> selectList(SearchCardParam param, List<String> cardList);
 
     /**
      * 根据条件筛选卡片的历史记录
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rareList    稀有度列表
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
-    List<CardHistoryDTO> selectHistory(String packageName, String cardName, List<String> rareList);
+    List<CardHistoryDTO> selectHistory(SearchHistoryParam param, List<String> cardList);
 }

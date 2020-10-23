@@ -1,6 +1,5 @@
 package com.weird.service.impl;
 
-import com.alibaba.druid.support.json.JSONUtils;
 import com.weird.mapper.card.CardPreviewMapper;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
@@ -189,44 +188,44 @@ public class CardServiceImpl implements CardService {
     /**
      * 管理端根据条件筛选所有卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
     @Override
-    public List<CardListDTO> selectListAdmin(SearchCardParam param) {
-        List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
-        return userCardListMapper.selectCardListAdmin(param.getPackageName(), nameList, param.getRareList());
+    public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
+        return userCardListMapper.selectCardListAdmin(param.getPackageName(), cardList, param.getRareList());
     }
 
     /**
      * 玩家端根据条件筛选所有卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
     @Override
-    public List<CardListDTO> selectListUser(SearchCardParam param) {
-        List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
-        return userCardListMapper.selectCardListUser(param.getPackageName(), nameList, param.getRareList(), 0);
+    public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
+        return userCardListMapper.selectCardListUser(param.getPackageName(), cardList, param.getRareList(), 0);
     }
 
 
     /**
      * 根据条件筛选拥有的卡片
      *
-     * @param param 参数
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
     @Override
-    public List<CardOwnListDTO> selectList(SearchCardParam param) {
+    public List<CardOwnListDTO> selectList(SearchCardParam param, List<String> cardList) {
         param.setName("");
         param.setPassword("");
         String key = param.toString();
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
-            List<String> nameList = cardPreviewMapper.blurSearch(param.getCardName());
-            cache = userCardListMapper.selectCardOwnList(param.getPackageName(), nameList, param.getRareList(), param.getTargetUser());
+            cache = userCardListMapper.selectCardOwnList(param.getPackageName(), cardList, param.getRareList(), param.getTargetUser());
             CacheUtil.putCardOwnListCache(key, cache);
         }
         return cache;
@@ -235,22 +234,20 @@ public class CardServiceImpl implements CardService {
     /**
      * 根据条件筛选卡片的历史记录
      *
-     * @param packageName 卡包名
-     * @param cardName    卡片名
-     * @param rareList    稀有度列表
+     * @param param    参数
+     * @param cardList 卡名列表
      * @return 查询结果
      */
     @Override
-    public List<CardHistoryDTO> selectHistory(String packageName, String cardName, List<String> rareList) {
+    public List<CardHistoryDTO> selectHistory(SearchHistoryParam param, List<String> cardList) {
         List<Integer> packageIndexList;
-        if (packageName.length() > 0) {
-            List<PackageInfoModel> packageList = packageInfoMapper.selectByName(packageName);
+        if (param.getPackageName().length() > 0) {
+            List<PackageInfoModel> packageList = packageInfoMapper.selectByName(param.getPackageName());
             packageIndexList = packageList.stream().map(PackageInfoModel::getPackageId).collect(Collectors.toList());
         } else {
             packageIndexList = null;
         }
-        List<String> cardNameList = cardPreviewMapper.blurSearch(cardName);
-        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardNameList, rareList);
+        List<Integer> cardIndexList = cardHistoryMapper.selectCardPk(packageIndexList, cardList, param.getRareList());
         if (cardIndexList.size() == 0) {
             return Collections.emptyList();
         } else {
