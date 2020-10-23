@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.*;
@@ -24,6 +25,7 @@ import java.util.*;
  */
 @RestController
 @TrimArgs
+@SearchParamFix
 public class CardListController {
     final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
     @Autowired

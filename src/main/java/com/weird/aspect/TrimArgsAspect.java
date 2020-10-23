@@ -19,16 +19,16 @@ import java.lang.reflect.Field;
 public class TrimArgsAspect {
     @Around("@within(TrimArgs)")
     public Object aroundClass(ProceedingJoinPoint point) throws Throwable {
+        return aroundMethod(point);
+    }
+
+    @Around("@annotation(TrimArgs)")
+    public Object aroundMethod(ProceedingJoinPoint point) throws Throwable {
         Object[] args = point.getArgs();
         for (int argsIndex = 0; argsIndex < args.length; ++argsIndex) {
             args[argsIndex] = trim(args[argsIndex]);
         }
         return point.proceed(args);
-    }
-
-    @Around("@annotation(TrimArgs)")
-    public Object aroundMethod(ProceedingJoinPoint point) throws Throwable {
-        return aroundClass(point);
     }
 
     private Object trim(Object object) throws IllegalAccessException {

@@ -6,7 +6,9 @@ import com.weird.service.CardPreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -49,6 +51,9 @@ public class CardPreviewServiceImpl implements CardPreviewService {
      */
     @Override
     public List<String> blurSearch(String word) {
+        if (StringUtils.isEmpty(word)) {
+            return Collections.emptyList();
+        }
         return cardPreviewMapper.blurSearch(word);
     }
 }
