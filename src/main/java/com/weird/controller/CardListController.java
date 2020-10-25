@@ -224,6 +224,7 @@ public class CardListController {
         checkList.put("UR卡", param.getUrList());
         checkList.put("HR卡", param.getHrList());
         checkList.put("GR卡", param.getGrList());
+        checkList.put("SER卡", param.getSerList());
         for (Map.Entry<String, List<String>> entry : checkList.entrySet()) {
             if (entry.getValue() == null) {
                 sb.append(String.format("%s列表为NULL!", entry.getKey()));
@@ -248,6 +249,7 @@ public class CardListController {
         allCardList.addAll(param.getUrList());
         allCardList.addAll(param.getHrList());
         allCardList.addAll(param.getGrList());
+        allCardList.addAll(param.getSerList());
         if (allCardList.size() == 0) {
             throw new OperationException("添加卡片列表为空！");
         }

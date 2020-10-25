@@ -15,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
@@ -147,40 +149,21 @@ public class PackageServiceImpl implements PackageService {
         }
 
         StringBuilder sb = new StringBuilder();
-        if (param.getNList().size() > 0) {
-            int nCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "N", param.getNList());
-            if (nCount < param.getNList().size()) {
-                sb.append("N卡没有全部更新，请重试！\n");
-            }
-        }
-        if (param.getRList().size() > 0) {
-            int rCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "R", param.getRList());
-            if (rCount < param.getRList().size()) {
-                sb.append("R卡没有全部更新，请重试！\n");
-            }
-        }
-        if (param.getSrList().size() > 0) {
-            int srCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "SR", param.getSrList());
-            if (srCount < param.getSrList().size()) {
-                sb.append("SR卡没有全部更新，请重试！\n");
-            }
-        }
-        if (param.getUrList().size() > 0) {
-            int urCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "UR", param.getUrList());
-            if (urCount < param.getUrList().size()) {
-                sb.append("UR卡没有全部更新，请重试！\n");
-            }
-        }
-        if (param.getHrList().size() > 0) {
-            int hrCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "HR", param.getHrList());
-            if (hrCount < param.getHrList().size()) {
-                sb.append("HR卡没有全部更新，请重试！\n");
-            }
-        }
-        if (param.getGrList().size() > 0) {
-            int grCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "GR", param.getGrList());
-            if (grCount < param.getGrList().size()) {
-                sb.append("GR卡没有全部更新，请重试！\n");
+        Map<String, List<String>> cardMap = new LinkedHashMap<>();
+        cardMap.put("N", param.getNList());
+        cardMap.put("R", param.getRList());
+        cardMap.put("SR", param.getSrList());
+        cardMap.put("UR", param.getUrList());
+        cardMap.put("HR", param.getHrList());
+        cardMap.put("GR", param.getGrList());
+        cardMap.put("SER", param.getSerList());
+        for (Map.Entry<String, List<String>> entry : cardMap.entrySet()) {
+            if (entry.getValue().size() > 0) {
+                int count = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), entry.getKey(), entry.getValue());
+                if (count < param.getNList().size()) {
+                    sb.append(entry.getKey());
+                    sb.append("卡没有全部更新，请重试！\n");
+                }
             }
         }
         if (sb.length() > 0) {
@@ -306,7 +289,7 @@ public class PackageServiceImpl implements PackageService {
             if (count <= 0) {
                 throw new OperationException("找不到卡包ID：[%d]！", packageId);
             }
-            orderNum ++;
+            orderNum++;
         }
         return "修改排序成功！";
     }

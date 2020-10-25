@@ -58,4 +58,10 @@ public class BatchAddCardParam implements Serializable, Trimable {
      * gr列表
      */
     List<String> grList;
+
+
+    /**
+     * ser列表
+     */
+    List<String> serList;
 }
