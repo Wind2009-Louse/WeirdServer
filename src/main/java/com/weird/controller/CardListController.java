@@ -14,6 +14,7 @@ import com.weird.service.PackageService;
 import com.weird.service.UserService;
 import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -30,7 +31,6 @@ import java.util.*;
 @TrimArgs
 @SearchParamFix
 public class CardListController {
-    final List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
     @Autowired
     UserService userService;
     @Autowired
@@ -187,7 +187,7 @@ public class CardListController {
         }
 
         // 稀有度验证
-        if (!RARE_LIST.contains(rare)) {
+        if (!PackageUtil.RARE_LIST.contains(rare)) {
             throw new OperationException("稀有度设置错误！");
         }
 
@@ -223,6 +223,7 @@ public class CardListController {
         checkList.put("SR卡", param.getSrList());
         checkList.put("UR卡", param.getUrList());
         checkList.put("HR卡", param.getHrList());
+        checkList.put("GR卡", param.getGrList());
         for (Map.Entry<String, List<String>> entry : checkList.entrySet()) {
             if (entry.getValue() == null) {
                 sb.append(String.format("%s列表为NULL!", entry.getKey()));
@@ -246,6 +247,7 @@ public class CardListController {
         allCardList.addAll(param.getSrList());
         allCardList.addAll(param.getUrList());
         allCardList.addAll(param.getHrList());
+        allCardList.addAll(param.getGrList());
         if (allCardList.size() == 0) {
             throw new OperationException("添加卡片列表为空！");
         }

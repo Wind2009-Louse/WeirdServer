@@ -168,13 +168,19 @@ public class PackageServiceImpl implements PackageService {
         if (param.getUrList().size() > 0) {
             int urCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "UR", param.getUrList());
             if (urCount < param.getUrList().size()) {
-                sb.append("SR卡没有全部更新，请重试！\n");
+                sb.append("UR卡没有全部更新，请重试！\n");
             }
         }
         if (param.getHrList().size() > 0) {
             int hrCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "HR", param.getHrList());
             if (hrCount < param.getHrList().size()) {
-                sb.append("SR卡没有全部更新，请重试！\n");
+                sb.append("HR卡没有全部更新，请重试！\n");
+            }
+        }
+        if (param.getGrList().size() > 0) {
+            int grCount = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), "GR", param.getGrList());
+            if (grCount < param.getGrList().size()) {
+                sb.append("GR卡没有全部更新，请重试！\n");
             }
         }
         if (sb.length() > 0) {

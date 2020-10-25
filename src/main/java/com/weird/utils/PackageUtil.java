@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2020.9.29
  */
 public class PackageUtil {
-    static public List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR");
+    static public List<String> RARE_LIST = Arrays.asList("N", "R", "SR", "UR", "HR", "GR");
 
     static public List<String> NR_LIST = Arrays.asList("N", "R");
 
