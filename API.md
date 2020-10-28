@@ -559,7 +559,9 @@
 	],
 	"hrList": [
 		"HR"
-	]
+	],
+	"grList": [],
+	"serList": []
 }
 ```
 
