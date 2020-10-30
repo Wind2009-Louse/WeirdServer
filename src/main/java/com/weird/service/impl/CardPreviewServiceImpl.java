@@ -54,7 +54,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     @Override
     public List<String> blurSearch(String word) {
         if (StringUtils.isEmpty(word)) {
-            return Collections.emptyList();
+            return null;
         }
         return cardPreviewMapper.blurSearch(word);
     }

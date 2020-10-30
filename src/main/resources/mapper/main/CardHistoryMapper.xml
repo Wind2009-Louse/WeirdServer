@@ -38,7 +38,7 @@
                     #{packageId}
                 </foreach>
             </if>
-            <if test="cardNameList != null and cardNameList.size() > 0">
+            <if test="cardNameList != null">
                 and (
                     old_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
