@@ -4,7 +4,7 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Target;
 
 /**
- * 将参数中的String自动进行Trim操作
+ * 将参数中的String自动进行Trim操作。AOP操作见{@link TrimArgsAspect}
  *
  * @author Nidhogg
  * @date 2020.10.10

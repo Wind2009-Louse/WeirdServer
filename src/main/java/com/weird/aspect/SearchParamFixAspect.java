@@ -26,15 +26,8 @@ public class SearchParamFixAspect {
     public Object aroundMethod(ProceedingJoinPoint point) throws Throwable {
         Object[] args = point.getArgs();
         for (int argsIndex = 0; argsIndex < args.length; ++argsIndex) {
-            args[argsIndex] = fix(args[argsIndex]);
-        }
-        return point.proceed(args);
-    }
-
-    private Object fix(Object object) {
-        // 对继承了Fixable接口的类进行Fix操作
-        for (Class<?> interFace : object.getClass().getInterfaces()) {
-            if (interFace.equals(Fixable.class)) {
+            Object object = args[argsIndex];
+            if (object instanceof Fixable) {
                 Field[] fields = object.getClass().getDeclaredFields();
                 for (Field field : fields) {
                     boolean flag = field.isAccessible();
@@ -42,9 +35,9 @@ public class SearchParamFixAspect {
                     ((Fixable) object).fix();
                     field.setAccessible(flag);
                 }
+                args[argsIndex] = object;
             }
         }
-
-        return object;
+        return point.proceed(args);
     }
 }

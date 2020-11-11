@@ -6,6 +6,7 @@ package com.weird.interfaces;
  * @author Nidhogg
  * @date 2020.10.23
  */
+@FunctionalInterface
 public interface Fixable {
     /**
      * 修复自身参数

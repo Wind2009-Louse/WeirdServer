@@ -8,7 +8,8 @@ import java.lang.annotation.Target;
 
 
 /**
- * 对{@link SearchCardParam}和{@link SearchHistoryParam}的null参数进行修复
+ * 对{@link SearchCardParam}和{@link SearchHistoryParam}的null参数进行修复。
+ * AOP方法见{@link SearchParamFixAspect}
  *
  * @author Nidhogg
  * @date 2020.10.23

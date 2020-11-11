@@ -37,23 +37,20 @@ public class TrimArgsAspect {
             String originArg = (String) object;
             object = originArg.trim();
         } else if (object instanceof java.util.List) {
+            // 对列表中的每个元素进行Trim
             java.util.List list = (java.util.List) object;
             for (int index = 0; index < list.size(); ++index) {
                 Object subObject = trim(list.get(index));
                 list.set(index, subObject);
             }
-        } else {
+        } else if (object instanceof Trimable) {
             // 对继承了Trimable接口的类进行Trim
-            for (Class<?> interFace : object.getClass().getInterfaces()) {
-                if (interFace.equals(Trimable.class)) {
-                    Field[] fields = object.getClass().getDeclaredFields();
-                    for (Field field : fields) {
-                        boolean flag = field.isAccessible();
-                        field.setAccessible(true);
-                        field.set(object, trim(field.get(object)));
-                        field.setAccessible(flag);
-                    }
-                }
+            Field[] fields = object.getClass().getDeclaredFields();
+            for (Field field : fields) {
+                boolean flag = field.isAccessible();
+                field.setAccessible(true);
+                field.set(object, trim(field.get(object)));
+                field.setAccessible(flag);
             }
         }
 
