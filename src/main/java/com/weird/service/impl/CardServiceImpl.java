@@ -195,6 +195,9 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
+        if (cardList != null && cardList.size() == 0){
+            return new LinkedList<>();
+        }
         return userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
     }
 
@@ -207,6 +210,9 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
+        if (cardList != null && cardList.size() == 0){
+            return new LinkedList<>();
+        }
         return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), 0);
     }
 
