@@ -280,6 +280,7 @@ public class CardListController {
      *
      * @param oldCardName 旧卡片名
      * @param newCardName 新卡片名
+     * @param newRare     新稀有度
      * @param isShow      是否在历史记录中显示该卡片
      * @param name        操作用户名称
      * @param password    操作用户密码
@@ -289,6 +290,7 @@ public class CardListController {
     public String updateCardName(
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
+            @RequestParam(value = "newRare") String newRare,
             @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
@@ -296,14 +298,8 @@ public class CardListController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (newCardName == null || newCardName.length() == 0) {
-            throw new OperationException("卡片名为空！");
-        }
-        if (newCardName.equals(oldCardName)) {
-            throw new OperationException("名字未修改！");
-        }
 
-        if (packageService.updateCardName(oldCardName, newCardName, isShow)) {
+        if (packageService.updateCardName(oldCardName, newCardName, newRare, isShow)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

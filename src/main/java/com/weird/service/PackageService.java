@@ -61,10 +61,11 @@ public interface PackageService {
      *
      * @param oldName 旧卡名
      * @param newName 新卡名
+     * @param newRare 新稀有度
      * @param isShow  是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
-    boolean updateCardName(String oldName, String newName, int isShow) throws Exception;
+    boolean updateCardName(String oldName, String newName, String newRare, int isShow) throws Exception;
 
     /**
      * 互换卡包中两张卡的稀有度

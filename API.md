@@ -586,7 +586,7 @@
 ## 【管理端】修改卡片名称
 
 #### 接口URL
-> http://127.0.0.1:15163/weird_project/card/update?name=admin&password=1&oldname=草兽&newname=除草兽&show=
+> http://127.0.0.1:15163/weird_project/card/update?name=admin&password=1&oldname=草兽&newname=除草兽&newRare=GR&show=
 
 #### 请求方式
 > GET
@@ -602,6 +602,7 @@
 | password     | 1 | 必填 | 操作用户密码 |
 | oldname     | 草兽 | 必填 | 旧卡名 |
 | newname     | 除草兽 | 必填 | 新卡名 |
+| newRare | GR  | 必填 | 新稀有度 |
 | show     | - | 选填 | 是否记录在更新记录（0以外为记录，默认为0） |
 
 

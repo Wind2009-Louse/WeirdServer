@@ -1,5 +1,6 @@
 package com.weird.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.weird.mapper.main.CardHistoryMapper;
 import com.weird.mapper.main.PackageCardMapper;
@@ -10,6 +11,7 @@ import com.weird.model.PackageInfoModel;
 import com.weird.model.param.BatchAddCardParam;
 import com.weird.service.PackageService;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -178,6 +180,7 @@ public class PackageServiceImpl implements PackageService {
      *
      * @param oldName 旧卡名
      * @param newName 新卡名
+     * @param newRare 新稀有度
      * @param isShow  是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
@@ -185,30 +188,71 @@ public class PackageServiceImpl implements PackageService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateCardName(String oldName,
                                   String newName,
+                                  String newRare,
                                   int isShow) throws Exception {
+        boolean isUpdated = false;
         // 查找是否能否更新
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(oldName);
         if (cardModel == null) {
             throw new OperationException("卡片[%s]不存在！", oldName);
         }
-        PackageCardModel goalModel = packageCardMapper.selectByNameDistinct(newName);
-        if (goalModel != null) {
-            throw new OperationException("卡片[%s]已存在！", newName);
+        String oldRare = cardModel.getRare();
+
+        if (StringUtils.isEmpty(newName)) {
+            newName = oldName;
+        }
+        if (!StringUtils.equals(oldName, newName)) {
+            PackageCardModel goalModel = packageCardMapper.selectByNameDistinct(newName);
+            if (goalModel != null) {
+                throw new OperationException("卡片[%s]已存在！", newName);
+            }
+            isUpdated = true;
+        }
+        if (StringUtils.isEmpty(newRare)) {
+            newRare = oldRare;
+        }
+        if (!StringUtils.equals(oldRare, newRare)) {
+            if (!PackageUtil.RARE_LIST.contains(newRare)) {
+                throw new OperationException("稀有度[%s]不合法！", newRare);
+            }
+            isUpdated = true;
+        }
+        if (!isUpdated) {
+            throw new OperationException("卡片未修改！");
         }
 
         // 修改
-        log.warn("卡片[{}]重命名为[{}]", oldName, newName);
+        log.warn("卡片[{}]({})重命名为[{}]({})", oldName, oldRare, newName, newRare);
         cardModel.setCardName(newName);
+        cardModel.setRare(newRare);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
         if (result > 0) {
             if (isShow != 0) {
-                CardHistoryModel cardHistory = new CardHistoryModel();
-                cardHistory.setPackageId(cardModel.getPackageId());
-                cardHistory.setCardPk(cardModel.getCardPk());
-                cardHistory.setOldName(oldName);
-                cardHistory.setNewName(newName);
-                cardHistory.setRare(cardModel.getRare());
-                cardHistoryMapper.insert(cardHistory);
+                if (StringUtils.equals(oldRare, newRare)) {
+                    CardHistoryModel cardHistory = new CardHistoryModel();
+                    cardHistory.setPackageId(cardModel.getPackageId());
+                    cardHistory.setCardPk(cardModel.getCardPk());
+                    cardHistory.setOldName(oldName);
+                    cardHistory.setNewName(newName);
+                    cardHistory.setRare(cardModel.getRare());
+                    cardHistoryMapper.insert(cardHistory);
+                } else {
+                    CardHistoryModel oldCardHistory = new CardHistoryModel();
+                    oldCardHistory.setPackageId(cardModel.getPackageId());
+                    oldCardHistory.setCardPk(cardModel.getCardPk());
+                    oldCardHistory.setOldName(oldName);
+                    oldCardHistory.setNewName("");
+                    oldCardHistory.setRare(oldRare);
+                    cardHistoryMapper.insert(oldCardHistory);
+
+                    CardHistoryModel newCardHistory = new CardHistoryModel();
+                    newCardHistory.setPackageId(cardModel.getPackageId());
+                    newCardHistory.setCardPk(cardModel.getCardPk());
+                    newCardHistory.setOldName("");
+                    newCardHistory.setNewName(newName);
+                    newCardHistory.setRare(newRare);
+                    cardHistoryMapper.insert(newCardHistory);
+                }
             }
 
             clearCardOwnListCache();
