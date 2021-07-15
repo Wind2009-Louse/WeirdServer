@@ -1,5 +1,6 @@
 package com.weird.service.impl;
 
+import com.alibaba.druid.util.StringUtils;
 import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.CardListDTO;
@@ -156,6 +157,27 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("用户名或密码错误！");
         }
         model.setPassword(newPassword);
+        log.warn("[{}]的密码发生修改", name);
+        return userDataMapper.updateByPrimaryKey(model) > 0;
+    }
+
+    /**
+     * 重置用户密码
+     *
+     * @param name        用户名
+     * @return 是否更改成功
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean resetPassword(String name) throws Exception {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到该用户名！");
+        }
+        if (StringUtils.equals(model.getPassword(), DEFAULT_PASSWORD_MD5)) {
+            return true;
+        }
+        model.setPassword(DEFAULT_PASSWORD_MD5);
         log.warn("[{}]的密码发生修改", name);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }

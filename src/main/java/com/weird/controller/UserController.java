@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.alibaba.druid.util.StringUtils;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardSwapDTO;
@@ -320,6 +321,38 @@ public class UserController {
             return "修改成功！";
         } else {
             return "修改失败！";
+        }
+    }
+
+    /**
+     * 【管理端】重置用户密码
+     * 用户密码默认为123456
+     *
+     * @param target   用户名
+     * @param name     操作用户名称
+     * @param password 操作用户密码
+     * @return 是否重置成功
+     */
+    @RequestMapping("/weird_project/user/reset")
+    public String resetPassword(@RequestParam(value = "target") String target,
+                          @RequestParam(value = "name") String name,
+                          @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        final LoginTypeEnum loginTypeEnum = userService.checkLogin(name, password);
+        if (loginTypeEnum == LoginTypeEnum.ADMIN) {
+            if (StringUtils.isEmpty(name)) {
+                throw new OperationException("用户名为空！");
+            }
+        } else if (loginTypeEnum == LoginTypeEnum.NORMAL) {
+            if (!StringUtils.equals(name, target)) {
+                throw new OperationException("权限不足！");
+            }
+        }
+
+        if (userService.resetPassword(target)) {
+            return "重置成功！";
+        } else {
+            throw new OperationException("重置失败！");
         }
     }
 }

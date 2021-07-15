@@ -65,6 +65,14 @@ public interface UserService {
     boolean updatePassword(String name, String oldPassword, String newPassword) throws Exception;
 
     /**
+     * 重置用户密码
+     *
+     * @param name        用户名
+     * @return 是否更改成功
+     */
+    boolean resetPassword(String name) throws Exception;
+
+    /**
      * 修改用户尘数
      *
      * @param name     用户名

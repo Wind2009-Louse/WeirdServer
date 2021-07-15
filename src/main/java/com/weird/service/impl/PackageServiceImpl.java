@@ -274,17 +274,14 @@ public class PackageServiceImpl implements PackageService {
         if (cardModel2 == null) {
             throw new OperationException("卡片[%s]不存在！", name1);
         }
-        if (cardModel1.getRare().equals(cardModel2.getRare())) {
-            throw new OperationException("卡片[%s]和[%s]的稀有度相同！", name1, name2);
-        }
-        if (cardModel1.getPackageId() != cardModel2.getPackageId()) {
-            throw new OperationException("卡片[%s]和[%s]不在同一卡包！", name1, name2);
+        if (cardModel1.getRare().equals(cardModel2.getRare()) && cardModel1.getPackageId() == cardModel2.getPackageId()) {
+            throw new OperationException("卡片[%s]和[%s]完全相同！", name1, name2);
         }
 
         // 修改
-        log.warn("卡片[{}]({})、[{}]({})稀有度互换",
-                cardModel1.getCardName(), cardModel1.getRare(),
-                cardModel2.getCardName(), cardModel2.getRare());
+        log.warn("卡片[{}-{}]({})、[{}-{}]({})稀有度互换",
+                cardModel1.getPackageId(), cardModel1.getCardName(), cardModel1.getRare(),
+                cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare());
         String tempName = cardModel1.getCardName();
         cardModel1.setCardName(cardModel2.getCardName());
         cardModel2.setCardName(tempName);
