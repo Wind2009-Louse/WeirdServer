@@ -192,7 +192,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
-        if (CollectionUtils.isEmpty(cardList)){
+        if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
         return userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
@@ -207,7 +207,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
-        if (CollectionUtils.isEmpty(cardList)){
+        if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
         return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), 0);
@@ -229,7 +229,7 @@ public class CardServiceImpl implements CardService {
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
-            if (CollectionUtils.isEmpty(cardList)){
+            if (cardList != null && cardList.size() == 0){
                 cache = Collections.emptyList();
             } else {
                 cache = userCardListMapper.selectCardOwnList(param.getPackageNameList(), cardList, param.getRareList(), param.getTargetUserList());
