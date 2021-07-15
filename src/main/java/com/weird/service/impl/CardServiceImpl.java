@@ -22,10 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 
@@ -195,8 +192,8 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
-        if (cardList != null && cardList.size() == 0){
-            return new LinkedList<>();
+        if (CollectionUtils.isEmpty(cardList)){
+            return Collections.emptyList();
         }
         return userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
     }
@@ -210,8 +207,8 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
-        if (cardList != null && cardList.size() == 0){
-            return new LinkedList<>();
+        if (CollectionUtils.isEmpty(cardList)){
+            return Collections.emptyList();
         }
         return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), 0);
     }
@@ -232,7 +229,11 @@ public class CardServiceImpl implements CardService {
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
-            cache = userCardListMapper.selectCardOwnList(param.getPackageNameList(), cardList, param.getRareList(), param.getTargetUserList());
+            if (CollectionUtils.isEmpty(cardList)){
+                cache = Collections.emptyList();
+            } else {
+                cache = userCardListMapper.selectCardOwnList(param.getPackageNameList(), cardList, param.getRareList(), param.getTargetUserList());
+            }
             CacheUtil.putCardOwnListCache(key, cache);
         }
         return cache;
