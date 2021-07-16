@@ -39,4 +39,52 @@
         or
             texts.desc like "%"||#{word}||"%"
     </select>
+
+    <select id="multiBlurSearch" resultType="java.lang.String">
+        select distinct t.name
+        from texts t
+        inner join datas d on d.id = t.id
+        <where>
+            <if test="wordList != null and wordList.size() > 0">
+                and
+                <foreach collection="wordList" index="index" item="word" separator="and">
+                    (
+                        t.name like "%"||#{word}||"%"
+                    or
+                        t.desc like "%"||#{word}||"%"
+                    )
+                </foreach>
+            </if>
+            <if test="typeList != null and typeList.size() > 0">
+                and
+                <foreach collection="typeList" index="index" item="cardType" separator="and">
+                        d.type &amp; #{cardType.value} != 0
+                    <if test="cardType.value == 16">
+                        or d.type = 2 or d.type = 4
+                    </if>
+                </foreach>
+            </if>
+            <if test="attributeList != null and attributeList.size() > 0">
+                and
+                <foreach collection="attributeList" index="index" item="cardAttribute" separator="and">
+                    d.attribute &amp; #{cardAttribute.value} != 0
+                </foreach>
+            </if>
+            <if test="raceList != null and raceList.size() > 0">
+                and
+                <foreach collection="raceList" index="index" item="cardRace" separator="and">
+                    d.race &amp; #{cardRace.value} != 0
+                </foreach>
+            </if>
+            <if test="level != null">
+                and d.level &amp; 0xffff = #{level}
+            </if>
+            <if test="attack != null">
+                and d.atk = #{attack}
+            </if>
+            <if test="defense != null">
+                and d.def = #{defense}
+            </if>
+        </where>
+    </select>
 </mapper>
