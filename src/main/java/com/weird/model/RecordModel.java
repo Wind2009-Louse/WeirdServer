@@ -3,6 +3,7 @@ package com.weird.model;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 记录
@@ -25,7 +26,7 @@ public class RecordModel implements Serializable {
     /**
      * 操作时间
      */
-    long time;
+    Date time;
 
     /**
      * 操作内容

@@ -10,6 +10,7 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.param.BatchAddCardParam;
 import com.weird.service.PackageService;
+import com.weird.service.RecordService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class PackageServiceImpl implements PackageService {
     @Autowired
     CardHistoryMapper cardHistoryMapper;
 
+    @Autowired
+    RecordService recordService;
+
     /**
      * 根据名称查找卡包列表
      *
@@ -60,7 +64,7 @@ public class PackageServiceImpl implements PackageService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean addPackage(String name) throws Exception {
+    public boolean addPackage(String name, String operator) throws Exception {
         // 查找是否重名
         PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(name);
         if (oldPackage != null) {
@@ -68,7 +72,7 @@ public class PackageServiceImpl implements PackageService {
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
-        log.warn("添加卡包：[{}]", name);
+        recordService.setRecord(operator, String.format("添加卡包：[%s]", name));
         return packageInfoMapper.insert(newPackage) > 0;
     }
 
@@ -81,7 +85,7 @@ public class PackageServiceImpl implements PackageService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updatePackageName(String oldName, String newName) throws Exception {
+    public boolean updatePackageName(String oldName, String newName, String operator) throws Exception {
         PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(oldName);
         if (oldPackage == null) {
             throw new OperationException("找不到该卡包：[%s]！", oldName);
@@ -92,7 +96,7 @@ public class PackageServiceImpl implements PackageService {
         }
 
         oldPackage.setPackageName(newName);
-        log.warn("卡包更改名字：[{}]->[{}]", oldName, newName);
+        recordService.setRecord(operator, String.format("卡包更改名字：[%s]->[%s]", oldName, newName));
         clearCardOwnListCache();
         clearRollListWithDetailCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
@@ -108,7 +112,7 @@ public class PackageServiceImpl implements PackageService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean addCard(String packageName, String cardName, String rare) throws Exception {
+    public boolean addCard(String packageName, String cardName, String rare, String operator) throws Exception {
         // 查找卡包是否存在
         PackageInfoModel packageModel = packageInfoMapper.selectByNameDistinct(packageName);
         if (packageModel == null) {
@@ -127,7 +131,7 @@ public class PackageServiceImpl implements PackageService {
         newCardModel.setCardName(cardName);
         newCardModel.setPackageId(packageId);
         newCardModel.setRare(rare);
-        log.warn("在卡包[{}]中添加卡片[{}]({})", packageName, cardName, rare);
+        recordService.setRecord(operator, String.format("在卡包[%s]中添加卡片[%s](%s)", packageName, cardName, rare));
         return packageCardMapper.insert(newCardModel) > 0;
     }
 
@@ -166,12 +170,14 @@ public class PackageServiceImpl implements PackageService {
                     sb.append(entry.getKey());
                     sb.append("卡没有全部更新，请重试！\n");
                 }
+                recordService.setRecord(
+                        param.getName(),
+                        String.format("[%s]添加%s卡：%s", param.getPackageName(), entry.getKey(), JSON.toJSONString(entry.getValue())));
             }
         }
         if (sb.length() > 0) {
             return sb.toString();
         }
-        log.warn("批量添加卡片：{}", param);
         return "";
     }
 
@@ -189,7 +195,8 @@ public class PackageServiceImpl implements PackageService {
     public boolean updateCardName(String oldName,
                                   String newName,
                                   String newRare,
-                                  int isShow) throws Exception {
+                                  int isShow,
+                                  String operator) throws Exception {
         boolean isUpdated = false;
         // 查找是否能否更新
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(oldName);
@@ -222,7 +229,6 @@ public class PackageServiceImpl implements PackageService {
         }
 
         // 修改
-        log.warn("卡片[{}]({})重命名为[{}]({})", oldName, oldRare, newName, newRare);
         cardModel.setCardName(newName);
         cardModel.setRare(newRare);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
@@ -257,6 +263,7 @@ public class PackageServiceImpl implements PackageService {
 
             clearCardOwnListCache();
             clearRollListWithDetailCache();
+            recordService.setRecord(operator, String.format("卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare));
             return true;
         }
         return false;
@@ -264,7 +271,7 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean exchangeCardName(String name1, String name2, int isShow) throws Exception {
+    public boolean exchangeCardName(String name1, String name2, int isShow, String operator) throws Exception {
         // 查找是否能否更新
         PackageCardModel cardModel1 = packageCardMapper.selectByNameDistinct(name1);
         if (cardModel1 == null) {
@@ -279,13 +286,18 @@ public class PackageServiceImpl implements PackageService {
         }
 
         // 修改
-        log.warn("卡片[{}-{}]({})、[{}-{}]({})稀有度互换",
-                cardModel1.getPackageId(), cardModel1.getCardName(), cardModel1.getRare(),
-                cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare());
         String tempName = cardModel1.getCardName();
         cardModel1.setCardName(cardModel2.getCardName());
         cardModel2.setCardName(tempName);
         int result = packageCardMapper.updateByPrimaryKey(cardModel1) + packageCardMapper.updateByPrimaryKey(cardModel2);
+        if (result > 0) {
+            recordService.setRecord(
+                    operator,
+                    String.format("卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
+                            cardModel1.getPackageId(), cardModel1.getCardName(), cardModel1.getRare(),
+                            cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare())
+            );
+        }
         if (result == 2) {
             if (isShow != 0) {
                 CardHistoryModel cardHistory1 = new CardHistoryModel();

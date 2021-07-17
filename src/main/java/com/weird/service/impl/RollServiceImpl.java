@@ -1,12 +1,15 @@
 package com.weird.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.DustEnum;
+import com.weird.model.enums.RollStatusEnum;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.CardPreviewService;
+import com.weird.service.RecordService;
 import com.weird.service.RollService;
 import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +51,9 @@ public class RollServiceImpl implements RollService {
 
     @Autowired
     CardPreviewService cardPreviewService;
+
+    @Autowired
+    RecordService recordService;
 
     /**
      * 将抽卡内容添加到用户上
@@ -226,7 +232,7 @@ public class RollServiceImpl implements RollService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean roll(List<String> cardNames, String userName) throws Exception {
+    public boolean roll(List<String> cardNames, String userName, String operator) throws Exception {
         // 判断用户
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null) {
@@ -259,6 +265,8 @@ public class RollServiceImpl implements RollService {
             throw new OperationException("添加抽卡记录失败！");
         }
 
+        int dustCount = userModel.getDustCount();
+        int nonawardCount = userModel.getNonawardCount();
         addCards(userModel, cardModels, rollModel.getRollId());
 
         StringBuilder sb = new StringBuilder();
@@ -266,8 +274,10 @@ public class RollServiceImpl implements RollService {
         for (PackageCardModel card : cardModels) {
             sb.append(String.format("[%s](%s), ", card.getCardName(), card.getRare()));
         }
-        sb.append(String.format("当前尘=%d，月见黑=%d", userModel.getDustCount(), userModel.getNonawardCount()));
-        log.warn(sb.toString());
+        sb.append(String.format("尘:%d->%d，月见黑:%d->%d",
+                dustCount, userModel.getDustCount(),
+                nonawardCount, userModel.getNonawardCount()));
+        recordService.setRecord(operator, sb.toString());
         clearCardOwnListCache();
         clearRollListWithDetailCache();
 
@@ -283,7 +293,7 @@ public class RollServiceImpl implements RollService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean setStatus(long rollId, int newStatus) throws Exception {
+    public boolean setStatus(long rollId, int newStatus, String operator) throws Exception {
         // 获取抽卡记录
         RollListModel rollListModel = rollListMapper.selectByPrimaryKey(rollId);
         if (rollListModel == null) {
@@ -317,11 +327,13 @@ public class RollServiceImpl implements RollService {
         }
 
         rollListModel.setIsDisabled((byte) newStatus);
-        log.warn("[{}]的状态变为{}", rollListModel, newStatus);
+
+        recordService.setRecord(operator,
+                String.format("[%s]的状态变为%s", JSON.toJSONString(rollListModel), RollStatusEnum.getById(newStatus)));
         if (rollListMapper.updateByPrimaryKey(rollListModel) <= 0) {
             throw new OperationException("修改抽卡记录状态失败！");
         }
-        if (newStatus == 0) {
+        if (newStatus == RollStatusEnum.VALID.getId()) {
             addCards(userModel, cardModels, 0);
             clearCardOwnListCache();
             clearRollListWithDetailCache();

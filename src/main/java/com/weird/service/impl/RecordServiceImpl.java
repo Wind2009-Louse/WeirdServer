@@ -1,9 +1,11 @@
 package com.weird.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.weird.mapper.main.RecordMapper;
 import com.weird.model.RecordModel;
 import com.weird.service.RecordService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,6 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 @Slf4j
 public class RecordServiceImpl implements RecordService {
+    @Autowired
+    RecordMapper recordMapper;
+
     @Override
     public void setRecord(String userName, String operation) {
         log.warn(operation);
@@ -26,9 +31,9 @@ public class RecordServiceImpl implements RecordService {
 
             RecordModel record = new RecordModel();
             record.setOperator(userName);
-            record.setTime(currentTime);
             record.setText(operation);
-            // TODO 插入到记录表
+
+            recordMapper.insert(record);
         } catch (Exception e) {
             log.error("插入记录失败：",e);
         }

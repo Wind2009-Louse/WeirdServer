@@ -191,7 +191,7 @@ public class CardListController {
             throw new OperationException("稀有度设置错误！");
         }
 
-        if (packageService.addCard(packageName, cardName, rare)) {
+        if (packageService.addCard(packageName, cardName, rare, name)) {
             return "添加成功！";
         } else {
             throw new OperationException("添加失败！");
@@ -299,7 +299,7 @@ public class CardListController {
             throw new OperationException("权限不足！");
         }
 
-        if (packageService.updateCardName(oldCardName, newCardName, newRare, isShow)) {
+        if (packageService.updateCardName(oldCardName, newCardName, newRare, isShow, name)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");
@@ -331,7 +331,7 @@ public class CardListController {
             throw new OperationException("卡片名为空！");
         }
 
-        if (packageService.exchangeCardName(cardName1, cardName2, isShow)) {
+        if (packageService.exchangeCardName(cardName1, cardName2, isShow, name)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

@@ -22,7 +22,7 @@ public interface RollService {
      * @param userName  用户名
      * @return 是否记录成功
      */
-    boolean roll(List<String> cardNames, String userName) throws Exception;
+    boolean roll(List<String> cardNames, String userName, String operator) throws Exception;
 
     /**
      * 设置抽卡记录状态
@@ -31,5 +31,5 @@ public interface RollService {
      * @param newStatus 新的状态
      * @return 是否设置成功
      */
-    boolean setStatus(long rollId, int newStatus) throws Exception;
+    boolean setStatus(long rollId, int newStatus, String operator) throws Exception;
 }

@@ -2,10 +2,10 @@ package com.weird.controller;
 
 import com.alibaba.druid.util.StringUtils;
 import com.weird.aspect.TrimArgs;
-import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
@@ -84,11 +84,7 @@ public class UserController {
             throw new OperationException("权限不足！");
         }
 
-        if (cardService.updateCardCount(targetUser, cardName, newCount)) {
-            return "修改成功！";
-        } else {
-            throw new OperationException("修改失败！");
-        }
+        return cardService.updateCardCount(targetUser, cardName, newCount, name);
     }
 
     /**
@@ -323,8 +319,8 @@ public class UserController {
      */
     @RequestMapping("/weird_project/user/reset")
     public String resetPassword(@RequestParam(value = "target") String target,
-                          @RequestParam(value = "name") String name,
-                          @RequestParam(value = "password") String password) throws Exception {
+                                @RequestParam(value = "name") String name,
+                                @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         final LoginTypeEnum loginTypeEnum = userService.checkLogin(name, password);
         if (loginTypeEnum == LoginTypeEnum.ADMIN) {

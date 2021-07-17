@@ -45,6 +45,9 @@ public class CardServiceImpl implements CardService {
     @Autowired
     CardHistoryMapper cardHistoryMapper;
 
+    @Autowired
+    RecordService recordService;
+
     /**
      * 修改用户持有的卡片数量
      *
@@ -55,7 +58,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateCardCount(String userName, String cardName, int count) throws Exception {
+    public String updateCardCount(String userName, String cardName, int count, String operator) throws Exception {
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null) {
             throw new OperationException("找不到该用户:[%s]！", userName);
@@ -78,21 +81,31 @@ public class CardServiceImpl implements CardService {
             if (count == model.getCount()) {
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
-            log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, model.getCount(), count);
+            String hint = String.format("修改[%s]的[%s]数量（%d->%d）", userName, cardName, model.getCount(), count);
             model.setCount(count);
             clearCardOwnListCache();
-            return userCardListMapper.update(model) > 0;
+            if (userCardListMapper.update(model) > 0) {
+                recordService.setRecord(operator, hint);
+                return hint;
+            } else {
+                throw new OperationException("修改失败！");
+            }
         } else {
             if (count == 0) {
                 throw new OperationException("[%s]的卡片[%s]的数量没有变化！", userName, cardName);
             }
-            log.warn("添加[{}]的[{}]数量（{}->{}）", userName, cardName, 0, count);
+            String hint = String.format("添加[%s]的[%s]数量（%d->%d）", userName, cardName, 0, count);
             model = new UserCardListModel();
             model.setUserId(userId);
             model.setCardPk(cardPk);
             model.setCount(count);
             clearCardOwnListCache();
-            return userCardListMapper.insert(model) > 0;
+            if (userCardListMapper.insert(model) > 0) {
+                recordService.setRecord(operator, hint);
+                return hint;
+            } else {
+                throw new OperationException("添加失败！");
+            }
         }
     }
 
@@ -145,7 +158,8 @@ public class CardServiceImpl implements CardService {
                     failCount++;
                     continue;
                 }
-                log.warn("修改[{}]的[{}]数量（{}->{}）", userName, cardName, model.getCount(), entry.getValue());
+                recordService.setRecord(param.getName(),
+                        String.format("修改[%s]的[%s]数量（%d->%d）", userName, cardName, model.getCount(), entry.getValue()));
                 model.setCount(entry.getValue());
                 updateList.add(model);
             } else {
@@ -154,7 +168,8 @@ public class CardServiceImpl implements CardService {
                     failCount++;
                     continue;
                 }
-                log.warn("添加[{}]的[{}]数量（{}->{}）", userName, cardName, 0, entry.getValue());
+                recordService.setRecord(param.getName(),
+                        String.format("添加[%s]的[%s]数量（%d->%d）", userName, cardName, 0, entry.getValue()));
                 model = new UserCardListModel();
                 model.setUserId(userId);
                 model.setCardPk(cardPk);

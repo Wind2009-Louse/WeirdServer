@@ -61,7 +61,7 @@ public class PackageController {
             throw new OperationException("卡包名为空！");
         }
 
-        if (packageService.addPackage(packageName)) {
+        if (packageService.addPackage(packageName, name)) {
             return "新增成功！";
         } else {
             throw new OperationException("新增失败！");
@@ -93,7 +93,7 @@ public class PackageController {
             throw new OperationException("名字未修改！");
         }
 
-        if (packageService.updatePackageName(oldPackageName, newPackageName)) {
+        if (packageService.updatePackageName(oldPackageName, newPackageName, name)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

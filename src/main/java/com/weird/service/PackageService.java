@@ -26,7 +26,7 @@ public interface PackageService {
      * @param name 卡包名称
      * @return 是否添加成功
      */
-    boolean addPackage(String name) throws Exception;
+    boolean addPackage(String name, String operator) throws Exception;
 
     /**
      * 更新卡包名称
@@ -35,7 +35,7 @@ public interface PackageService {
      * @param newName 新卡包名称
      * @return 是否更新成功
      */
-    boolean updatePackageName(String oldName, String newName) throws Exception;
+    boolean updatePackageName(String oldName, String newName, String operator) throws Exception;
 
     /**
      * 在卡包中添加卡片
@@ -45,7 +45,7 @@ public interface PackageService {
      * @param rare        稀有度
      * @return 是否添加成功
      */
-    boolean addCard(String packageName, String cardName, String rare) throws Exception;
+    boolean addCard(String packageName, String cardName, String rare, String operator) throws Exception;
 
     /**
      * 在卡包中批量添加卡片
@@ -65,7 +65,7 @@ public interface PackageService {
      * @param isShow  是否在历史记录中显示该卡片
      * @return 是否修改成功
      */
-    boolean updateCardName(String oldName, String newName, String newRare, int isShow) throws Exception;
+    boolean updateCardName(String oldName, String newName, String newRare, int isShow, String operator) throws Exception;
 
     /**
      * 互换卡包中两张卡的稀有度
@@ -75,7 +75,7 @@ public interface PackageService {
      * @param isShow 是否展示
      * @return 是否修改成功
      */
-    boolean exchangeCardName(String name1, String name2, int isShow) throws Exception;
+    boolean exchangeCardName(String name1, String name2, int isShow, String operator) throws Exception;
 
     /**
      * 对卡包进行排序

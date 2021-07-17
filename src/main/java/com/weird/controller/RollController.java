@@ -4,6 +4,7 @@ import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.enums.RollStatusEnum;
 import com.weird.model.param.RollParam;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.RollService;
@@ -55,7 +56,7 @@ public class RollController {
         }
 
         List<String> cardNames = Arrays.asList(cardName1, cardName2, cardName3);
-        if (rollService.roll(cardNames, targetUser)) {
+        if (rollService.roll(cardNames, targetUser, name)) {
             return "记录成功!";
         } else {
             throw new OperationException("抽卡记录失败！");
@@ -89,7 +90,7 @@ public class RollController {
                 continue;
             }
             try {
-                if (rollService.roll(list, param.getTarget())) {
+                if (rollService.roll(list, param.getTarget(), param.getName())) {
                     successCount++;
                 } else {
                     totalException.append(String.format("抽卡记录[%s]记录失败！\n", list.toString()));
@@ -140,11 +141,11 @@ public class RollController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (status != 0 && status != 1) {
+        if (RollStatusEnum.getById(status) == null) {
             throw new OperationException("状态设置错误！");
         }
 
-        if (rollService.setStatus(rollId, status)) {
+        if (rollService.setStatus(rollId, status, name)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");
