@@ -182,7 +182,7 @@ public class CardListController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (cardName == null || cardName.length() == 0) {
+        if (StringUtils.isEmpty(cardName)) {
             throw new OperationException("卡片名为空！");
         }
 
@@ -211,7 +211,7 @@ public class CardListController {
             throw new OperationException("权限不足！");
         }
 
-        if (param.getPackageName() == null || param.getPackageName().length() == 0) {
+        if (StringUtils.isEmpty(param.getPackageName())) {
             throw new OperationException("卡包名为空！");
         }
 
@@ -327,8 +327,7 @@ public class CardListController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (cardName1 == null || cardName1.length() == 0
-                || cardName2 == null || cardName2.length() == 0) {
+        if (StringUtils.isEmpty(cardName1) || StringUtils.isEmpty(cardName2)) {
             throw new OperationException("卡片名为空！");
         }
 

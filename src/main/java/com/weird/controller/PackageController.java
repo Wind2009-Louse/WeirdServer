@@ -8,9 +8,11 @@ import com.weird.service.PackageService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 卡包相关
@@ -55,7 +57,7 @@ public class PackageController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (packageName == null || packageName.length() == 0) {
+        if (StringUtils.isEmpty(packageName)) {
             throw new OperationException("卡包名为空！");
         }
 
@@ -84,10 +86,10 @@ public class PackageController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (newPackageName == null || newPackageName.length() == 0) {
+        if (StringUtils.isEmpty(newPackageName)) {
             throw new OperationException("卡包名为空！");
         }
-        if (oldPackageName.equals(newPackageName)) {
+        if (Objects.equals(oldPackageName, newPackageName)) {
             throw new OperationException("名字未修改！");
         }
 

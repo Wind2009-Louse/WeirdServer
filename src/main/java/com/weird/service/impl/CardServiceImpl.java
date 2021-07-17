@@ -12,6 +12,7 @@ import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
 import com.weird.service.CardService;
+import com.weird.service.RecordService;
 import com.weird.utils.CacheUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;

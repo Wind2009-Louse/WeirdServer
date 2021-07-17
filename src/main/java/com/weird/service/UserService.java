@@ -49,10 +49,11 @@ public interface UserService {
     /**
      * 添加新用户（默认密码为123456）
      *
-     * @param name 用户名
+     * @param name     用户名
+     * @param operator 操作人
      * @return 是否添加成功
      */
-    boolean addUser(String name) throws Exception;
+    boolean addUser(String name, String operator) throws Exception;
 
     /**
      * 修改用户密码
@@ -67,19 +68,21 @@ public interface UserService {
     /**
      * 重置用户密码
      *
-     * @param name        用户名
+     * @param name     用户名
+     * @param operator 操作人
      * @return 是否更改成功
      */
-    boolean resetPassword(String name) throws Exception;
+    boolean resetPassword(String name, String operator) throws Exception;
 
     /**
      * 修改用户尘数
      *
      * @param name     用户名
      * @param newCount 新尘数
+     * @param operator 操作人
      * @return 是否更改成功
      */
-    boolean updateDust(String name, int newCount) throws Exception;
+    String updateDust(String name, int newCount, String operator) throws Exception;
 
     /**
      * 将尘转换成卡片
@@ -119,9 +122,10 @@ public interface UserService {
      *
      * @param name     用户名
      * @param newCount 新结果
+     * @param operator 操作人
      * @return 是否更改成功
      */
-    boolean updateAward(String name, int newCount) throws Exception;
+    String updateAward(String name, int newCount, String operator) throws Exception;
 
     /**
      * 修改DP
@@ -130,7 +134,7 @@ public interface UserService {
      * @param newCount 新DP
      * @return 是否更改成功
      */
-    boolean updateDuelPoint(String name, int newCount) throws Exception;
+    String updateDuelPoint(String name, int newCount, String operator) throws Exception;
 
     /**
      * 交换两个用户持有的卡片
@@ -138,5 +142,5 @@ public interface UserService {
      * @param dto 参数
      * @return 是否交换成功
      */
-    String swapCard(CardSwapDTO dto) throws Exception;
+    String swapCard(CardSwapDTO dto, String operator) throws Exception;
 }

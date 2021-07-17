@@ -126,7 +126,7 @@ public class UserController {
         if (dto.getCardA().equals(dto.getCardB())) {
             throw new OperationException("不能更换相同的卡！");
         }
-        return userService.swapCard(dto);
+        return userService.swapCard(dto, dto.getName());
     }
 
     /**
@@ -148,15 +148,11 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-        if (targetUser == null || targetUser.length() == 0) {
+        if (StringUtils.isEmpty(targetUser)) {
             throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateDust(targetUser, dustCount)) {
-            return "修改成功！";
-        } else {
-            throw new OperationException("修改失败！");
-        }
+        return userService.updateDust(targetUser, dustCount, name);
     }
 
     /**
@@ -241,11 +237,7 @@ public class UserController {
             throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateAward(targetUser, awardCount)) {
-            return "修改成功！";
-        } else {
-            throw new OperationException("修改失败！");
-        }
+        return userService.updateAward(targetUser, awardCount, name);
     }
 
     /**
@@ -271,11 +263,7 @@ public class UserController {
             throw new OperationException("用户名为空！");
         }
 
-        if (userService.updateDuelPoint(targetUser, dpCount)) {
-            return "修改成功！";
-        } else {
-            throw new OperationException("修改失败！");
-        }
+        return userService.updateDuelPoint(targetUser, dpCount, name);
     }
 
     /**
@@ -298,7 +286,7 @@ public class UserController {
         if (target == null || target.length() == 0) {
             throw new OperationException("用户名为空！");
         }
-        if (userService.addUser(target)) {
+        if (userService.addUser(target, name)) {
             return "添加成功！";
         } else {
             throw new OperationException("添加失败！");
@@ -349,7 +337,7 @@ public class UserController {
             }
         }
 
-        if (userService.resetPassword(target)) {
+        if (userService.resetPassword(target, name)) {
             return "重置成功！";
         } else {
             throw new OperationException("重置失败！");

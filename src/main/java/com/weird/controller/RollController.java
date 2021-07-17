@@ -11,6 +11,7 @@ import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
@@ -83,7 +84,7 @@ public class RollController {
         StringBuilder totalException = new StringBuilder();
         int successCount = 0;
         for (List<String> list : param.getCards()) {
-            if (list == null || list.size() == 0) {
+            if (CollectionUtils.isEmpty(list)) {
                 totalException.append("抽卡列表为空！\n");
                 continue;
             }

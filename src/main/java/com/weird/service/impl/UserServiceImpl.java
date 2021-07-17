@@ -8,6 +8,7 @@ import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.service.RecordService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
@@ -50,6 +51,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RollDetailMapper rollDetailMapper;
+
+    @Autowired
+    RecordService recordService;
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
@@ -123,7 +127,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean addUser(String name) throws Exception {
+    public boolean addUser(String name, String operator) throws Exception {
         UserDataModel modelList = userDataMapper.selectByNameDistinct(name);
         if (modelList != null) {
             throw new OperationException("该用户：[%s]已存在！", name);
@@ -137,7 +141,8 @@ public class UserServiceImpl implements UserService {
         newModel.setDuelPoint(0);
         newModel.setNonawardCount(0);
         userDataMapper.insert(newModel);
-        log.warn("添加新用户：[{}]", name);
+        String hint = String.format("添加新用户：[%s]", name);
+        recordService.setRecord(operator, hint);
         return newModel.getUserId() > 0;
     }
 
@@ -157,19 +162,20 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("用户名或密码错误！");
         }
         model.setPassword(newPassword);
-        log.warn("[{}]的密码发生修改", name);
+        String hint = String.format("[%s]的密码发生修改", name);
+        recordService.setRecord(name, hint);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
 
     /**
      * 重置用户密码
      *
-     * @param name        用户名
+     * @param name 用户名
      * @return 是否更改成功
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean resetPassword(String name) throws Exception {
+    public boolean resetPassword(String name, String operator) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到该用户名！");
@@ -178,7 +184,8 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         model.setPassword(DEFAULT_PASSWORD_MD5);
-        log.warn("[{}]的密码发生修改", name);
+        String hint = String.format("[%s]的密码发生修改", name);
+        recordService.setRecord(operator, hint);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
 
@@ -191,16 +198,22 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateDust(String name, int newCount) throws Exception {
+    public String updateDust(String name, int newCount, String operator) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
         }
 
-        log.warn("[{}]的尘被修改：（{}->{}）", name, model.getDustCount(), newCount);
+        String hint = String.format("[%s]的尘被修改：%d->%d", name, model.getDustCount(), newCount);
+
         model.setDustCount(newCount);
-        userDataMapper.updateByPrimaryKey(model);
-        return true;
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, hint);
+            return hint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
     }
 
     /**
@@ -300,7 +313,8 @@ public class UserServiceImpl implements UserService {
         // 清除缓存
         clearRollListWithDetailCache();
         clearCardOwnListCache();
-        log.warn("[{}]合成了一张[{}]", userName, cardName);
+        String hint = String.format("[%s]合成了一张[%s]", userName, cardName);
+        recordService.setRecord(userName, hint);
 
         return true;
     }
@@ -357,7 +371,8 @@ public class UserServiceImpl implements UserService {
         }
 
         cardListModel.setCount(cardListModel.getCount() + 1);
-        String result = String.format("你抽到了[%s](%s)！", rareCard.getCardName(), rareCard.getRare());
+        String result = String.format("抽到了[%s](%s)", rareCard.getCardName(), rareCard.getRare());
+        String resultToPlayer = String.format("你%s！", result);
 
         // 更新
         dustCount -= DustEnum.TO_RANDOM.getCount();
@@ -365,19 +380,19 @@ public class UserServiceImpl implements UserService {
             if (dustCount >= 0) {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                log.warn("[{}]使用150尘roll闪。", userName);
+                recordService.setRecord(userName, String.format("[%s]使用150尘roll闪。", userName));
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                log.warn("[{}]使用月见黑roll闪。", userName);
+                recordService.setRecord(userName, String.format("[%s]使用月见黑roll闪。", userName));
             }
         } else {
             if (userModel.getNonawardCount() >= 100) {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                log.warn("[{}]使用月见黑roll闪。", userName);
+                recordService.setRecord(userName, String.format("[%s]使用月见黑roll闪。", userName));
             } else {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                log.warn("[{}]使用150尘roll闪。", userName);
+                recordService.setRecord(userName, String.format("[%s]使用150尘roll闪。", userName));
             }
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
@@ -411,13 +426,13 @@ public class UserServiceImpl implements UserService {
         // 清除缓存
         clearRollListWithDetailCache();
         clearCardOwnListCache();
-        log.warn("[{}]在[{}]随机抽到了一张[{}]({})",
+        recordService.setRecord(userName, String.format("[%s]在[%s]随机抽到了一张[%s](%s)",
                 userName,
                 packageName,
                 rareCard.getCardName(),
-                rareCard.getRare());
+                rareCard.getRare()));
 
-        return result;
+        return resultToPlayer;
     }
 
     /**
@@ -456,7 +471,7 @@ public class UserServiceImpl implements UserService {
         userDataMapper.updateByPrimaryKey(userModel);
         userCardListMapper.update(cardListModel);
         clearCardOwnListCache();
-        log.warn("[{}]分解了{}张[{}]", userName, count, cardName);
+        recordService.setRecord(userName, String.format("[%s]分解了%d张[%s]", userName, count, cardName));
         return newDustCount;
     }
 
@@ -469,16 +484,21 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateAward(String name, int newCount) throws Exception {
+    public String updateAward(String name, int newCount, String operator) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
         }
 
-        log.warn("[{}]的月见黑被修改：（{}->{}）", name, model.getNonawardCount(), newCount);
+        String successHint = String.format("%s的月见黑被修改：%d->%d", name, model.getNonawardCount(), newCount);
         model.setNonawardCount(newCount);
-        userDataMapper.updateByPrimaryKey(model);
-        return true;
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("月见黑修改失败！");
+        }
     }
 
     /**
@@ -490,16 +510,21 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public boolean updateDuelPoint(String name, int newCount) throws Exception {
+    public String updateDuelPoint(String name, int newCount, String operator) throws Exception {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
         }
 
-        log.warn("[{}]的DP被修改：（{}->{}）", name, model.getDuelPoint(), newCount);
+        String successHint = String.format("%s的月见黑被修改：%d->%d", name, model.getDuelPoint(), newCount);
         model.setDuelPoint(newCount);
-        userDataMapper.updateByPrimaryKey(model);
-        return true;
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
     }
 
     /**
@@ -510,7 +535,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String swapCard(CardSwapDTO dto) throws Exception {
+    public String swapCard(CardSwapDTO dto, String operator) throws Exception {
         // 判断用户是否存在
         UserDataModel userA = userDataMapper.selectByNameDistinct(dto.getUserA());
         if (userA == null) {
@@ -596,7 +621,7 @@ public class UserServiceImpl implements UserService {
         }
 
         clearCardOwnListCache();
-        log.warn("[{}]的[{}]、[{}]的[{}]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB());
+        recordService.setRecord(operator, String.format("[%s]的[%s]、[%s]的[%s]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB()));
         return "交换成功！";
     }
 }
