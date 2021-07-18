@@ -313,8 +313,7 @@ public class UserServiceImpl implements UserService {
         // 清除缓存
         clearRollListWithDetailCache();
         clearCardOwnListCache();
-        String hint = String.format("[%s]合成了一张[%s]", userName, cardName);
-        recordService.setRecord(userName, hint);
+        recordService.setRecord(userName, "[%s]合成了一张[%s]，剩余尘：%d。", userName, cardName, userModel.getDustCount());
 
         return true;
     }
@@ -380,19 +379,19 @@ public class UserServiceImpl implements UserService {
             if (dustCount >= 0) {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                recordService.setRecord(userName,"[%s]使用150尘roll闪。", userName);
+                recordService.setRecord(userName,"[%s]使用150尘roll闪，剩余尘：%d。", userName, dustCount);
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordService.setRecord(userName,"[%s]使用月见黑roll闪。", userName);
+                recordService.setRecord(userName,"[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, userModel.getNonawardCount());
             }
         } else {
             if (userModel.getNonawardCount() >= 100) {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordService.setRecord(userName,"[%s]使用月见黑roll闪。", userName);
+                recordService.setRecord(userName,"[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, userModel.getNonawardCount());
             } else {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                recordService.setRecord(userName,"[%s]使用150尘roll闪。", userName);
+                recordService.setRecord(userName,"[%s]使用150尘roll闪，剩余尘：%d。", userName, dustCount);
             }
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
@@ -471,7 +470,7 @@ public class UserServiceImpl implements UserService {
         userDataMapper.updateByPrimaryKey(userModel);
         userCardListMapper.update(cardListModel);
         clearCardOwnListCache();
-        recordService.setRecord(userName,"[%s]分解了%d张[%s]", userName, count, cardName);
+        recordService.setRecord(userName,"[%s]分解了%d张[%s]，当前尘：%d。", userName, count, cardName, userModel.getDustCount());
         return newDustCount;
     }
 

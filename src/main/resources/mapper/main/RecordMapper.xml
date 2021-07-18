@@ -18,11 +18,11 @@
             <if test="detail != null and detail != ''">
                 detail like "%"||#{detail}||"%"
             </if>
-            <if test="startTime != null and startTime != ''">
-                and db_created_time &gt;= #{startTime}
+            <if test="startTimeStr != null and startTimeStr != ''">
+                and db_created_time &gt;= #{startTimeStr}
             </if>
-            <if test="endTime != null and endTime != ''">
-                and db_created_time &lt;= #{endTime}
+            <if test="endTimeStr != null and endTimeStr != ''">
+                and db_created_time &lt;= #{endTimeStr}
             </if>
         </where>
     </sql>
@@ -38,10 +38,9 @@
             record_id recordId,
             operator operator,
             detail detail,
-            db_create_time time
+            db_created_time time
         from record
         <include refid="param"/>
         order by record_id desc
-        limit #{beginFrom}, {pageSize}
     </select>
 </mapper>

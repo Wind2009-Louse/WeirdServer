@@ -4,6 +4,8 @@ import com.weird.interfaces.Fixable;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 搜索记录参数
@@ -13,6 +15,8 @@ import java.io.Serializable;
  */
 @Data
 public class RecordParam extends UserCheckParam implements Serializable, Fixable {
+    private static SimpleDateFormat fm = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     /**
      * 操作人
      */
@@ -27,11 +31,13 @@ public class RecordParam extends UserCheckParam implements Serializable, Fixable
      * 开始时间
      */
     long startTime;
+    String startTimeStr;
 
     /**
      * 结束时间
      */
     long endTime;
+    String endTimeStr;
 
     /**
      * 当前页码
@@ -43,16 +49,21 @@ public class RecordParam extends UserCheckParam implements Serializable, Fixable
      */
     int pageSize;
 
-    int beginFrom;
-
     @Override
     public void fix() {
+        startTimeStr = null;
+        endTimeStr = null;
+        if (startTime > 0) {
+            startTimeStr = fm.format(new Date(startTime * 1000));
+        }
+        if (endTime > 0) {
+            endTimeStr = fm.format(new Date(endTime * 1000));
+        }
         if (this.page <= 0) {
             this.page = 1;
         }
         if (this.pageSize <= 0) {
             this.pageSize = 20;
         }
-        this.beginFrom = (this.page - 1) * this.pageSize;
     }
 }

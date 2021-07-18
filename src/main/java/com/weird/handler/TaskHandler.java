@@ -1,5 +1,6 @@
 package com.weird.handler;
 
+import com.weird.service.RecordService;
 import com.weird.service.TaskService;
 import com.weird.utils.CacheUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -31,12 +32,15 @@ public class TaskHandler {
     @Autowired
     TaskService taskService;
 
+    @Autowired
+    RecordService recordService;
+
     @Async
     @Scheduled(cron = "0 0 0 * * ?")
     public void clearDaily() throws Exception {
-        log.info("【日常刷新】开始");
+        recordService.setRecord("日常更新", "【日常刷新】开始");
         int updateCount = taskService.updateDaily();
-        log.info("【日常刷新】更新{}条数据", updateCount);
+        recordService.setRecord("日常更新", "【日常刷新】更新{}条数据", updateCount);
         CacheUtil.clearRollListWithDetailCache();
         CacheUtil.clearCardOwnListCache();
     }
@@ -44,15 +48,15 @@ public class TaskHandler {
     @Async
     @Scheduled(cron = "0 0 0 ? * 1")
     public void clearWeekly() throws Exception {
-        log.info("【周常刷新】开始");
+        recordService.setRecord("周常更新", "【周常刷新】开始");
         int updateCount = taskService.updateWeekly();
-        log.info("【周常刷新】更新{}条记录", updateCount);
+        recordService.setRecord("周常更新", "【周常刷新】更新{}条记录", updateCount);
     }
 
     @Async
     @Scheduled(cron = "30 0 0 * * ?")
     public void backupDataBase() throws Exception {
-        log.info("【数据库备份】开始");
+        recordService.setRecord("数据库备份", "【数据库备份】开始");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
         Date currentDate = new Date();
         String newDateString = formatter.format(currentDate);
@@ -62,7 +66,7 @@ public class TaskHandler {
         oldDateCalender.add(Calendar.DATE, -14);
         String oldDateString = formatter.format(oldDateCalender.getTime());
         if (Files.deleteIfExists(Paths.get(String.format("backup/data-%s.db", oldDateString)))) {
-            log.info("【数据库备份】清除{}时备份的数据库", oldDateString);
+            recordService.setRecord("数据库备份", "【数据库备份】清除{}时备份的数据库", oldDateString);
         }
 
         File dir = new File("backup");
@@ -71,6 +75,6 @@ public class TaskHandler {
         }
         Path source = Paths.get("data.db");
         Files.copy(source, new FileOutputStream(String.format("backup/data-%s.db", newDateString)));
-        log.info("【数据库备份】结束");
+        recordService.setRecord("数据库备份", "【数据库备份】结束");
     }
 }

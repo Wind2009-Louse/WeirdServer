@@ -1,9 +1,9 @@
 package com.weird.controller;
 
+import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.RecordModel;
 import com.weird.model.enums.LoginTypeEnum;
-import com.weird.model.param.PackageSortParam;
 import com.weird.model.param.RecordParam;
 import com.weird.service.RecordService;
 import com.weird.service.UserService;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @TrimArgs
+@SearchParamFix
 public class RecordController {
     @Autowired
     RecordService recordService;

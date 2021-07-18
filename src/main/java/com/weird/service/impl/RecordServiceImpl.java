@@ -30,7 +30,7 @@ public class RecordServiceImpl implements RecordService {
         log.warn(operation);
         try {
             if (StringUtils.isEmpty(userName)) {
-                userName = "empty";
+                userName = "system";
             }
 
             RecordModel record = new RecordModel();
