@@ -13,17 +13,7 @@ import java.util.List;
  * @date 2020.9.17
  */
 @Data
-public class BatchAddCardParam implements Serializable, Trimable {
-    /**
-     * 用户名
-     */
-    String name;
-
-    /**
-     * 密码
-     */
-    String password;
-
+public class BatchAddCardParam extends UserCheckParam implements Serializable, Trimable {
     /**
      * 卡包名
      */

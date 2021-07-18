@@ -329,7 +329,7 @@ public class RollServiceImpl implements RollService {
         rollListModel.setIsDisabled((byte) newStatus);
 
         recordService.setRecord(operator,
-                String.format("[%s]的状态变为%s", JSON.toJSONString(rollListModel), RollStatusEnum.getById(newStatus)));
+                "[%s]的状态变为%s", JSON.toJSONString(rollListModel), RollStatusEnum.getById(newStatus));
         if (rollListMapper.updateByPrimaryKey(rollListModel) <= 0) {
             throw new OperationException("修改抽卡记录状态失败！");
         }

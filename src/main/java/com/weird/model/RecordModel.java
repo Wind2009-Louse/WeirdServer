@@ -31,5 +31,5 @@ public class RecordModel implements Serializable {
     /**
      * 操作内容
      */
-    String text;
+    String detail;
 }

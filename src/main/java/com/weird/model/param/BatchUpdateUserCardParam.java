@@ -13,17 +13,7 @@ import java.util.Map;
  * @date 2020.9.23
  */
 @Data
-public class BatchUpdateUserCardParam implements Serializable, Trimable {
-    /**
-     * 用户名
-     */
-    String name;
-
-    /**
-     * 密码
-     */
-    String password;
-
+public class BatchUpdateUserCardParam extends UserCheckParam implements Serializable, Trimable {
     /**
      * 操作目标
      */

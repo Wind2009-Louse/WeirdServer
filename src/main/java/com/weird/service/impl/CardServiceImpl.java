@@ -159,7 +159,7 @@ public class CardServiceImpl implements CardService {
                     continue;
                 }
                 recordService.setRecord(param.getName(),
-                        String.format("修改[%s]的[%s]数量（%d->%d）", userName, cardName, model.getCount(), entry.getValue()));
+                        "修改[%s]的[%s]数量（%d->%d）", userName, cardName, model.getCount(), entry.getValue());
                 model.setCount(entry.getValue());
                 updateList.add(model);
             } else {
@@ -169,7 +169,7 @@ public class CardServiceImpl implements CardService {
                     continue;
                 }
                 recordService.setRecord(param.getName(),
-                        String.format("添加[%s]的[%s]数量（%d->%d）", userName, cardName, 0, entry.getValue()));
+                        "添加[%s]的[%s]数量（%d->%d）", userName, cardName, 0, entry.getValue());
                 model = new UserCardListModel();
                 model.setUserId(userId);
                 model.setCardPk(cardPk);

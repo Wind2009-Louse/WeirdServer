@@ -7,6 +7,41 @@
            readOnly="false"/>
     <insert id="insert" parameterType="com.weird.model.RecordModel">
         insert into record (operator, detail)
-        values (#{operator}, #{text})
+        values (#{operator}, #{detail})
     </insert>
+
+    <sql id="param">
+        <where>
+            <if test="operator != null and operator != ''">
+                operator like "%"||#{operator}||"%"
+            </if>
+            <if test="detail != null and detail != ''">
+                detail like "%"||#{detail}||"%"
+            </if>
+            <if test="startTime != null and startTime != ''">
+                and db_created_time &gt;= #{startTime}
+            </if>
+            <if test="endTime != null and endTime != ''">
+                and db_created_time &lt;= #{endTime}
+            </if>
+        </where>
+    </sql>
+
+    <select id="count" parameterType="com.weird.model.param.RecordParam" resultType="java.lang.Integer">
+        select count(*)
+        from record
+        <include refid="param"/>
+    </select>
+
+    <select id="searchList" parameterType="com.weird.model.param.RecordParam" resultType="com.weird.model.RecordModel">
+        select
+            record_id recordId,
+            operator operator,
+            detail detail,
+            db_create_time time
+        from record
+        <include refid="param"/>
+        order by record_id desc
+        limit #{beginFrom}, {pageSize}
+    </select>
 </mapper>

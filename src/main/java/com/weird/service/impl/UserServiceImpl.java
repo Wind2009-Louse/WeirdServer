@@ -380,19 +380,19 @@ public class UserServiceImpl implements UserService {
             if (dustCount >= 0) {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                recordService.setRecord(userName, String.format("[%s]使用150尘roll闪。", userName));
+                recordService.setRecord(userName,"[%s]使用150尘roll闪。", userName);
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordService.setRecord(userName, String.format("[%s]使用月见黑roll闪。", userName));
+                recordService.setRecord(userName,"[%s]使用月见黑roll闪。", userName);
             }
         } else {
             if (userModel.getNonawardCount() >= 100) {
                 userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordService.setRecord(userName, String.format("[%s]使用月见黑roll闪。", userName));
+                recordService.setRecord(userName,"[%s]使用月见黑roll闪。", userName);
             } else {
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
-                recordService.setRecord(userName, String.format("[%s]使用150尘roll闪。", userName));
+                recordService.setRecord(userName,"[%s]使用150尘roll闪。", userName);
             }
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
@@ -426,11 +426,11 @@ public class UserServiceImpl implements UserService {
         // 清除缓存
         clearRollListWithDetailCache();
         clearCardOwnListCache();
-        recordService.setRecord(userName, String.format("[%s]在[%s]随机抽到了一张[%s](%s)",
+        recordService.setRecord(userName,"[%s]在[%s]随机抽到了一张[%s](%s)",
                 userName,
                 packageName,
                 rareCard.getCardName(),
-                rareCard.getRare()));
+                rareCard.getRare());
 
         return resultToPlayer;
     }
@@ -471,7 +471,7 @@ public class UserServiceImpl implements UserService {
         userDataMapper.updateByPrimaryKey(userModel);
         userCardListMapper.update(cardListModel);
         clearCardOwnListCache();
-        recordService.setRecord(userName, String.format("[%s]分解了%d张[%s]", userName, count, cardName));
+        recordService.setRecord(userName,"[%s]分解了%d张[%s]", userName, count, cardName);
         return newDustCount;
     }
 
@@ -621,7 +621,7 @@ public class UserServiceImpl implements UserService {
         }
 
         clearCardOwnListCache();
-        recordService.setRecord(operator, String.format("[%s]的[%s]、[%s]的[%s]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB()));
+        recordService.setRecord(operator, "[%s]的[%s]、[%s]的[%s]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB());
         return "交换成功！";
     }
 }

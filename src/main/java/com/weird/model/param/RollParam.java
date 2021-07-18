@@ -13,17 +13,7 @@ import java.util.List;
  * @date 2020.9.18
  */
 @Data
-public class RollParam implements Serializable, Trimable {
-    /**
-     * 操作用户名称
-     */
-    String name;
-
-    /**
-     * 操作用户密码
-     */
-    String password;
-
+public class RollParam extends UserCheckParam implements Serializable, Trimable {
     /**
      * 抽卡对象
      */

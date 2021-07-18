@@ -13,17 +13,7 @@ import java.util.List;
  * @date 2020.10.5
  */
 @Data
-public class PackageSortParam implements Serializable, Trimable {
-    /**
-     * 用户名
-     */
-    String name;
-
-    /**
-     * 密码
-     */
-    String password;
-
+public class PackageSortParam extends UserCheckParam implements Serializable, Trimable {
     /**
      * 新的卡包顺序
      */

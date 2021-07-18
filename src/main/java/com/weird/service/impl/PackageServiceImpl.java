@@ -72,7 +72,7 @@ public class PackageServiceImpl implements PackageService {
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
-        recordService.setRecord(operator, String.format("添加卡包：[%s]", name));
+        recordService.setRecord(operator, "添加卡包：[%s]", name);
         return packageInfoMapper.insert(newPackage) > 0;
     }
 
@@ -96,7 +96,7 @@ public class PackageServiceImpl implements PackageService {
         }
 
         oldPackage.setPackageName(newName);
-        recordService.setRecord(operator, String.format("卡包更改名字：[%s]->[%s]", oldName, newName));
+        recordService.setRecord(operator, "卡包更改名字：[%s]->[%s]", oldName, newName);
         clearCardOwnListCache();
         clearRollListWithDetailCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
@@ -131,7 +131,7 @@ public class PackageServiceImpl implements PackageService {
         newCardModel.setCardName(cardName);
         newCardModel.setPackageId(packageId);
         newCardModel.setRare(rare);
-        recordService.setRecord(operator, String.format("在卡包[%s]中添加卡片[%s](%s)", packageName, cardName, rare));
+        recordService.setRecord(operator, "在卡包[%s]中添加卡片[%s](%s)", packageName, cardName, rare);
         return packageCardMapper.insert(newCardModel) > 0;
     }
 
@@ -172,7 +172,7 @@ public class PackageServiceImpl implements PackageService {
                 }
                 recordService.setRecord(
                         param.getName(),
-                        String.format("[%s]添加%s卡：%s", param.getPackageName(), entry.getKey(), JSON.toJSONString(entry.getValue())));
+                        "[%s]添加%s卡：%s", param.getPackageName(), entry.getKey(), JSON.toJSONString(entry.getValue()));
             }
         }
         if (sb.length() > 0) {
@@ -263,7 +263,7 @@ public class PackageServiceImpl implements PackageService {
 
             clearCardOwnListCache();
             clearRollListWithDetailCache();
-            recordService.setRecord(operator, String.format("卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare));
+            recordService.setRecord(operator, "卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare);
             return true;
         }
         return false;
@@ -293,9 +293,9 @@ public class PackageServiceImpl implements PackageService {
         if (result > 0) {
             recordService.setRecord(
                     operator,
-                    String.format("卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
+                    "卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
                             cardModel1.getPackageId(), cardModel1.getCardName(), cardModel1.getRare(),
-                            cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare())
+                            cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare()
             );
         }
         if (result == 2) {
