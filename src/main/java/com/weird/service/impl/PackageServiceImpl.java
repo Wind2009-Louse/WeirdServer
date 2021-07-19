@@ -166,7 +166,7 @@ public class PackageServiceImpl implements PackageService {
         for (Map.Entry<String, List<String>> entry : cardMap.entrySet()) {
             if (entry.getValue().size() > 0) {
                 int count = packageCardMapper.insertByRareBatch(packageInfoModel.getPackageId(), entry.getKey(), entry.getValue());
-                if (count < param.getNList().size()) {
+                if (count < entry.getValue().size()) {
                     sb.append(entry.getKey());
                     sb.append("卡没有全部更新，请重试！\n");
                 }

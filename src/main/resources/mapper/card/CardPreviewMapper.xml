@@ -59,10 +59,10 @@
                 and
                 <foreach collection="typeList" index="index" item="cardType" separator="and">
                     <if test="cardType.value == 16">
-                        (d.type &amp; #{cardType.value} != 0 or d.type = 2 or d.type = 4)
+                        (d.type &amp; #{cardType.value} = #{cardType.value} or d.type = 2 or d.type = 4)
                     </if>
                     <if test="cardType.value != 16">
-                        d.type &amp; #{cardType.value} != 0
+                        d.type &amp; #{cardType.value} = #{cardType.value}
                     </if>
                 </foreach>
             </if>
@@ -79,13 +79,13 @@
                 </foreach>
             </if>
             <if test="level != null">
-                and d.level &amp; 0xffff = #{level}
+                and d.level &amp; 0xffff = #{level} and d.type &amp; 1 != 0
             </if>
             <if test="attack != null">
-                and d.atk = #{attack}
+                and d.atk = #{attack} and d.type &amp; 1 != 0
             </if>
             <if test="defense != null">
-                and d.def = #{defense}
+                and d.def = #{defense} and d.type &amp; 1 != 0 and d.type &amp; 0x4000000 = 0
             </if>
         </where>
     </select>

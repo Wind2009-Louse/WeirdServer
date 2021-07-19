@@ -14,7 +14,7 @@ public enum RollStatusEnum {
     /**
      * 失效
      */
-    INVALID(1, "失效");
+    INVALID(1, "无效");
 
 
     private final int id;
