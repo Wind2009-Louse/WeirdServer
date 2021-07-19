@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice;
+import org.sqlite.SQLiteException;
 
 /**
  * 返回处理类
@@ -48,6 +49,11 @@ public class ResponseHandler implements ResponseBodyAdvice {
             e.printStackTrace();
         }
         log.error(e.getMessage());
-        return new ResultModel<>(500, e.getMessage());
+        // 隐藏数据库错误
+        if (e instanceof SQLiteException) {
+            return new ResultModel<>(500, "数据库异常，请联系管理员");
+        } else {
+            return new ResultModel<>(500, e.getMessage());
+        }
     }
 }

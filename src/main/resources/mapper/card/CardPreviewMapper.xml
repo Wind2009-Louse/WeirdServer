@@ -61,7 +61,13 @@
                     <if test="cardType.value == 16">
                         (d.type &amp; #{cardType.value} = #{cardType.value} or d.type = 2 or d.type = 4)
                     </if>
-                    <if test="cardType.value != 16">
+                    <if test="cardType.value == 18">
+                        d.type = 2
+                    </if>
+                    <if test="cardType.value == 20">
+                        d.type = 4
+                    </if>
+                    <if test="cardType.value != 16 and cardType.value != 18 and cardType.value != 20">
                         d.type &amp; #{cardType.value} = #{cardType.value}
                     </if>
                 </foreach>
