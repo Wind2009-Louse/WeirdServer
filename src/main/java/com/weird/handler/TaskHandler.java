@@ -40,7 +40,7 @@ public class TaskHandler {
     public void clearDaily() throws Exception {
         recordService.setRecord("日常更新", "【日常刷新】开始");
         int updateCount = taskService.updateDaily();
-        recordService.setRecord("日常更新", "【日常刷新】更新{}条数据", updateCount);
+        recordService.setRecord("日常更新", "【日常刷新】更新%d条数据", updateCount);
         CacheUtil.clearRollListWithDetailCache();
         CacheUtil.clearCardOwnListCache();
     }
@@ -50,7 +50,7 @@ public class TaskHandler {
     public void clearWeekly() throws Exception {
         recordService.setRecord("周常更新", "【周常刷新】开始");
         int updateCount = taskService.updateWeekly();
-        recordService.setRecord("周常更新", "【周常刷新】更新{}条记录", updateCount);
+        recordService.setRecord("周常更新", "【周常刷新】更新%d条记录", updateCount);
     }
 
     @Async
@@ -66,7 +66,7 @@ public class TaskHandler {
         oldDateCalender.add(Calendar.DATE, -14);
         String oldDateString = formatter.format(oldDateCalender.getTime());
         if (Files.deleteIfExists(Paths.get(String.format("backup/data-%s.db", oldDateString)))) {
-            recordService.setRecord("数据库备份", "【数据库备份】清除{}时备份的数据库", oldDateString);
+            recordService.setRecord("数据库备份", "【数据库备份】清除%s时备份的数据库", oldDateString);
         }
 
         File dir = new File("backup");
