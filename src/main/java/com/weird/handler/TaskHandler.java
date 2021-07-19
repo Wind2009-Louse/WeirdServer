@@ -10,6 +10,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.nio.file.Files;
@@ -76,5 +77,10 @@ public class TaskHandler {
         Path source = Paths.get("data.db");
         Files.copy(source, new FileOutputStream(String.format("backup/data-%s.db", newDateString)));
         recordService.setRecord("数据库备份", "【数据库备份】结束");
+    }
+
+    @PreDestroy
+    public void beforeShutdown() {
+        recordService.setRecord("system", "后端进程结束");
     }
 }
