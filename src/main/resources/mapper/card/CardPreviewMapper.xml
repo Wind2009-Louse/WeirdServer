@@ -58,9 +58,11 @@
             <if test="typeList != null and typeList.size() > 0">
                 and
                 <foreach collection="typeList" index="index" item="cardType" separator="and">
-                        d.type &amp; #{cardType.value} != 0
                     <if test="cardType.value == 16">
-                        or d.type = 2 or d.type = 4
+                        (d.type &amp; #{cardType.value} != 0 or d.type = 2 or d.type = 4)
+                    </if>
+                    <if test="cardType.value != 16">
+                        d.type &amp; #{cardType.value} != 0
                     </if>
                 </foreach>
             </if>
