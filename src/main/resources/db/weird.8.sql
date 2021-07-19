@@ -172,6 +172,31 @@ LOCK TABLES `user_card_list` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `record`
+--
+
+DROP TABLE IF EXISTS `record`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `record` (
+  `record_id` int(11) NOT NULL COMMENT '日志ID',
+  `operator` varchat(45) NOT NULL DEFAULT '' COMMENT '日志操作者',
+  `detail` text NOT NULL DEFAULT '' COMMENT '日志内容',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='操作日志记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `record`
+--
+
+LOCK TABLES `record` WRITE;
+/*!40000 ALTER TABLE `record` DISABLE KEYS */;
+/*!40000 ALTER TABLE `record` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user_data`
 --
 
