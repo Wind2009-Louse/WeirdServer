@@ -61,6 +61,7 @@
         <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
         <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
     </resultMap>
 
     <select id="selectCardListAdmin" resultMap="CardListDTO" useCache="false">
@@ -94,32 +95,38 @@
     <select id="selectCardListUser" resultMap="CardListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
-        package_card.rare
-        from package_info inner join package_card on package_info.package_id = package_card.package_id
+        package_card.rare,
+        uc.count
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        left join
+            (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
+            inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
+            on uc.card_pk = package_card.card_pk
         <where>
             (
-            rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
+            package_card.rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
             )
             <if test="packageNameList != null and packageNameList.size() > 0">
-                and package_name in
+                and package_info.package_name in
                 <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="cardNameList != null">
-                and card_name in
+                and package_card.card_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="rareList != null and rareList.size() > 0">
-                and rare in
+                and package_card.rare in
                 <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
             <if test="cardPk != 0">
-                and card_pk = #{cardPk}
+                and package_card.card_pk = #{cardPk}
             </if>
         </where>
         order by package_info.order_num, package_card.rare, package_card.card_name

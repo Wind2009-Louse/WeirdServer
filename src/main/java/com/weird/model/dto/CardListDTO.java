@@ -35,4 +35,9 @@ public class CardListDTO implements Serializable {
      * 稀有度
      */
     String rare;
+
+    /**
+     * 持有数量
+     */
+    int count;
 }

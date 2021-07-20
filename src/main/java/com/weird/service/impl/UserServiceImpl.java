@@ -243,7 +243,7 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("无法合成[%s]！", cardName);
         }
 
-        List<CardListDTO> records = userCardListMapper.selectCardListUser(null, null, null, cardModel.getCardPk());
+        List<CardListDTO> records = userCardListMapper.selectCardListUser(null, null, null, userName, cardModel.getCardPk());
         if (records.size() <= 0) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }

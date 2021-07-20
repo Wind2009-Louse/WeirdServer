@@ -54,6 +54,7 @@ public interface UserCardListMapper {
     List<CardListDTO> selectCardListUser(@Param("packageNameList") List<String> packageNameList,
                                          @Param("cardNameList") List<String> cardNameList,
                                          @Param("rareList") List<String> rareList,
+                                         @Param("name") String userName,
                                          @Param("cardPk") int cardPk);
 
     /**

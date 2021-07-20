@@ -226,7 +226,7 @@ public class CardServiceImpl implements CardService {
         if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
-        return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), 0);
+        return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), param.getName(), 0);
     }
 
 
