@@ -38,7 +38,7 @@
                     #{packageId}
                 </foreach>
             </if>
-            <if test="cardNameList != null">
+            <if test="cardNameList != null and cardNameList.size() > 0">
                 and (
                     old_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
@@ -66,6 +66,7 @@
     </resultMap>
     <select id="selectByCardPk" resultMap="ResultMap">
         select pack.package_name package_name,
+            his.card_pk cardPk,
             his.old_name old_name,
             his.new_name new_name,
             his.rare rare,

@@ -23,6 +23,8 @@ public class CardHistoryDTO implements Serializable {
      */
     String rare;
 
+    long cardPk;
+
     /**
      * 卡片原名
      */

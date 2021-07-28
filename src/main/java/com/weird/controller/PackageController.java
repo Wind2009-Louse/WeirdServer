@@ -100,7 +100,13 @@ public class PackageController {
         }
     }
 
-
+    /**
+     * 【管理端】卡包排序
+     *
+     * @param param 排序参数
+     * @return
+     * @throws Exception
+     */
     @PostMapping("/weird_project/package/sort")
     public String sortPackage(@RequestBody PackageSortParam param) throws Exception {
         // 管理权限验证
