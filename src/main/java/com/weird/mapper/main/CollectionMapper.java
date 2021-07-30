@@ -17,5 +17,5 @@ public interface CollectionMapper {
                       @Param("cardPk") int cardPk);
 
     int cutOffCollection(@Param("userId") int userId,
-                         @Param("visibleList") List<Integer> cardPkList);
+                         @Param("cardPkList") List<Integer> cardPkList);
 }
