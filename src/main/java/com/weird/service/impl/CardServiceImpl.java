@@ -1,6 +1,5 @@
 package com.weird.service.impl;
 
-import com.weird.mapper.card.CardPreviewMapper;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.UserCardListModel;
@@ -8,7 +7,9 @@ import com.weird.model.UserDataModel;
 import com.weird.model.dto.CardHistoryDTO;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
+import com.weird.model.param.CollectionParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
 import com.weird.service.CardService;
@@ -47,6 +48,9 @@ public class CardServiceImpl implements CardService {
 
     @Autowired
     RecordService recordService;
+
+    @Autowired
+    CollectionMapper collectionMapper;
 
     /**
      * 修改用户持有的卡片数量
@@ -229,6 +233,32 @@ public class CardServiceImpl implements CardService {
         return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), param.getName(), 0);
     }
 
+    /**
+     * 查看自己收藏的卡片信息
+     *
+     * @param param         搜索参数
+     * @param loginTypeEnum 登录信息
+     * @return 查询结果
+     */
+    @Override
+    public List<CardListDTO> selectListCollection(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException {
+        final String userName = param.getName();
+        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
+        if (userModel == null) {
+            throw new OperationException("找不到该用户:[%s]！", userName);
+        }
+        int userId = userModel.getUserId();
+
+        if (LoginTypeEnum.NORMAL.equals(loginTypeEnum)) {
+            List<Integer> visibleCardPkList = userCardListMapper.getVisibleCardPkList();
+            collectionMapper.cutOffCollection(userId, visibleCardPkList);
+        }
+        List<Integer> collectionPkList = collectionMapper.getCollectionByUserId(userId);
+        if (CollectionUtils.isEmpty(collectionPkList)) {
+            return Collections.emptyList();
+        }
+        return userCardListMapper.selectCardListCollection(userName, collectionPkList);
+    }
 
     /**
      * 根据条件筛选拥有的卡片

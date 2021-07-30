@@ -1,9 +1,12 @@
 package com.weird.service;
 
 import com.weird.model.dto.*;
+import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
+import com.weird.model.param.CollectionParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
+import com.weird.utils.OperationException;
 
 import java.util.List;
 
@@ -43,6 +46,15 @@ public interface CardService {
      * @return 查询结果
      */
     List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList);
+
+    /**
+     * 查看自己收藏的卡片信息
+     *
+     * @param param         搜索参数
+     * @param loginTypeEnum 登录信息
+     * @return 查询结果
+     */
+    List<CardListDTO> selectListCollection(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException;
 
     /**
      * 根据条件筛选拥有的卡片

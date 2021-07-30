@@ -57,6 +57,16 @@ public interface UserCardListMapper {
                                          @Param("name") String userName,
                                          @Param("cardPk") int cardPk);
 
+    List<CardListDTO> selectCardListCollection(@Param("name") String userName,
+                                               @Param("cardPkList") List<Integer> cardPkList);
+
+    /**
+     * 获取玩家端可以查阅的卡片主键列表
+     *
+     * @return
+     */
+    List<Integer> getVisibleCardPkList();
+
     /**
      * 查找卡片持有情况
      *

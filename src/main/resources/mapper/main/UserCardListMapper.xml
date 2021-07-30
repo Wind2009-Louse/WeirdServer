@@ -100,9 +100,9 @@
         from package_info
         inner join package_card on package_info.package_id = package_card.package_id
         left join
-            (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
-            inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
-            on uc.card_pk = package_card.card_pk
+        (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
+        on uc.card_pk = package_card.card_pk
         <where>
             (
             package_card.rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
@@ -130,6 +130,36 @@
             </if>
         </where>
         order by package_info.order_num, package_card.rare, package_card.card_name
+    </select>
+
+    <select id="selectCardListCollection" resultMap="CardListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.rare,
+        uc.count
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        left join
+        (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
+        on uc.card_pk = package_card.card_pk
+        <where>
+            package_card.card_pk in
+            <foreach collection="cardPkList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+        order by package_info.order_num, package_card.rare, package_card.card_name
+    </select>
+
+    <select id="getVisibleCardPkList" resultType="java.lang.Integer">
+        select package_card.card_pk
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        where
+            package_card.rare = "HR"
+        or
+            package_card.card_pk in (select distinct card_pk from user_card_list)
     </select>
 
     <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">

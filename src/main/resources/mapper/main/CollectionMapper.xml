@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.CollectionMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="256"
+           eviction="LRU"
+           readOnly="false"/>
+
+    <select id="getCollectionByUserId" resultType="java.lang.Integer">
+        select card_pk
+        from collection
+        where user_id = #{userId}
+    </select>
+
+    <select id="checkCollection" resultType="java.lang.Integer">
+        select collection_id
+        from collection
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </select>
+
+    <insert id="addCollection">
+        insert into collection(user_id, card_pk)
+        values
+        (#{userId}, #{cardPk})
+    </insert>
+
+    <delete id="delCollection">
+        delete from collection
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </delete>
+
+    <delete id="cutOffCollection">
+        delete from collection
+        where user_id = #{userId}
+        <if test="cardPkList != null and cardPkList.size() > 0">
+            and card_pk not in
+            <foreach collection="cardPkList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </delete>
+</mapper>
