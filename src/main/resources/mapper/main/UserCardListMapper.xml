@@ -76,11 +76,18 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="cardNameList != null">
-                and card_name in
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (card_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
+                <if test="originName != null and originName != ''">
+                    or card_name like "%"||#{originName}||"%"
+                </if>
+                )
+            </if>
+            <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+                and card_name like "%"||#{originName}||"%"
             </if>
             <if test="rareList != null and rareList.size() > 0">
                 and rare in
@@ -113,11 +120,18 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="cardNameList != null">
-                and package_card.card_name in
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (package_card.card_name in
                 <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                     #{item}
                 </foreach>
+                <if test="originName != null and originName != ''">
+                    or package_card.card_name like "%"||#{originName}||"%"
+                </if>
+                )
+            </if>
+            <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+                and package_card.card_name like "%"||#{originName}||"%"
             </if>
             <if test="rareList != null and rareList.size() > 0">
                 and package_card.rare in
@@ -190,11 +204,18 @@
                 #{item}
             </foreach>
         </if>
-        <if test="cardNameList != null">
-            and card_name in
+        <if test="cardNameList != null and cardNameList.size() > 0">
+            and (card_name in
             <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
+            <if test="originName != null and originName != ''">
+                or card_name like "%"||#{originName}||"%"
+            </if>
+            )
+        </if>
+        <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+            and card_name like "%"||#{originName}||"%"
         </if>
         <if test="rareList != null and rareList.size() > 0">
             and rare in

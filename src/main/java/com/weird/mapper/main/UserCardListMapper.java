@@ -40,7 +40,8 @@ public interface UserCardListMapper {
      */
     List<CardListDTO> selectCardListAdmin(@Param("packageNameList") List<String> packageNameList,
                                           @Param("cardNameList") List<String> cardNameList,
-                                          @Param("rareList") List<String> rareList);
+                                          @Param("rareList") List<String> rareList,
+                                          @Param("originName") String originName);
 
     /**
      * 客户端查找卡片
@@ -55,7 +56,8 @@ public interface UserCardListMapper {
                                          @Param("cardNameList") List<String> cardNameList,
                                          @Param("rareList") List<String> rareList,
                                          @Param("name") String userName,
-                                         @Param("cardPkList") List<Integer> cardPkList);
+                                         @Param("cardPkList") List<Integer> cardPkList,
+                                         @Param("originName") String originName);
 
     List<CardListDTO> selectCardListCollection(@Param("name") String userName,
                                                @Param("cardPkList") List<Integer> cardPkList);
@@ -79,7 +81,8 @@ public interface UserCardListMapper {
     List<CardOwnListDTO> selectCardOwnList(@Param("packageNameList") List<String> packageNameList,
                                            @Param("cardNameList") List<String> cardNameList,
                                            @Param("rareList") List<String> rareList,
-                                           @Param("userNameList") List<String> userNameList);
+                                           @Param("userNameList") List<String> userNameList,
+                                           @Param("originName") String originName);
 
     /**
      * 查找卡片的拥有数量

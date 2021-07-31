@@ -212,10 +212,14 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListAdmin(SearchCardParam param, List<String> cardList) {
-        if (cardList != null && cardList.size() == 0){
+        if (cardList != null && cardList.size() == 0 && StringUtils.isEmpty(param.getCardName())){
             return Collections.emptyList();
         }
-        List<CardListDTO> preResult = userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
+        List<CardListDTO> preResult = userCardListMapper.selectCardListAdmin(
+                param.getPackageNameList(),
+                cardList,
+                param.getRareList(),
+                param.getCardName());
         for (CardListDTO result : preResult) {
             result.setInCollection(result.getInCollection() > 0 ? 1 : 0);
         }
@@ -231,7 +235,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     public List<CardListDTO> selectListUser(SearchCardParam param, List<String> cardList) {
-        if (cardList != null && cardList.size() == 0){
+        if (cardList != null && cardList.size() == 0 && StringUtils.isEmpty(param.getCardName())){
             return Collections.emptyList();
         }
         List<Integer> collectionPkList = null;
@@ -246,7 +250,8 @@ public class CardServiceImpl implements CardService {
                 cardList,
                 param.getRareList(),
                 param.getName(),
-                collectionPkList);
+                collectionPkList,
+                param.getCardName());
         for (CardListDTO result : preResult) {
             result.setInCollection(result.getInCollection() > 0 ? 1 : 0);
         }
@@ -261,6 +266,7 @@ public class CardServiceImpl implements CardService {
      * @return 查询结果
      */
     @Override
+    @Deprecated
     public List<CardListDTO> selectListCollection(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException {
         final String userName = param.getName();
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
@@ -298,7 +304,12 @@ public class CardServiceImpl implements CardService {
             if (cardList != null && cardList.size() == 0){
                 cache = Collections.emptyList();
             } else {
-                cache = userCardListMapper.selectCardOwnList(param.getPackageNameList(), cardList, param.getRareList(), param.getTargetUserList());
+                cache = userCardListMapper.selectCardOwnList(
+                        param.getPackageNameList(),
+                        cardList,
+                        param.getRareList(),
+                        param.getTargetUserList(),
+                        param.getCardName());
             }
             CacheUtil.putCardOwnListCache(key, cache);
         }
