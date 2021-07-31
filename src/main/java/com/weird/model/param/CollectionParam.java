@@ -19,7 +19,7 @@ public class CollectionParam extends UserCheckParam implements Serializable, Tri
     /**
      * 卡片ID
      */
-    int cardPk;
+    String cardName;
 
     /**
      * 操作（1=添加，2=移除）

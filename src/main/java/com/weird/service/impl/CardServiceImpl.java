@@ -253,7 +253,7 @@ public class CardServiceImpl implements CardService {
             List<Integer> visibleCardPkList = userCardListMapper.getVisibleCardPkList();
             collectionMapper.cutOffCollection(userId, visibleCardPkList);
         }
-        List<Integer> collectionPkList = collectionMapper.getCollectionByUserId(userId);
+        List<Integer> collectionPkList = collectionMapper.getCollectionIdByUserId(userId);
         if (CollectionUtils.isEmpty(collectionPkList)) {
             return Collections.emptyList();
         }

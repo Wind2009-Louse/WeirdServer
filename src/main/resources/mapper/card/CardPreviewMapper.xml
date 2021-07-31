@@ -45,9 +45,9 @@
         from texts t
         inner join datas d on d.id = t.id
         <where>
-            <if test="wordList != null and wordList.size() > 0">
+            <if test="param.cardDescList != null and param.cardDescList.size() > 0">
                 and
-                <foreach collection="wordList" index="index" item="word" separator="and">
+                <foreach collection="param.cardDescList" index="index" item="word" separator="and">
                     (
                         t.name like "%"||#{word}||"%"
                     or
@@ -55,9 +55,9 @@
                     )
                 </foreach>
             </if>
-            <if test="typeList != null and typeList.size() > 0">
+            <if test="param.cardTypeList != null and param.cardTypeList.size() > 0">
                 and
-                <foreach collection="typeList" index="index" item="cardType" separator="and">
+                <foreach collection="param.cardTypeList" index="index" item="cardType" separator="and">
                     <if test="cardType.value == 16">
                         (d.type &amp; #{cardType.value} = #{cardType.value} or d.type = 2 or d.type = 4)
                     </if>
@@ -72,26 +72,26 @@
                     </if>
                 </foreach>
             </if>
-            <if test="attributeList != null and attributeList.size() > 0">
+            <if test="param.cardAttributeList != null and param.cardAttributeList.size() > 0">
                 and
-                <foreach collection="attributeList" index="index" item="cardAttribute" separator="and">
+                <foreach collection="param.cardAttributeList" index="index" item="cardAttribute" separator="and">
                     d.attribute &amp; #{cardAttribute.value} != 0
                 </foreach>
             </if>
-            <if test="raceList != null and raceList.size() > 0">
+            <if test="param.cardRaceList != null and param.cardRaceList.size() > 0">
                 and
-                <foreach collection="raceList" index="index" item="cardRace" separator="and">
+                <foreach collection="param.cardRaceList" index="index" item="cardRace" separator="and">
                     d.race &amp; #{cardRace.value} != 0
                 </foreach>
             </if>
-            <if test="level != null">
-                and d.level &amp; 0xffff = #{level} and d.type &amp; 1 != 0
+            <if test="param.cardLevel != null">
+                and d.level &amp; 0xffff = #{param.cardLevel} and d.type &amp; 1 != 0
             </if>
-            <if test="attack != null">
-                and d.atk = #{attack} and d.type &amp; 1 != 0
+            <if test="param.cardAttack != null">
+                and d.atk = #{param.cardAttack} and d.type &amp; 1 != 0
             </if>
-            <if test="defense != null">
-                and d.def = #{defense} and d.type &amp; 1 != 0 and d.type &amp; 0x4000000 = 0
+            <if test="param.cardDefense != null">
+                and d.def = #{param.cardDefense} and d.type &amp; 1 != 0 and d.type &amp; 0x4000000 = 0
             </if>
         </where>
     </select>

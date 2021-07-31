@@ -5,7 +5,9 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface CollectionMapper {
-    List<Integer> getCollectionByUserId(@Param("userId") int userId);
+    List<String> getCollectionByUserId(@Param("userId") int userId);
+
+    List<Integer> getCollectionIdByUserId(@Param("userId") int userId);
 
     List<Integer> checkCollection(@Param("userId") int userId,
                                   @Param("cardPk") int cardPk);

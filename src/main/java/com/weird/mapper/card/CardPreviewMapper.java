@@ -4,6 +4,7 @@ import com.weird.model.CardPreviewModel;
 import com.weird.model.enums.CardAttributeEnum;
 import com.weird.model.enums.CardRaceEnum;
 import com.weird.model.enums.CardTypeEnum;
+import com.weird.model.param.BlurSearchParam;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -47,4 +48,6 @@ public interface CardPreviewMapper {
                                  @Param("attack") Long attack,
                                  @Param("defense") Long defense,
                                  @Param("scale") Long scale);
+
+    List<String> multiBlurSearch(@Param("param")BlurSearchParam param);
 }

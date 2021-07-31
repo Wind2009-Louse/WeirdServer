@@ -47,7 +47,7 @@ public class CollectionServiceImpl implements CollectionService {
             throw new OperationException("找不到该用户:[%s]！", userName);
         }
 
-        List<Integer> collectionList = collectionMapper.getCollectionByUserId(userModel.getUserId());
+        List<Integer> collectionList = collectionMapper.getCollectionIdByUserId(userModel.getUserId());
         if (collectionList == null) {
              return Collections.emptyList();
         }
@@ -64,13 +64,14 @@ public class CollectionServiceImpl implements CollectionService {
         }
         int userId = userModel.getUserId();
 
-        int cardPk = param.getCardPk();
-        PackageCardModel card = packageCardMapper.selectByPrimaryKey(cardPk);
+        String cardName = param.getCardName();
+        PackageCardModel card = packageCardMapper.selectByNameDistinct(cardName);
         if (card == null) {
             throw new OperationException("找不到该卡片！");
         }
+        int cardPk = card.getCardPk();
 
-        List<Integer> existCheck = collectionMapper.checkCollection(userId, param.getCardPk());
+        List<Integer> existCheck = collectionMapper.checkCollection(userId, cardPk);
 
         switch (Objects.requireNonNull(CollectionOperationEnum.getById(param.getOp()))) {
             case ADD:

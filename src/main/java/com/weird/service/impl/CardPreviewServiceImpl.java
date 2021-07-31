@@ -5,6 +5,7 @@ import com.weird.model.CardPreviewModel;
 import com.weird.model.enums.CardAttributeEnum;
 import com.weird.model.enums.CardRaceEnum;
 import com.weird.model.enums.CardTypeEnum;
+import com.weird.model.param.BlurSearchParam;
 import com.weird.service.CardPreviewService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,14 +67,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
         if (StringUtils.isEmpty(word)) {
             return null;
         }
-        List<String> cardDescList = new LinkedList<>();
-        Set<CardTypeEnum> cardTypeSet = new HashSet<>();
-        Set<CardAttributeEnum> cardAttributeSet = new HashSet<>();
-        Set<CardRaceEnum> cardRaceSet = new HashSet<>();
-        Long cardLevel = null;
-        Long cardAttack = null;
-        Long cardDefense = null;
-        Long cardScale = null;
+        BlurSearchParam param = new BlurSearchParam();
 
         for (String rawText : word.split("\\|")) {
             boolean filtered = false;
@@ -87,7 +81,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
                     String filteredText = realText.substring(filter.length());
                     CardTypeEnum cardType = CardTypeEnum.getByName(filteredText);
                     if (cardType != null) {
-                        cardTypeSet.add(cardType);
+                        param.getCardTypeSet().add(cardType);
                         filtered = true;
                     }
                 }
@@ -98,7 +92,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
                     String filteredText = realText.substring(filter.length());
                     CardAttributeEnum cardAttribute = CardAttributeEnum.getByName(filteredText);
                     if (cardAttribute != null) {
-                        cardAttributeSet.add(cardAttribute);
+                        param.getCardAttributeSet().add(cardAttribute);
                         filtered = true;
                     }
                 }
@@ -109,7 +103,7 @@ public class CardPreviewServiceImpl implements CardPreviewService {
                     String filteredText = realText.substring(filter.length());
                     CardRaceEnum cardRace = CardRaceEnum.getByName(filteredText);
                     if (cardRace != null) {
-                        cardRaceSet.add(cardRace);
+                        param.getCardRaceSet().add(cardRace);
                         filtered = true;
                     }
                 }
@@ -119,11 +113,11 @@ public class CardPreviewServiceImpl implements CardPreviewService {
                 if (realText.startsWith(filter)) {
                     String filteredText = realText.substring(filter.length());
                     try {
-                        cardLevel = Long.parseLong(filteredText);
+                        param.setCardLevel(Long.parseLong(filteredText));
                         filtered = true;
                         break;
                     } catch (Exception e) {
-                        cardLevel = null;
+                        param.setCardLevel(null);
                     }
                 }
             }
@@ -131,12 +125,18 @@ public class CardPreviewServiceImpl implements CardPreviewService {
             for (String filter : cardAttackFilter) {
                 if (realText.startsWith(filter)) {
                     String filteredText = realText.substring(filter.length());
-                    try {
-                        cardAttack = Long.parseLong(filteredText);
+                    if ("?".equals(filteredText)) {
+                        param.setCardAttack(-2L);
                         filtered = true;
                         break;
-                    } catch (Exception e) {
-                        cardAttack = null;
+                    } else {
+                        try {
+                            param.setCardAttack(Long.parseLong(filteredText));
+                            filtered = true;
+                            break;
+                        } catch (Exception e) {
+                            param.setCardAttack(null);
+                        }
                     }
                 }
             }
@@ -144,12 +144,18 @@ public class CardPreviewServiceImpl implements CardPreviewService {
             for (String filter : cardDefenseFilter) {
                 if (realText.startsWith(filter)) {
                     String filteredText = realText.substring(filter.length());
-                    try {
-                        cardDefense = Long.parseLong(filteredText);
+                    if ("?".equals(filteredText)) {
+                        param.setCardDefense(-2L);
                         filtered = true;
                         break;
-                    } catch (Exception e) {
-                        cardDefense = null;
+                    } else {
+                        try {
+                            param.setCardDefense(Long.parseLong(filteredText));
+                            filtered = true;
+                            break;
+                        } catch (Exception e) {
+                            param.setCardDefense(null);
+                        }
                     }
                 }
             }
@@ -157,34 +163,30 @@ public class CardPreviewServiceImpl implements CardPreviewService {
             for (String filter : cardScaleFilter) {
                 if (realText.startsWith(filter)) {
                     String filteredText = realText.substring(filter.length());
-                    try {
-                        cardScale = Long.parseLong(filteredText);
+                    if ("?".equals(filteredText)) {
+                        param.setCardScale(-2L);
                         filtered = true;
                         break;
-                    } catch (Exception e) {
-                        cardScale = null;
+                    } else {
+                        try {
+                            param.setCardScale(Long.parseLong(filteredText));
+                            filtered = true;
+                            break;
+                        } catch (Exception e) {
+                            param.setCardScale(null);
+                        }
                     }
                 }
             }
 
             if (!filtered) {
-                cardDescList.add(realText);
+                param.getCardDescList().add(realText);
             }
         }
 
-        List<CardTypeEnum> cardTypeList = new LinkedList<>(cardTypeSet);
-        List<CardAttributeEnum> cardAttributeList = new LinkedList<>(cardAttributeSet);
-        List<CardRaceEnum> cardRaceList = new LinkedList<>(cardRaceSet);
+        param.build();
 
         // TODO 刻度搜索
-        return cardPreviewMapper.multiBlurSearch(
-                cardDescList,
-                cardTypeList,
-                cardAttributeList,
-                cardRaceList,
-                cardLevel,
-                cardAttack,
-                cardDefense,
-                cardScale);
+        return cardPreviewMapper.multiBlurSearch(param);
     }
 }
