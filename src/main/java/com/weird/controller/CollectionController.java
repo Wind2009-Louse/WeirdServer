@@ -69,7 +69,7 @@ public class CollectionController {
      * @return 搜索结果
      */
     @RequestMapping("/weird_project/collection/op")
-    public boolean operation(@RequestBody CollectionParam param) throws OperationException {
+    public String operation(@RequestBody CollectionParam param) throws OperationException {
         // 登录信息验证
         LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
         if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
@@ -80,7 +80,11 @@ public class CollectionController {
             throw new OperationException("操作非法！");
         }
 
-        return collectionService.operation(param, loginTypeEnum);
+        if (collectionService.operation(param, loginTypeEnum)) {
+            return "操作成功！";
+        } else {
+            throw new OperationException("操作失败！");
+        }
     }
 
     /**

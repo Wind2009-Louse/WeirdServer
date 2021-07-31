@@ -61,6 +61,11 @@ public class SearchCardParam implements Serializable, Fixable {
      */
     String password;
 
+    /**
+     * 是否在收藏中搜索
+     */
+    boolean searchInCollection;
+
     @Override
     public void fix() {
         if (this.packageNameList == null) {

@@ -48,14 +48,14 @@ public interface UserCardListMapper {
      * @param packageNameList 卡包名列表
      * @param cardNameList    卡片名列表
      * @param rareList        稀有度列表
-     * @param cardPk          不包括在内的卡片ID
+     * @param cardPkList      不包括在内的卡片ID
      * @return 查询结果
      */
     List<CardListDTO> selectCardListUser(@Param("packageNameList") List<String> packageNameList,
                                          @Param("cardNameList") List<String> cardNameList,
                                          @Param("rareList") List<String> rareList,
                                          @Param("name") String userName,
-                                         @Param("cardPk") int cardPk);
+                                         @Param("cardPkList") List<Integer> cardPkList);
 
     List<CardListDTO> selectCardListCollection(@Param("name") String userName,
                                                @Param("cardPkList") List<Integer> cardPkList);

@@ -234,7 +234,19 @@ public class CardServiceImpl implements CardService {
         if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
-        List<CardListDTO> preResult = userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), param.getName(), 0);
+        List<Integer> collectionPkList = null;
+        if (param.isSearchInCollection()) {
+            UserDataModel userModel = userDataMapper.selectByNameDistinct(param.getName());
+            if (userModel != null) {
+                collectionPkList = collectionMapper.getCollectionIdByUserId(userModel.getUserId());
+            }
+        }
+        List<CardListDTO> preResult = userCardListMapper.selectCardListUser(
+                param.getPackageNameList(),
+                cardList,
+                param.getRareList(),
+                param.getName(),
+                collectionPkList);
         for (CardListDTO result : preResult) {
             result.setInCollection(result.getInCollection() > 0 ? 1 : 0);
         }

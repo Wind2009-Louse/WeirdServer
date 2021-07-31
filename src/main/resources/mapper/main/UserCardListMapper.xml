@@ -125,8 +125,11 @@
                     #{item}
                 </foreach>
             </if>
-            <if test="cardPk != 0">
-                and package_card.card_pk = #{cardPk}
+            <if test="cardPkList != null and cardPkList.size() > 0">
+                and package_card.card_pk in
+                <foreach collection="cardPkList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
             </if>
         </where>
         order by package_info.order_num, package_card.rare, package_card.card_name

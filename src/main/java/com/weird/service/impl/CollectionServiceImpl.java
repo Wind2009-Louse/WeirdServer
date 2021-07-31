@@ -90,7 +90,7 @@ public class CollectionServiceImpl implements CollectionService {
                     throw new OperationException("重复收藏！");
                 }
                 if (collectionMapper.addCollection(userId, cardPk) > 0) {
-                    recordService.setRecord(userName, "[%s]将[%s]添加为收藏");
+                    recordService.setRecord(userName, "[%s]将[%s]添加为收藏", userName, cardName);
                     return true;
                 } else {
                     return false;
@@ -100,7 +100,7 @@ public class CollectionServiceImpl implements CollectionService {
                     throw new OperationException("未收藏该卡片！");
                 }
                 if (collectionMapper.delCollection(userId, cardPk) > 0) {
-                    recordService.setRecord(userName, "[%s]将[%s]从收藏移除");
+                    recordService.setRecord(userName, "[%s]将[%s]从收藏移除", userName, cardName);
                     return true;
                 } else {
                     return false;
