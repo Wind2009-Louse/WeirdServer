@@ -36,18 +36,8 @@ public interface CardPreviewMapper {
     /**
      * 多重条件查询
      *
-     * @param wordList 卡名/效果列表
-     * @param typeList 类型列表
+     * @param param 卡名/效果列表
      * @return
      */
-    List<String> multiBlurSearch(@Param("wordList") List<String> wordList,
-                                 @Param("typeList") List<CardTypeEnum> typeList,
-                                 @Param("attributeList") List<CardAttributeEnum> attributeList,
-                                 @Param("raceList") List<CardRaceEnum> raceList,
-                                 @Param("level") Long level,
-                                 @Param("attack") Long attack,
-                                 @Param("defense") Long defense,
-                                 @Param("scale") Long scale);
-
     List<String> multiBlurSearch(@Param("param")BlurSearchParam param);
 }

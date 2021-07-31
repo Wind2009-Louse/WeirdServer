@@ -1,5 +1,6 @@
 package com.weird.service;
 
+import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.CollectionParam;
 import com.weird.utils.OperationException;
 
@@ -28,5 +29,5 @@ public interface CollectionService {
      * @return
      * @throws OperationException
      */
-    boolean operation(CollectionParam param) throws OperationException;
+    boolean operation(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException;
 }

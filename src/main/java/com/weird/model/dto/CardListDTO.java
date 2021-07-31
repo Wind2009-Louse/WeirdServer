@@ -40,4 +40,9 @@ public class CardListDTO implements Serializable {
      * 持有数量
      */
     int count;
+
+    /**
+     * 是否在收藏中
+     */
+    int inCollection;
 }

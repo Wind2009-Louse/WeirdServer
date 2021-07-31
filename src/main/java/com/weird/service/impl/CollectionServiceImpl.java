@@ -2,10 +2,12 @@ package com.weird.service.impl;
 
 import com.weird.mapper.main.CollectionMapper;
 import com.weird.mapper.main.PackageCardMapper;
+import com.weird.mapper.main.UserCardListMapper;
 import com.weird.mapper.main.UserDataMapper;
 import com.weird.model.PackageCardModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.enums.CollectionOperationEnum;
+import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.CollectionParam;
 import com.weird.service.CollectionService;
 import com.weird.service.RecordService;
@@ -40,6 +42,9 @@ public class CollectionServiceImpl implements CollectionService {
     @Autowired
     RecordService recordService;
 
+    @Autowired
+    UserCardListMapper userCardListMapper;
+
     @Override
     public List<Integer> getCollectionByName(String userName) throws OperationException {
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
@@ -56,7 +61,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
-    public boolean operation(CollectionParam param) throws OperationException {
+    public boolean operation(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException {
         String userName = param.getName();
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null) {
@@ -75,6 +80,12 @@ public class CollectionServiceImpl implements CollectionService {
 
         switch (Objects.requireNonNull(CollectionOperationEnum.getById(param.getOp()))) {
             case ADD:
+                if (LoginTypeEnum.NORMAL.equals(loginTypeEnum)) {
+                    List<Integer> visibleCardPkList = userCardListMapper.getVisibleCardPkList();
+                    if (!visibleCardPkList.contains(cardPk)) {
+                        throw new OperationException("找不到该卡片！");
+                    }
+                }
                 if (!CollectionUtils.isEmpty(existCheck)) {
                     throw new OperationException("重复收藏！");
                 }

@@ -96,13 +96,13 @@
         select package_info.package_name,
         package_card.card_name,
         package_card.rare,
-        uc.count
+        user_card_list.count,
+        collection.card_pk inCollection
         from package_info
         inner join package_card on package_info.package_id = package_card.package_id
-        left join
-        (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
-        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
-        on uc.card_pk = package_card.card_pk
+        inner join user_data on user_data.user_name = #{name}
+        left  join user_card_list on user_card_list.card_pk = package_card.card_pk and user_card_list.user_id = user_data.user_id
+        left  join collection on collection.user_id = user_data.user_id and collection.card_pk = package_card.card_pk
         <where>
             (
             package_card.rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)

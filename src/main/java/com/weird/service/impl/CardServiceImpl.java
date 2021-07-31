@@ -215,7 +215,11 @@ public class CardServiceImpl implements CardService {
         if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
-        return userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
+        List<CardListDTO> preResult = userCardListMapper.selectCardListAdmin(param.getPackageNameList(), cardList, param.getRareList());
+        for (CardListDTO result : preResult) {
+            result.setInCollection(result.getInCollection() > 0 ? 1 : 0);
+        }
+        return preResult;
     }
 
     /**
@@ -230,7 +234,11 @@ public class CardServiceImpl implements CardService {
         if (cardList != null && cardList.size() == 0){
             return Collections.emptyList();
         }
-        return userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), param.getName(), 0);
+        List<CardListDTO> preResult = userCardListMapper.selectCardListUser(param.getPackageNameList(), cardList, param.getRareList(), param.getName(), 0);
+        for (CardListDTO result : preResult) {
+            result.setInCollection(result.getInCollection() > 0 ? 1 : 0);
+        }
+        return preResult;
     }
 
     /**
