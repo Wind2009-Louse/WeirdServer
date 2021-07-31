@@ -61,6 +61,12 @@ CREATE TABLE record (
   detail text NOT NULL DEFAULT '' ,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
+CREATE TABLE collection (
+  collection_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id int(11) NOT NULL ,
+  card_pk int(11) NOT NULL DEFAULT '0' ,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
 INSERT INTO user_data (user_name,password,is_admin,nonaward_count,dust_count,duel_point) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('user_data',1);

@@ -197,6 +197,31 @@ LOCK TABLES `record` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `collection`
+--
+
+DROP TABLE IF EXISTS `collection`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `collection` (
+  `collection_id` int(11) NOT NULL COMMENT '收藏ID',
+  `user_id` int(11) NOT NULL DEFAULT '' COMMENT '收藏用户ID',
+  `card_pk` int(11) NOT NULL DEFAULT '' COMMENT '收藏卡片ID',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡片收藏记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `collection`
+--
+
+LOCK TABLES `collection` WRITE;
+/*!40000 ALTER TABLE `collection` DISABLE KEYS */;
+/*!40000 ALTER TABLE `collection` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `user_data`
 --
 
