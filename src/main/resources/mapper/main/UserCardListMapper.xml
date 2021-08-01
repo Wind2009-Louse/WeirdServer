@@ -115,7 +115,9 @@
         left  join collection on collection.user_id = user_data.user_id and collection.card_pk = package_card.card_pk
         <where>
             (
-            package_card.rare = "HR" or package_card.card_pk in (select distinct card_pk from user_card_list)
+                package_card.rare = "HR"
+                or package_card.card_pk in (select distinct card_pk from user_card_list)
+                or package_card.need_coin > 0
             )
             <if test="packageNameList != null and packageNameList.size() > 0">
                 and package_info.package_name in
@@ -180,6 +182,8 @@
             package_card.rare = "HR"
         or
             package_card.card_pk in (select distinct card_pk from user_card_list)
+        or
+            package_card.need_coin > 0
     </select>
 
     <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">
