@@ -36,4 +36,9 @@ public class UserDataDTO implements Serializable {
      * DP
      */
     private Integer duelPoint;
+
+    /**
+     * 硬币数量
+     */
+    private Integer coin;
 }

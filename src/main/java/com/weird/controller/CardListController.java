@@ -291,6 +291,7 @@ public class CardListController {
             @RequestParam(value = "oldname") String oldCardName,
             @RequestParam(value = "newname") String newCardName,
             @RequestParam(value = "newRare") String newRare,
+            @RequestParam(value = "needCoin", required = false, defaultValue = "-1") int needCoin,
             @RequestParam(value = "show", required = false, defaultValue = "0") int isShow,
             @RequestParam(value = "name") String name,
             @RequestParam(value = "password") String password) throws Exception {
@@ -299,7 +300,7 @@ public class CardListController {
             throw new OperationException("权限不足！");
         }
 
-        if (packageService.updateCardName(oldCardName, newCardName, newRare, isShow, name)) {
+        if (packageService.updateCardName(oldCardName, newCardName, newRare, needCoin, isShow, name)) {
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");
@@ -307,7 +308,7 @@ public class CardListController {
     }
 
     /**
-     * 交换两张卡的稀有度
+     * 【管理端】交换两张卡的稀有度
      *
      * @param cardName1 卡名1
      * @param cardName2 卡名2

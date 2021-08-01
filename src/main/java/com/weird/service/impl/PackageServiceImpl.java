@@ -195,9 +195,11 @@ public class PackageServiceImpl implements PackageService {
     public boolean updateCardName(String oldName,
                                   String newName,
                                   String newRare,
+                                  int needCoin,
                                   int isShow,
                                   String operator) throws Exception {
-        boolean isUpdated = false;
+        boolean isRenamed = false;
+        boolean isChanged = false;
         // 查找是否能否更新
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(oldName);
         if (cardModel == null) {
@@ -213,7 +215,8 @@ public class PackageServiceImpl implements PackageService {
             if (goalModel != null) {
                 throw new OperationException("卡片[%s]已存在！", newName);
             }
-            isUpdated = true;
+            isRenamed = true;
+            isChanged = true;
         }
         if (StringUtils.isEmpty(newRare)) {
             newRare = oldRare;
@@ -222,18 +225,32 @@ public class PackageServiceImpl implements PackageService {
             if (!PackageUtil.RARE_LIST.contains(newRare)) {
                 throw new OperationException("稀有度[%s]不合法！", newRare);
             }
-            isUpdated = true;
+            isRenamed = true;
+            isChanged = true;
         }
-        if (!isUpdated) {
+        if (needCoin < 0) {
+            needCoin = cardModel.getNeedCoin();
+        }
+        String coinChange = "";
+        if (needCoin != cardModel.getNeedCoin()) {
+            isChanged = true;
+            coinChange = String.format("[%s]需要的硬币修改：%d->%d", cardModel.getCardName(), cardModel.getNeedCoin(), needCoin);
+        }
+
+        if (!isChanged) {
             throw new OperationException("卡片未修改！");
         }
 
         // 修改
         cardModel.setCardName(newName);
         cardModel.setRare(newRare);
+        cardModel.setNeedCoin(needCoin);
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
         if (result > 0) {
-            if (isShow != 0) {
+            if (!StringUtils.isEmpty(coinChange)) {
+                recordService.setRecord(operator, coinChange);
+            }
+            if (isShow != 0 && isRenamed) {
                 if (StringUtils.equals(oldRare, newRare)) {
                     CardHistoryModel cardHistory = new CardHistoryModel();
                     cardHistory.setPackageId(cardModel.getPackageId());
@@ -263,7 +280,9 @@ public class PackageServiceImpl implements PackageService {
 
             clearCardOwnListCache();
             clearRollListWithDetailCache();
-            recordService.setRecord(operator, "卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare);
+            if (isRenamed) {
+                recordService.setRecord(operator, "卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare);
+            }
             return true;
         }
         return false;

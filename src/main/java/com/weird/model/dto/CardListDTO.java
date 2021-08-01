@@ -45,4 +45,9 @@ public class CardListDTO implements Serializable {
      * 是否在收藏中
      */
     int inCollection;
+
+    /**
+     * 兑换需要的硬币数量
+     */
+    int needCoin;
 }

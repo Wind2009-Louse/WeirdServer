@@ -48,6 +48,11 @@ public class UserDataModel implements Serializable {
     private int duelPoint;
 
     /**
+     * 硬币
+     */
+    private int coin;
+
+    /**
      * 当天胜利次数
      */
     private int dailyWin;

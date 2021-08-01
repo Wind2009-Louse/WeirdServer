@@ -62,11 +62,13 @@
         <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
         <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="need_coin" jdbcType="INTEGER" property="needCoin"/>
     </resultMap>
 
     <select id="selectCardListAdmin" resultMap="CardListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
+        package_card.need_coin,
         package_card.rare
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         <where>
@@ -104,6 +106,7 @@
         package_card.card_name,
         package_card.rare,
         user_card_list.count,
+        package_card.need_coin,
         collection.card_pk inCollection
         from package_info
         inner join package_card on package_info.package_id = package_card.package_id
@@ -185,12 +188,14 @@
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="need_coin" jdbcType="INTEGER" property="needCoin"/>
     </resultMap>
 
     <select id="selectCardOwnList" resultMap="CardOwnListDTO" useCache="false">
         select package_info.package_name,
         package_card.card_name,
         package_card.rare,
+        package_card.need_coin,
         user_data.user_name,
         user_card_list.count
         from package_info inner join package_card on package_info.package_id = package_card.package_id

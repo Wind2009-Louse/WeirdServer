@@ -45,4 +45,9 @@ public class CardOwnListDTO implements Serializable {
      * 持有数
      */
     int count;
+
+    /**
+     * 需要的硬币
+     */
+    int needCoin;
 }

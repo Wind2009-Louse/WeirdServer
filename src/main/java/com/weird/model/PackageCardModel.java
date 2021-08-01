@@ -31,4 +31,9 @@ public class PackageCardModel implements Serializable {
      * 稀有度
      */
     private String rare;
+
+    /**
+     * 需要的硬币
+     */
+    private int needCoin;
 }

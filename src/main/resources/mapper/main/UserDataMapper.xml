@@ -19,10 +19,11 @@
         <result column="weekly_dust_change_n" jdbcType="INTEGER" property="weeklyDustChangeN"/>
         <result column="weekly_dust_change_r" jdbcType="INTEGER" property="weeklyDustChangeR"/>
         <result column="weekly_dust_change_alter" jdbcType="INTEGER" property="weeklyDustChangeAlter"/>
+        <result column="coin" jdbcType="INTEGER" property="coin"/>
     </resultMap>
     <sql id="Base_Column_List">
         user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point, daily_win,
-        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter
+        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter, coin
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -76,6 +77,9 @@
             <if test="weeklyDustChangeAlter != null">
                 weekly_dust_change_alter,
             </if>
+            <if test="coin != null">
+                coin,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -116,6 +120,9 @@
             </if>
             <if test="weeklyDustChangeAlter != null">
                 #{weeklyDustChangeAlter,jdbcType=INTEGER},
+            </if>
+            <if test="coin != null">
+                #{coin,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -158,6 +165,9 @@
             <if test="weeklyDustChangeAlter != null">
                 weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
             </if>
+            <if test="coin != null">
+                coin = #{coin,jdbcType=INTEGER},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
@@ -174,7 +184,8 @@
         daily_award = #{dailyAward,jdbcType=INTEGER},
         weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
         weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
-        weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER}
+        weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
+        coin = #{coin,jdbcType=INTEGER}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
 
@@ -207,12 +218,12 @@
         is_admin, nonaward_count, dust_count,
         duel_point, daily_win, daily_lost,
         daily_award, weekly_dust_change_n, weekly_dust_change_r,
-        weekly_dust_change_alter)
+        weekly_dust_change_alter, coin)
         values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER},
         #{duelPoint,jdbcType=INTEGER}, #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER},
         #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
-        #{weeklyDustChangeAlter,jdbcType=INTEGER})
+        #{weeklyDustChangeAlter,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER})
     </insert>
 
     <update id="updateDaily">

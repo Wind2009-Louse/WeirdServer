@@ -191,6 +191,21 @@ public class UserController {
     }
 
     /**
+     * 【玩家端】硬币换卡
+     *
+     * @param cardName    卡片名
+     * @param name        用户名
+     * @param password    密码
+     * @return 转换结果
+     */
+    @RequestMapping("/weird_project/user/card/coin")
+    public String coinToCard(@RequestParam(value = "cardName") String cardName,
+                             @RequestParam(value = "name") String name,
+                             @RequestParam(value = "password") String password) throws Exception {
+        return userService.coinToCard(cardName, name, password);
+    }
+
+    /**
      * 【玩家端】将溢出的闪卡合成尘
      *
      * @param userName 用户名
@@ -260,6 +275,32 @@ public class UserController {
         }
 
         return userService.updateDuelPoint(targetUser, dpCount, name);
+    }
+
+    /**
+     * 【管理端】修改用户硬币
+     *
+     * @param targetUser 用户名
+     * @param coin       新硬币数量
+     * @param name       操作用户名称
+     * @param password   操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/weird_project/user/coin")
+    public String updateCoin(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "coin") int coin,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (targetUser == null || targetUser.length() == 0) {
+            throw new OperationException("用户名为空！");
+        }
+
+        return userService.updateCoin(targetUser, coin, name);
     }
 
     /**

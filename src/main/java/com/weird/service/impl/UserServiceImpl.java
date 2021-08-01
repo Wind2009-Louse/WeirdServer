@@ -434,6 +434,55 @@ public class UserServiceImpl implements UserService {
         return resultToPlayer;
     }
 
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String coinToCard(String cardName, String userName, String password) throws Exception {
+        // 玩家权限验证
+        UserDataModel userModel = userDataMapper.selectByNamePassword(userName, password);
+        if (userModel == null) {
+            throw new OperationException("登录失败！");
+        }
+
+        // 判断卡片是否可兑换
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
+        if (cardModel == null) {
+            throw new OperationException("找不到卡片：[%s]！", cardName);
+        }
+        int needCoin = cardModel.getNeedCoin();
+        if (needCoin <= 0) {
+            throw new OperationException("该卡片无法用硬币兑换：[%s]！", cardName);
+        }
+        int remainCoin = userModel.getCoin() - needCoin;
+        if (remainCoin < 0) {
+            throw new OperationException("兑换[%s]需要[%d]枚硬币，当前[%s]拥有[%d]枚硬币！", cardName, needCoin, userName, userModel.getCoin());
+        }
+        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), cardModel.getCardPk());
+        if (cardListModel != null && cardListModel.getCount() > 0) {
+            throw new OperationException("你已拥有[%s]，无法重复兑换！", cardName);
+        }
+
+        userModel.setCoin(remainCoin);
+        if (userDataMapper.updateByPrimaryKeySelective(userModel) > 0) {
+            String recordResult = String.format("[%s]用[%d]枚硬币兑换了1张[%s]", userModel.getUserName(), needCoin, cardModel.getCardName());
+            int result = 0;
+            if (cardListModel == null) {
+                cardListModel = new UserCardListModel();
+                cardListModel.setUserId(userModel.getUserId());
+                cardListModel.setCardPk(cardModel.getCardPk());
+                cardListModel.setCount(1);
+                result = userCardListMapper.insert(cardListModel);
+            } else {
+                cardListModel.setCount(1);
+                result = userCardListMapper.update(cardListModel);
+            }
+            if (result > 0) {
+                recordService.setRecord(userName, recordResult);
+                return "兑换成功！";
+            }
+        }
+        throw new OperationException("用户信息更新失败");
+    }
+
     /**
      * 将多余的闪卡换成尘
      *
@@ -517,6 +566,25 @@ public class UserServiceImpl implements UserService {
 
         String successHint = String.format("%s的月见黑被修改：%d->%d", name, model.getDuelPoint(), newCount);
         model.setDuelPoint(newCount);
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String updateCoin(String name, int newCount, String operator) throws Exception {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到用户：[%s]！", name);
+        }
+
+        String successHint = String.format("%s的硬币被修改：%d->%d", name, model.getCoin(), newCount);
+        model.setCoin(newCount);
         int updateCount = userDataMapper.updateByPrimaryKey(model);
         if (updateCount > 0) {
             recordService.setRecord(operator, successHint);

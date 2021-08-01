@@ -9,10 +9,11 @@
         <id column="card_pk" jdbcType="INTEGER" property="cardPk"/>
         <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
         <result column="package_id" jdbcType="INTEGER" property="packageId"/>
+        <result column="need_coin" jdbcType="INTEGER" property="needCoin"/>
         <result column="rare" jdbcType="VARCHAR" property="rare"/>
     </resultMap>
     <sql id="Base_Column_List">
-        card_pk, card_name, package_id, rare
+        card_pk, card_name, package_id, rare, need_coin
     </sql>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from package_card
@@ -33,6 +34,9 @@
             <if test="rare != null">
                 rare,
             </if>
+            <if test="needCoin != null">
+                need_coin,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="cardPk != null">
@@ -46,6 +50,9 @@
             </if>
             <if test="rare != null">
                 #{rare,jdbcType=VARCHAR},
+            </if>
+            <if test="needCoin != null">
+                #{needCoin,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -61,6 +68,9 @@
             <if test="rare != null">
                 rare = #{rare,jdbcType=VARCHAR},
             </if>
+            <if test="needCoin != null">
+                need_coin = #{needCoin,jdbcType=INTEGER},
+            </if>
         </set>
         where card_pk = #{cardPk,jdbcType=BIGINT}
     </update>
@@ -68,7 +78,8 @@
         update package_card
         set card_name = #{cardName,jdbcType=VARCHAR},
         package_id = #{packageId,jdbcType=INTEGER},
-        rare = #{rare,jdbcType=VARCHAR}
+        rare = #{rare,jdbcType=VARCHAR},
+        need_coin = #{needCoin,jdbcType=INTEGER}
         where card_pk = #{cardPk,jdbcType=BIGINT}
     </update>
 

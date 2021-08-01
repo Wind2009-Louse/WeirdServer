@@ -105,6 +105,16 @@ public interface UserService {
      */
     String dustToRare(String packageName, String userName, String password, int dustFirst) throws Exception;
 
+    /**
+     * 用硬币更换卡片
+     *
+     * @param cardName    卡片名
+     * @param userName    用户名
+     * @param password    密码
+     * @return 转换结果
+     */
+    String coinToCard(String cardName, String userName, String password) throws Exception;
+
 
     /**
      * 将多余的闪卡换成尘
@@ -135,6 +145,8 @@ public interface UserService {
      * @return 是否更改成功
      */
     String updateDuelPoint(String name, int newCount, String operator) throws Exception;
+
+    String updateCoin(String name, int newCount, String operator) throws Exception;
 
     /**
      * 交换两个用户持有的卡片
