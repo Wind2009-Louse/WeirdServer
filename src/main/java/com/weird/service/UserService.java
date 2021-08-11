@@ -3,6 +3,7 @@ package com.weird.service;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.param.ReplaceCardParam;
 
 import java.util.List;
 
@@ -146,6 +147,13 @@ public interface UserService {
      */
     String updateDuelPoint(String name, int newCount, String operator) throws Exception;
 
+    /**
+     * 修改硬币数量
+     *
+     * @param name     用户名
+     * @param newCount 新硬币数量
+     * @param operator 操作人
+     */
     String updateCoin(String name, int newCount, String operator) throws Exception;
 
     /**
@@ -155,4 +163,13 @@ public interface UserService {
      * @return 是否交换成功
      */
     String swapCard(CardSwapDTO dto, String operator) throws Exception;
+
+    /**
+     * 替换玩家持有的卡片
+     *
+     * @param param 参数
+     * @return
+     * @throws Exception
+     */
+    String exchangeOwnCard(ReplaceCardParam param) throws Exception;
 }

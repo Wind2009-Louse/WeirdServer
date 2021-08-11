@@ -3,11 +3,11 @@ package com.weird.service.impl;
 import com.alibaba.druid.util.StringUtils;
 import com.weird.mapper.main.*;
 import com.weird.model.*;
-import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.param.ReplaceCardParam;
 import com.weird.service.RecordService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
@@ -690,5 +690,76 @@ public class UserServiceImpl implements UserService {
         clearCardOwnListCache();
         recordService.setRecord(operator, "[%s]的[%s]、[%s]的[%s]进行交换", dto.getUserA(), dto.getCardA(), dto.getUserB(), dto.getCardB());
         return "交换成功！";
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String exchangeOwnCard(ReplaceCardParam param) throws Exception {
+        // 判断用户是否存在
+        String targetUserName = param.getTargetUser();
+        UserDataModel targetUser = userDataMapper.selectByNameDistinct(targetUserName);
+        if (targetUser == null) {
+            throw new OperationException("找不到用户：[%s]！", targetUserName);
+        }
+
+        // 判断卡片是否存在
+        PackageCardModel cardA = packageCardMapper.selectByNameDistinct(param.getOldCardName());
+        if (cardA == null) {
+            throw new OperationException("找不到该卡片：[%s]！", param.getOldCardName());
+        }
+        PackageCardModel cardB = packageCardMapper.selectByNameDistinct(param.getNewCardName());
+        if (cardB == null) {
+            throw new OperationException("找不到该卡片：[%s]！", param.getNewCardName());
+        }
+
+        int updateResult = 0;
+
+        // 旧数据中减除卡片数量
+        UserCardListModel originCard = userCardListMapper.selectByUserCard(targetUser.getUserId(), cardA.getCardPk());
+        if (originCard == null) {
+            originCard = new UserCardListModel();
+        }
+        int oldCardOriginCount = originCard.getCount();
+        int oldCardCurrentCount = originCard.getCount() - param.getCount();
+        if (oldCardCurrentCount < 0) {
+            throw new OperationException("[%s]的持有数量为[%d]张，不满[%d]张！", param.getOldCardName(), originCard.getCount(), param.getCount());
+        }
+        originCard.setCount(oldCardCurrentCount);
+        updateResult = userCardListMapper.update(originCard);
+        if (updateResult <= 0) {
+            throw new OperationException("修改旧卡片数量失败！");
+        }
+
+        // 新数据中添加卡片数量
+        UserCardListModel nextCard = userCardListMapper.selectByUserCard(targetUser.getUserId(), cardB.getCardPk());
+        int nextCardOriginCount = 0;
+        int nextCardCurrentCount;
+        if (nextCard == null) {
+            nextCardCurrentCount = param.getCount();
+
+            nextCard = new UserCardListModel();
+            nextCard.setUserId(targetUser.getUserId());
+            nextCard.setCardPk(cardB.getCardPk());
+            nextCard.setCount(nextCardCurrentCount);
+            updateResult = userCardListMapper.insert(nextCard);
+        } else {
+            nextCardOriginCount = nextCard.getCount();
+            nextCardCurrentCount = nextCard.getCount() + param.getCount();
+            nextCard.setCount(nextCardCurrentCount);
+            updateResult = userCardListMapper.update(nextCard);
+        }
+        if (updateResult <= 0) {
+            throw new OperationException("修改新卡片数量失败！");
+        }
+
+        // 报告结果
+        clearCardOwnListCache();
+        String result = String.format("[%s]的卡被替换：[%s](%d->%d), [%s](%d->%d)",
+                targetUserName,
+                param.getOldCardName(), oldCardOriginCount, oldCardCurrentCount,
+                param.getNewCardName(), nextCardOriginCount, nextCardCurrentCount);
+
+        recordService.setRecord(param.getName(), result);
+        return result;
     }
 }

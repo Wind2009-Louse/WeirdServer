@@ -6,6 +6,7 @@ import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.*;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchAddCardParam;
+import com.weird.model.param.ReplaceCardParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
 import com.weird.service.CardPreviewService;
@@ -337,6 +338,29 @@ public class CardListController {
         } else {
             throw new OperationException("修改失败！");
         }
+    }
+
+    @RequestMapping("/weird_project/card/exchangeOwn")
+    public String exchangeUserCard(@RequestBody ReplaceCardParam param) throws Exception {
+        if (param.getCount() == 0) {
+            param.setCount(1);
+        }
+        if (param.getCount() < 0) {
+            throw new OperationException("不能替换负数张！");
+        }
+        if (StringUtils.isEmpty(param.getTargetUser())) {
+            throw new OperationException("操作对象为空！");
+        }
+        if (Objects.equals(param.getOldCardName(), param.getNewCardName())) {
+            throw new OperationException("卡片没有修改！");
+        }
+
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        return userService.exchangeOwnCard(param);
     }
 
     /**
