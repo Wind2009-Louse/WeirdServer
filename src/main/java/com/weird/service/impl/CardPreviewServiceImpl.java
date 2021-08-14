@@ -27,12 +27,12 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     @Autowired
     CardPreviewMapper cardPreviewMapper;
 
-    static String[] cardTypeFilter = {"t:", "type:", "t=", "type="};
-    static String[] cardAttributeFilter = {"a:", "attribute:", "a=", "attribute="};
-    static String[] cardRaceFilter = {"r:", "race:", "r=", "race="};
-    static String[] cardLevelFilter = {"l:", "lv:", "level:", "l=", "lv=", "level="};
-    static String[] cardAttackFilter = {"atk:", "attack:", "atk=", "attack="};
-    static String[] cardDefenseFilter = {"def:", "defense:", "def=", "defense="};
+    static String[] cardTypeFilter = {"t:", "type:", "t：", "type：", "类型:", "类型："};
+    static String[] cardAttributeFilter = {"a:", "attribute:", "a：", "attribute：", "属性:", "属性："};
+    static String[] cardRaceFilter = {"r:", "race:", "r：", "race：", "种族:", "种族："};
+    static String[] cardLevelFilter = {"l:", "lv:", "level:", "l：", "lv：", "level：", "等级:", "等级："};
+    static String[] cardAttackFilter = {"atk:", "attack:", "atk：", "attack：", "攻击力:", "攻击力：", "攻击:", "攻击："};
+    static String[] cardDefenseFilter = {"def:", "defense:", "def：", "defense：", "守备力:", "守备力：", "守备:", "守备："};
     static String[] cardScaleFilter = {"ls:", "scale:", "ls=", "scale="};
 
     /**

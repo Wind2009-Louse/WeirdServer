@@ -13,6 +13,7 @@ public enum CardAttributeEnum {
     EARTH("地", 0x1),
     WATER("水", 0x2),
     FIRE("炎", 0x4),
+    WIND("风", 0x8),
     LIGHT("光", 0x10),
     DARK("暗", 0x20),
     GOD("神", 0x40);
