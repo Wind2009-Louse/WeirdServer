@@ -23,7 +23,7 @@ DROP TABLE IF EXISTS `card_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `card_history` (
-  `package_id` int(11) NOT NULL COMMENT '卡包ID',
+  `package_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
   `card_pk` int(11) NOT NULL COMMENT '卡片PK',
   `old_name` varchar(45) NOT NULL DEFAULT '' COMMENT '原卡名',
   `new_name` varchar(45) NOT NULL DEFAULT '' COMMENT '现卡名',
@@ -54,6 +54,7 @@ CREATE TABLE `package_card` (
   `card_name` varchar(200) NOT NULL DEFAULT '' COMMENT '卡名',
   `package_id` int unsigned NOT NULL DEFAULT '0' COMMENT '所在卡包',
   `rare` varchar(45) NOT NULL DEFAULT 'N' COMMENT '稀有度',
+  `need_coin` int(11) NOT NULL DEFAULT '0' COMMENT '需要的硬币',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`card_pk`)
@@ -102,7 +103,7 @@ DROP TABLE IF EXISTS `roll_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `roll_detail` (
-  `roll_id` bigint NOT NULL COMMENT '抽卡记录ID',
+  `roll_id` bigint NOT NULL AUTO_INCREMENT COMMENT '抽卡记录ID',
   `card_pk` int NOT NULL COMMENT '抽卡PK',
   `is_dust` tinyint NOT NULL COMMENT '是否转化为尘',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
@@ -154,7 +155,7 @@ DROP TABLE IF EXISTS `user_card_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `user_card_list` (
-  `user_id` int NOT NULL COMMENT '用户ID',
+  `user_id` int NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `card_pk` int NOT NULL DEFAULT '0' COMMENT '卡片PK',
   `count` int NOT NULL DEFAULT '0' COMMENT '持有数量',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
@@ -179,7 +180,7 @@ DROP TABLE IF EXISTS `record`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `record` (
-  `record_id` int(11) NOT NULL COMMENT '日志ID',
+  `record_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
   `operator` varchat(45) NOT NULL DEFAULT '' COMMENT '日志操作者',
   `detail` text NOT NULL DEFAULT '' COMMENT '日志内容',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
@@ -204,7 +205,7 @@ DROP TABLE IF EXISTS `collection`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `collection` (
-  `collection_id` int(11) NOT NULL COMMENT '收藏ID',
+  `collection_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '收藏ID',
   `user_id` int(11) NOT NULL DEFAULT '' COMMENT '收藏用户ID',
   `card_pk` int(11) NOT NULL DEFAULT '' COMMENT '收藏卡片ID',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
@@ -236,6 +237,7 @@ CREATE TABLE `user_data` (
   `nonaward_count` int NOT NULL DEFAULT '0' COMMENT '未出货的计数',
   `dust_count` int NOT NULL DEFAULT '0' COMMENT '尘数',
   `duel_point` int NOT NULL DEFAULT '0' COMMENT 'DP',
+  `coin` int NOT NULL DEFAULT '0' COMMENT '硬币数',
   `daily_win` int NOT NULL DEFAULT '0' COMMENT '当天胜利次数',
   `daily_lost` int NOT NULL DEFAULT '0' COMMENT '当天失败次数',
   `daily_award` int NOT NULL DEFAULT '0' COMMENT '当天是否出货',
@@ -245,7 +247,7 @@ CREATE TABLE `user_data` (
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COMMENT='用户信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -256,6 +258,59 @@ LOCK TABLES `user_data` WRITE;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
 INSERT INTO `user_data` (`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`) VALUES ("admin","E10ADC3949BA59ABBE56E057F20F883E",1,0,0,0);
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `deck_list`
+--
+
+DROP TABLE IF EXISTS `deck_list`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `deck_list` (
+  `deck_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡组ID',
+  `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
+  `deck_name` text NOT NULL DEFAULT '' COMMENT '卡组名',
+  `last_modify_time` bigint(20) NOT NULL DEFAULT 0 COMMENT '最后更新时间',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡组列表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `deck_list`
+--
+
+LOCK TABLES `deck_list` WRITE;
+/*!40000 ALTER TABLE `deck_list` DISABLE KEYS */;
+/*!40000 ALTER TABLE `deck_list` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `deck_detail`
+--
+
+DROP TABLE IF EXISTS `deck_detail`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `deck_detail` (
+  `detail_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡组详情ID',
+  `deck_id` int(11) NOT NULL DEFAULT 0 COMMENT '卡组ID',
+  `code` bigint(20) NOT NULL DEFAULT 0 COMMENT '卡片密码',
+  `count` int(11) NOT NULL DEFAULT 0 COMMENT '数量',
+  `type` int(11) NOT NULL DEFAULT 0 COMMENT '类型（1=主卡组，2=额外卡组，3=副卡组）',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡组卡片信息';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `deck_detail`
+--
+
+LOCK TABLES `deck_detail` WRITE;
+/*!40000 ALTER TABLE `deck_detail` DISABLE KEYS */;
+/*!40000 ALTER TABLE `deck_detail` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 

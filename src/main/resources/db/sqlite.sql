@@ -13,6 +13,7 @@ CREATE TABLE package_card (
   card_name varchar(200) NOT NULL DEFAULT '' ,
   package_id int(10)  NOT NULL DEFAULT '0' ,
   rare varchar(45) NOT NULL DEFAULT 'N' ,
+  need_coin int(11) not null default '0',
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE package_info (
@@ -47,6 +48,7 @@ CREATE TABLE user_data (
   nonaward_count int(11) NOT NULL DEFAULT '0' ,
   dust_count int(11) NOT NULL DEFAULT '0' ,
   duel_point int NOT NULL DEFAULT '0' ,
+  coin int(11) NOT NULL DEFAULT '0',
   daily_win int NOT NULL DEFAULT '0' ,
   daily_lost int NOT NULL DEFAULT '0' ,
   daily_award int NOT NULL DEFAULT '0' ,
@@ -67,6 +69,22 @@ CREATE TABLE collection (
   card_pk int(11) NOT NULL DEFAULT '0' ,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
+CREATE TABLE deck_list (
+  deck_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_id int(11) NOT NULL DEFAULT 0,
+  deck_name text NOT NULL DEFAULT '' ,
+  last_modify_time bigint(20)  NOT NULL DEFAULT 0,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
+CREATE TABLE deck_detail (
+  detail_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  deck_id int(11) NOT NULL DEFAULT 0,
+  code bigint(20)  NOT NULL DEFAULT 0,
+  count int(11) NOT NULL DEFAULT 0,
+  type int(11) NOT NULL DEFAULT 0,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
+CREATE INDEX idx_deck_id on deck_detail (deck_id);
 INSERT INTO user_data (user_name,password,is_admin,nonaward_count,dust_count,duel_point) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('user_data',1);
