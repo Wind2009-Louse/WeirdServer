@@ -45,6 +45,12 @@
         from texts t
         inner join datas d on d.id = t.id
         <where>
+            <if test="param.cardNameList != null and param.cardNameList.size() > 0">
+                and
+                <foreach collection="param.cardNameList" index="index" item="word" separator="and">
+                    t.name like "%"||#{word}||"%"
+                </foreach>
+            </if>
             <if test="param.cardDescList != null and param.cardDescList.size() > 0">
                 and
                 <foreach collection="param.cardDescList" index="index" item="word" separator="and">
@@ -84,15 +90,91 @@
                     d.race &amp; #{cardRace.value} != 0
                 </foreach>
             </if>
+
             <if test="param.cardLevel != null">
-                and d.level &amp; 0xffff = #{param.cardLevel} and d.type &amp; 1 != 0
+                and d.level &amp; 0xffff = #{param.cardLevel}
             </if>
+            <if test="param.cardLevelGe != null and param.cardLevelGe.size() > 0">
+                and
+                <foreach collection="param.cardLevelGe" index="index" item="value" separator="and">
+                    d.level &amp; 0xffff &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardLevelG != null and param.cardLevelG.size() > 0">
+                and
+                <foreach collection="param.cardLevelG" index="index" item="value" separator="and">
+                    d.level &amp; 0xffff &gt; #{value}
+                </foreach>
+            </if>
+            <if test="param.cardLevelLe != null and param.cardLevelLe.size() > 0">
+                and
+                <foreach collection="param.cardLevelLe" index="index" item="value" separator="and">
+                    d.level &amp; 0xffff &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardLevelL != null and param.cardLevelL.size() > 0">
+                and
+                <foreach collection="param.cardLevelL" index="index" item="value" separator="and">
+                    d.level &amp; 0xffff &lt; #{value}
+                </foreach>
+            </if>
+
             <if test="param.cardAttack != null">
-                and d.atk = #{param.cardAttack} and d.type &amp; 1 != 0
+                and d.atk = #{param.cardAttack}
             </if>
+            <if test="param.cardAttackGe != null and param.cardAttackGe.size() > 0">
+                and
+                <foreach collection="param.cardAttackGe" index="index" item="value" separator="and">
+                    d.atk &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardAttackG != null and param.cardAttackG.size() > 0">
+                and
+                <foreach collection="param.cardAttackG" index="index" item="value" separator="and">
+                    d.atk &gt; #{value}
+                </foreach>
+            </if>
+            <if test="param.cardAttackLe != null and param.cardAttackLe.size() > 0">
+                and
+                <foreach collection="param.cardAttackLe" index="index" item="value" separator="and">
+                    d.atk &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardAttackL != null and param.cardAttackL.size() > 0">
+                and
+                <foreach collection="param.cardAttackL" index="index" item="value" separator="and">
+                    d.atk &lt; #{value}
+                </foreach>
+            </if>
+
             <if test="param.cardDefense != null">
-                and d.def = #{param.cardDefense} and d.type &amp; 1 != 0 and d.type &amp; 0x4000000 = 0
+                and d.def = #{param.cardDefense} and d.type &amp; 0x4000000 = 0
             </if>
+            <if test="param.cardDefenseGe != null and param.cardDefenseGe.size() > 0">
+                and
+                <foreach collection="param.cardDefenseGe" index="index" item="value" separator="and">
+                    d.def &gt;= #{value} and d.type &amp; 0x4000000 = 0
+                </foreach>
+            </if>
+            <if test="param.cardDefenseG != null and param.cardDefenseG.size() > 0">
+                and
+                <foreach collection="param.cardDefenseG" index="index" item="value" separator="and">
+                    d.def &gt; #{value} and d.type &amp; 0x4000000 = 0
+                </foreach>
+            </if>
+            <if test="param.cardDefenseLe != null and param.cardDefenseLe.size() > 0">
+                and
+                <foreach collection="param.cardDefenseLe" index="index" item="value" separator="and">
+                    d.def &lt;= #{value} and d.type &amp; 0x4000000 = 0
+                </foreach>
+            </if>
+            <if test="param.cardDefenseL != null and param.cardDefenseL.size() > 0">
+                and
+                <foreach collection="param.cardDefenseL" index="index" item="value" separator="and">
+                    d.def &lt; #{value} and d.type &amp; 0x4000000 = 0
+                </foreach>
+            </if>
+
         </where>
     </select>
 </mapper>

@@ -50,6 +50,8 @@ public enum CardTypeEnum {
     XYZ_ORIGIN_M("XYZ怪兽", 0x800000),
     PENDULUM("灵摆", 0x1000000),
     PENDULUM_M("灵摆怪兽", 0x1000000),
+    SPECIAL("特殊召唤", 0x2000000),
+    SPECIAL_M("特殊召唤怪兽", 0x2000000),
     LINK("连接", 0x4000000),
     LINK_M("连接怪兽", 0x4000000),
 

@@ -1,5 +1,6 @@
 package com.weird.service.impl;
 
+import com.weird.handler.CardSearchHandler;
 import com.weird.mapper.card.CardPreviewMapper;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.enums.CardAttributeEnum;
@@ -27,13 +28,8 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     @Autowired
     CardPreviewMapper cardPreviewMapper;
 
-    static String[] cardTypeFilter = {"t:", "type:", "t：", "type：", "类型:", "类型："};
-    static String[] cardAttributeFilter = {"a:", "attribute:", "a：", "attribute：", "属性:", "属性："};
-    static String[] cardRaceFilter = {"r:", "race:", "r：", "race：", "种族:", "种族："};
-    static String[] cardLevelFilter = {"l:", "lv:", "level:", "l：", "lv：", "level：", "等级:", "等级："};
-    static String[] cardAttackFilter = {"atk:", "attack:", "atk：", "attack：", "攻击力:", "攻击力：", "攻击:", "攻击："};
-    static String[] cardDefenseFilter = {"def:", "defense:", "def：", "defense：", "守备力:", "守备力：", "守备:", "守备："};
-    static String[] cardScaleFilter = {"ls:", "scale:", "ls=", "scale="};
+    @Autowired
+    List<CardSearchHandler> cardSearchHandlers;
 
     /**
      * 根据卡名返回卡片详情
@@ -69,121 +65,21 @@ public class CardPreviewServiceImpl implements CardPreviewService {
         }
         BlurSearchParam param = new BlurSearchParam();
 
-        for (String rawText : word.split("\\|")) {
-            boolean filtered = false;
+        for (String rawText : word.split("[\\| ]")) {
             String realText = rawText.trim();
             if (StringUtils.isEmpty(realText)) {
                 continue;
             }
+            boolean handled = false;
 
-            for (String filter : cardTypeFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    CardTypeEnum cardType = CardTypeEnum.getByName(filteredText);
-                    if (cardType != null) {
-                        param.getCardTypeSet().add(cardType);
-                        filtered = true;
-                    }
-                }
+            for (CardSearchHandler handler : cardSearchHandlers) {
+                handled |= handler.handleParam(realText, param);
             }
 
-            for (String filter : cardAttributeFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    CardAttributeEnum cardAttribute = CardAttributeEnum.getByName(filteredText);
-                    if (cardAttribute != null) {
-                        param.getCardAttributeSet().add(cardAttribute);
-                        filtered = true;
-                    }
-                }
-            }
-
-            for (String filter : cardRaceFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    CardRaceEnum cardRace = CardRaceEnum.getByName(filteredText);
-                    if (cardRace != null) {
-                        param.getCardRaceSet().add(cardRace);
-                        filtered = true;
-                    }
-                }
-            }
-
-            for (String filter : cardLevelFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    try {
-                        param.setCardLevel(Long.parseLong(filteredText));
-                        filtered = true;
-                        break;
-                    } catch (Exception e) {
-                        param.setCardLevel(null);
-                    }
-                }
-            }
-
-            for (String filter : cardAttackFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    if ("?".equals(filteredText)) {
-                        param.setCardAttack(-2L);
-                        filtered = true;
-                        break;
-                    } else {
-                        try {
-                            param.setCardAttack(Long.parseLong(filteredText));
-                            filtered = true;
-                            break;
-                        } catch (Exception e) {
-                            param.setCardAttack(null);
-                        }
-                    }
-                }
-            }
-
-            for (String filter : cardDefenseFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    if ("?".equals(filteredText)) {
-                        param.setCardDefense(-2L);
-                        filtered = true;
-                        break;
-                    } else {
-                        try {
-                            param.setCardDefense(Long.parseLong(filteredText));
-                            filtered = true;
-                            break;
-                        } catch (Exception e) {
-                            param.setCardDefense(null);
-                        }
-                    }
-                }
-            }
-
-            for (String filter : cardScaleFilter) {
-                if (realText.startsWith(filter)) {
-                    String filteredText = realText.substring(filter.length());
-                    if ("?".equals(filteredText)) {
-                        param.setCardScale(-2L);
-                        filtered = true;
-                        break;
-                    } else {
-                        try {
-                            param.setCardScale(Long.parseLong(filteredText));
-                            filtered = true;
-                            break;
-                        } catch (Exception e) {
-                            param.setCardScale(null);
-                        }
-                    }
-                }
-            }
-
-            if (!filtered) {
+            if (!handled) {
                 param.getCardDescList().add(realText);
             }
         }
-
         param.build();
 
         // TODO 刻度搜索

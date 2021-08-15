@@ -1,9 +1,14 @@
 package com.weird.utils;
 
 import com.weird.model.CardPreviewModel;
+import com.weird.model.param.BlurSearchParam;
+import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 /**
  * 卡片预览工具
@@ -162,5 +167,83 @@ public class CardPreviewUtil {
                 get = true;
             }
         }
+    }
+
+    /**
+     * 对入参进行范围搜索的设置
+     *
+     * @param string       输入参数
+     * @param param        参数类
+     * @param eqSetter     获取相等的匹配
+     * @param geListGetter >=
+     * @param gListGetter  >
+     * @param leListGetter <=
+     * @param lListGetter  <
+     * @return
+     */
+    public static boolean setRangeSearch(
+            String string,
+            BlurSearchParam param,
+            BiConsumer<BlurSearchParam, Long> eqSetter,
+            Function<BlurSearchParam, List<Long>> geListGetter,
+            Function<BlurSearchParam, List<Long>> gListGetter,
+            Function<BlurSearchParam, List<Long>> leListGetter,
+            Function<BlurSearchParam, List<Long>> lListGetter) {
+        if (StringUtils.isEmpty(string)) {
+            return false;
+        }
+        if (string.startsWith(">=")) {
+            String filteredText = string.substring(2);
+            Long result = convertStringToLongOrNull(filteredText);
+            if (result != null) {
+                geListGetter.apply(param).add(result);
+                return true;
+            }
+        } else if (string.startsWith(">")) {
+            String filteredText = string.substring(1);
+            Long result = convertStringToLongOrNull(filteredText);
+            if (result != null) {
+                gListGetter.apply(param).add(result);
+                return true;
+            }
+        } else if (string.startsWith("<=")) {
+            String filteredText = string.substring(2);
+            Long result = convertStringToLongOrNull(filteredText);
+            if (result != null) {
+                leListGetter.apply(param).add(result);
+                return true;
+            }
+        } else if (string.startsWith("<")) {
+            String filteredText = string.substring(1);
+            Long result = convertStringToLongOrNull(filteredText);
+            if (result != null) {
+                lListGetter.apply(param).add(result);
+                return true;
+            }
+        } else {
+            String filteredText = string;
+            if (string.startsWith("=")) {
+                filteredText = string.substring(1);
+            }
+            Long result = convertStringToLongOrNull(filteredText);
+            if (result != null) {
+                eqSetter.accept(param, result);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static Long convertStringToLongOrNull(String string) {
+        Long result = null;
+        if ("?".equals(string) || "？".equals(string)) {
+            return -2L;
+        }
+        try {
+            result = Long.parseLong(string);
+        } catch (Exception e) {
+
+        }
+        return result;
     }
 }
