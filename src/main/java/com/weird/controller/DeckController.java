@@ -7,9 +7,11 @@ import com.weird.model.dto.DeckListDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.DeckInfoParam;
 import com.weird.model.param.DeckListParam;
+import com.weird.model.param.DeckSubmitBatchParam;
 import com.weird.model.param.DeckSubmitParam;
 import com.weird.service.DeckService;
 import com.weird.service.UserService;
+import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +52,7 @@ public class DeckController {
         // 管理权限验证
         List<DeckListDTO> resultList;
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
+            param.setTargetUser(param.getName());
             resultList = deckService.searchPage(param);
         } else {
             resultList = deckService.searchPageAdmin(param);
@@ -69,7 +72,7 @@ public class DeckController {
     @RequestMapping("/weird_project/deck/add")
     public String addDeck(@RequestBody DeckSubmitParam param) throws Exception {
         if (userService.checkLogin(param.getName(), param.getPassword()) == LoginTypeEnum.UNLOGIN) {
-            throw new OpenDataException("你未登录！");
+            throw new OperationException("你未登录！");
         }
         // 如果有YDK，根据YDK组建卡组列表
         DeckInfoDTO deck = param.getDeck();
@@ -84,6 +87,43 @@ public class DeckController {
         } else {
             throw new OperationException("添加失败！");
         }
+    }
+
+    /**
+     * 【ALL】添加卡组
+     *
+     * @param param
+     * @return
+     * @throws Exception
+     */
+    @RequestMapping("/weird_project/deck/add/batch")
+    public String addDeckBatch(@RequestBody DeckSubmitBatchParam param) throws Exception {
+        if (userService.checkLogin(param.getName(), param.getPassword()) == LoginTypeEnum.UNLOGIN) {
+            throw new OperationException("你未登录！");
+        }
+
+        int successCount = 0;
+        for (DeckInfoDTO deck : param.getDeckList()) {
+            try {
+                DeckSubmitParam submitParam = BeanConverter.convert(param, DeckSubmitParam.class);
+
+                // 如果有YDK，根据YDK组建卡组列表
+                deck.buildDeckList();
+                // 判断卡组是否合法
+                if (!deck.checkDeck()) {
+                    continue;
+                }
+                submitParam.setDeck(deck);
+
+                if (deckService.addDeck(submitParam)) {
+                    successCount += 1;
+                }
+            } catch (OperationException e) {
+                log.error("批量上传卡组错误：{}", e.getMessage());
+            }
+        }
+
+        return String.format("成功上传%d个卡组！", successCount);
     }
 
     /**
