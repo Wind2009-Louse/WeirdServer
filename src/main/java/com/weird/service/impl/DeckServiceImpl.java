@@ -55,9 +55,9 @@ public class DeckServiceImpl implements DeckService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addDeck(DeckSubmitParam param) throws Exception {
-        UserDataModel user = userDataMapper.selectByNameDistinct(param.getName());
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
-            throw new OperationException("找不到用户：[{}]！", param.getName());
+            throw new OperationException("找不到用户：[%s]！", param.getName());
         }
 
         DeckInfoDTO deck = param.getDeck();
@@ -76,15 +76,15 @@ public class DeckServiceImpl implements DeckService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDeck(DeckSubmitParam param) throws Exception {
-        UserDataModel user = userDataMapper.selectByNameDistinct(param.getName());
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
-            throw new OperationException("找不到用户：[{}]！", param.getName());
+            throw new OperationException("找不到用户：[%s]！", param.getName());
         }
 
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || dbDeck.getUserId() != user.getUserId()) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
             throw new OperationException("该卡组无法修改！");
         }
 
@@ -144,15 +144,15 @@ public class DeckServiceImpl implements DeckService {
 
     @Override
     public boolean renameDeck(DeckSubmitParam param) throws Exception {
-        UserDataModel user = userDataMapper.selectByNameDistinct(param.getName());
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
-            throw new OperationException("找不到用户：[{}]！", param.getName());
+            throw new OperationException("找不到用户：[%s]！", param.getName());
         }
 
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || dbDeck.getUserId() != user.getUserId()) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
             throw new OperationException("该卡组无法修改！");
         }
 
@@ -165,15 +165,15 @@ public class DeckServiceImpl implements DeckService {
 
     @Override
     public boolean removeDeck(DeckSubmitParam param) throws Exception {
-        UserDataModel user = userDataMapper.selectByNameDistinct(param.getName());
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
-            throw new OperationException("找不到用户：[{}]！", param.getName());
+            throw new OperationException("找不到用户：[%s]！", param.getName());
         }
 
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || dbDeck.getUserId() != user.getUserId()) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
             throw new OperationException("该卡组无法删除！");
         }
 

@@ -212,6 +212,13 @@
         where user_name = #{name} and is_admin = 0
     </select>
 
+    <select id="selectByNameInAllDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name}
+    </select>
+
     <insert id="insert" parameterType="com.weird.model.UserDataModel"
             useGeneratedKeys="true" keyProperty="userId">
         insert into user_data (user_name, password,

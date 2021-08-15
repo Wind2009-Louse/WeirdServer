@@ -45,6 +45,8 @@ public interface UserDataMapper {
      */
     UserDataModel selectByNameDistinct(@Param("name") String name);
 
+    UserDataModel selectByNameInAllDistinct(@Param("name") String name);
+
     /**
      * 更新日常统计
      *
