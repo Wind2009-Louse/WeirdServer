@@ -53,6 +53,27 @@ public class CardPreviewServiceImpl implements CardPreviewService {
     }
 
     /**
+     * 根据卡名返回卡片详情
+     *
+     * @param code 卡号
+     * @return 卡片描述
+     */
+    @Override
+    public CardPreviewModel selectPreviewByCode(long code) {
+        try {
+            List<CardPreviewModel> list = cardPreviewMapper.getPreviewByCode(code);
+            if (CollectionUtils.isEmpty(list)) {
+                return null;
+            } else {
+                return list.get(0);
+            }
+        } catch (Exception e) {
+            log.error("查询卡片[{}]效果时出现错误：{}", code, e.getMessage());
+            return null;
+        }
+    }
+
+    /**
      * 根据关键词从卡名和效果中查找符合条件的卡片
      *
      * @param word 关键词

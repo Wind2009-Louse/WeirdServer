@@ -84,7 +84,7 @@ public class DeckServiceImpl implements DeckService {
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() == 0)) {
             throw new OperationException("该卡组无法修改！");
         }
 
@@ -118,13 +118,13 @@ public class DeckServiceImpl implements DeckService {
 
     @Override
     public DeckInfoDTO getDeckInfo(DeckInfoParam param, boolean isAdmin) throws Exception {
-        UserDataModel user = userDataMapper.selectByNameDistinct(param.getName());
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
             throw new OperationException("找不到用户：[{}]！", param.getName());
         }
         int deckId = param.getDeckId();
         DeckListModel dbDeckListModel = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeckListModel == null || dbDeckListModel.getUserId() != user.getUserId()) {
+        if (dbDeckListModel == null || (dbDeckListModel.getUserId() != user.getUserId() && !isAdmin)) {
             throw new OperationException("无权查看此卡组！");
         }
 
@@ -152,7 +152,7 @@ public class DeckServiceImpl implements DeckService {
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() == 0)) {
             throw new OperationException("该卡组无法修改！");
         }
 
@@ -173,7 +173,7 @@ public class DeckServiceImpl implements DeckService {
         DeckInfoDTO deck = param.getDeck();
         int deckId = deck.getDeckId();
         DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(deckId);
-        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() > 0)) {
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() == 0)) {
             throw new OperationException("该卡组无法删除！");
         }
 

@@ -2,16 +2,19 @@ package com.weird.controller;
 
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
+import com.weird.model.CardPreviewModel;
+import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.dto.DeckCardDTO;
 import com.weird.model.dto.DeckInfoDTO;
 import com.weird.model.dto.DeckListDTO;
 import com.weird.model.enums.LoginTypeEnum;
-import com.weird.model.param.DeckInfoParam;
-import com.weird.model.param.DeckListParam;
-import com.weird.model.param.DeckSubmitBatchParam;
-import com.weird.model.param.DeckSubmitParam;
+import com.weird.model.param.*;
+import com.weird.service.CardPreviewService;
+import com.weird.service.CardService;
 import com.weird.service.DeckService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
+import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +25,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.openmbean.OpenDataException;
+import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 卡组相关
@@ -40,6 +47,12 @@ public class DeckController {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    CardService cardService;
+
+    @Autowired
+    CardPreviewService cardPreviewService;
 
     /**
      * 【ALL】搜索卡组列表
@@ -167,7 +180,50 @@ public class DeckController {
             throw new OperationException("你未登录！");
         }
 
-        return deckService.getDeckInfo(param, loginTypeEnum == LoginTypeEnum.ADMIN);
+        DeckInfoDTO deckInfo = deckService.getDeckInfo(param, loginTypeEnum == LoginTypeEnum.ADMIN);
+        
+        // 获取卡片说明
+        for (DeckCardDTO mainCard : deckInfo.getMainList()) {
+            long code = mainCard.getCode();
+            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
+            if (preview != null) {
+                mainCard.setCardName(preview.getName());
+                mainCard.setDesc(CardPreviewUtil.getPreview(preview));;
+            }
+        }
+        for (DeckCardDTO exCard : deckInfo.getExList()) {
+            long code = exCard.getCode();
+            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
+            if (preview != null) {
+                exCard.setCardName(preview.getName());
+                exCard.setDesc(CardPreviewUtil.getPreview(preview));;
+            }
+        }
+        for (DeckCardDTO sideCard : deckInfo.getSideList()) {
+            long code = sideCard.getCode();
+            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
+            if (preview != null) {
+                sideCard.setCardName(preview.getName());
+                sideCard.setDesc(CardPreviewUtil.getPreview(preview));;
+            }
+        }
+
+        // 获取用户持有数量
+        String userName = deckInfo.getUserName();
+        List<DeckCardDTO> allCardList = new LinkedList<>();
+        allCardList.addAll(deckInfo.getMainList());
+        allCardList.addAll(deckInfo.getExList());
+        allCardList.addAll(deckInfo.getSideList());
+        List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
+        SearchCardParam countParam = new SearchCardParam();
+        countParam.setTargetUserList(Collections.singletonList(userName));
+        List<CardOwnListDTO> cardCountList = cardService.selectList(countParam, nameList);
+        Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardOwnListDTO::getCardName, CardOwnListDTO::getCount));
+        for (DeckCardDTO card : allCardList) {
+            card.setOwn(cardCountMap.getOrDefault(card.getCardName(), 0));
+        }
+
+        return deckInfo;
     }
 
     /**

@@ -33,6 +33,11 @@ public class DeckCardDTO implements Serializable {
      */
     int count;
 
+    /**
+     * 持有数量
+     */
+    int own;
+
     public DeckCardDTO() {
     }
 

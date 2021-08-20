@@ -25,6 +25,8 @@ public interface CardPreviewMapper {
      */
     List<CardPreviewModel> getPreviewByName(@Param("name") String name);
 
+    List<CardPreviewModel> getPreviewByCode(@Param("code") long code);
+
     /**
      * 根据关键词从卡名和效果中查找符合条件的卡片
      *

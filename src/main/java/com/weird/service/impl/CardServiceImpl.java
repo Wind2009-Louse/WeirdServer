@@ -1,5 +1,7 @@
 package com.weird.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.UserCardListModel;
@@ -297,7 +299,7 @@ public class CardServiceImpl implements CardService {
     public List<CardOwnListDTO> selectList(SearchCardParam param, List<String> cardList) {
         param.setName("");
         param.setPassword("");
-        String key = param.toString();
+        String key = param.toString() + cardList.hashCode();
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
