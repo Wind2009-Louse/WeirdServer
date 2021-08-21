@@ -128,8 +128,10 @@ public class DeckServiceImpl implements DeckService {
             throw new OperationException("无权查看此卡组！");
         }
 
+        UserDataModel owner = userDataMapper.selectByPrimaryKey(dbDeckListModel.getUserId());
         DeckInfoDTO realDeck = BeanConverter.convert(dbDeckListModel, DeckInfoDTO.class);
-        realDeck.setUserName(user.getUserName());
+        realDeck.setUserName(owner.getUserName());
+
         List<DeckDetailModel> deckDetailList = deckMapper.getDeckDetailByDeckId(deckId);
         if (!CollectionUtils.isEmpty(deckDetailList)) {
             Map<Integer, List<DeckDetailModel>> cardMapByType = deckDetailList.stream().collect(Collectors.groupingBy(DeckDetailModel::getType));

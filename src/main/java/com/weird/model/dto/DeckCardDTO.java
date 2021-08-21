@@ -38,6 +38,16 @@ public class DeckCardDTO implements Serializable {
      */
     int own;
 
+    /**
+     * 卡包名
+     */
+    String packageName;
+
+    /**
+     * 稀有度
+     */
+    String rare;
+
     public DeckCardDTO() {
     }
 

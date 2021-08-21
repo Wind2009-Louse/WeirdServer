@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -181,46 +182,36 @@ public class DeckController {
         }
 
         DeckInfoDTO deckInfo = deckService.getDeckInfo(param, loginTypeEnum == LoginTypeEnum.ADMIN);
+
+        List<DeckCardDTO> allCardList = new LinkedList<>();
+        allCardList.addAll(deckInfo.getMainList());
+        allCardList.addAll(deckInfo.getExList());
+        allCardList.addAll(deckInfo.getSideList());
         
         // 获取卡片说明
-        for (DeckCardDTO mainCard : deckInfo.getMainList()) {
-            long code = mainCard.getCode();
+        for (DeckCardDTO deckCard : allCardList) {
+            long code = deckCard.getCode();
             CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
             if (preview != null) {
-                mainCard.setCardName(preview.getName());
-                mainCard.setDesc(CardPreviewUtil.getPreview(preview));;
-            }
-        }
-        for (DeckCardDTO exCard : deckInfo.getExList()) {
-            long code = exCard.getCode();
-            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
-            if (preview != null) {
-                exCard.setCardName(preview.getName());
-                exCard.setDesc(CardPreviewUtil.getPreview(preview));;
-            }
-        }
-        for (DeckCardDTO sideCard : deckInfo.getSideList()) {
-            long code = sideCard.getCode();
-            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
-            if (preview != null) {
-                sideCard.setCardName(preview.getName());
-                sideCard.setDesc(CardPreviewUtil.getPreview(preview));;
+                deckCard.setCardName(preview.getName());
+                deckCard.setDesc(CardPreviewUtil.getPreview(preview));;
             }
         }
 
         // 获取用户持有数量
         String userName = deckInfo.getUserName();
-        List<DeckCardDTO> allCardList = new LinkedList<>();
-        allCardList.addAll(deckInfo.getMainList());
-        allCardList.addAll(deckInfo.getExList());
-        allCardList.addAll(deckInfo.getSideList());
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
         SearchCardParam countParam = new SearchCardParam();
         countParam.setTargetUserList(Collections.singletonList(userName));
         List<CardOwnListDTO> cardCountList = cardService.selectList(countParam, nameList);
-        Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardOwnListDTO::getCardName, CardOwnListDTO::getCount));
+        Map<String, CardOwnListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardOwnListDTO::getCardName, Function.identity()));
         for (DeckCardDTO card : allCardList) {
-            card.setOwn(cardCountMap.getOrDefault(card.getCardName(), 0));
+            CardOwnListDTO cardData = cardMap.getOrDefault(card.getCardName(), null);
+            if (cardData != null) {
+                card.setPackageName(cardData.getPackageName());
+                card.setRare(cardData.getRare());
+                card.setOwn(cardData.getCount());
+            }
         }
 
         return deckInfo;
