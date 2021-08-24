@@ -3,10 +3,7 @@ package com.weird.controller;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
-import com.weird.model.dto.CardOwnListDTO;
-import com.weird.model.dto.DeckCardDTO;
-import com.weird.model.dto.DeckInfoDTO;
-import com.weird.model.dto.DeckListDTO;
+import com.weird.model.dto.*;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.*;
 import com.weird.service.CardPreviewService;
@@ -202,11 +199,11 @@ public class DeckController {
         String userName = deckInfo.getUserName();
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
         SearchCardParam countParam = new SearchCardParam();
-        countParam.setTargetUserList(Collections.singletonList(userName));
-        List<CardOwnListDTO> cardCountList = cardService.selectList(countParam, nameList);
-        Map<String, CardOwnListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardOwnListDTO::getCardName, Function.identity()));
+        countParam.setName(userName);
+        List<CardListDTO> cardCountList = cardService.selectListUser(countParam, nameList);
+        Map<String, CardListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, Function.identity()));
         for (DeckCardDTO card : allCardList) {
-            CardOwnListDTO cardData = cardMap.getOrDefault(card.getCardName(), null);
+            CardListDTO cardData = cardMap.getOrDefault(card.getCardName(), null);
             if (cardData != null) {
                 card.setPackageName(cardData.getPackageName());
                 card.setRare(cardData.getRare());

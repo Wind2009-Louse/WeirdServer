@@ -300,39 +300,44 @@ public class PackageServiceImpl implements PackageService {
         if (cardModel2 == null) {
             throw new OperationException("卡片[%s]不存在！", name1);
         }
-        if (cardModel1.getRare().equals(cardModel2.getRare()) && cardModel1.getPackageId() == cardModel2.getPackageId()) {
-            throw new OperationException("卡片[%s]和[%s]完全相同！", name1, name2);
+        int packageId1 = cardModel1.getPackageId();
+        String rare1 = cardModel1.getRare();
+        int packageId2 = cardModel2.getPackageId();
+        String rare2 = cardModel2.getRare();
+        if (rare1.equals(rare2) && packageId1 == packageId2) {
+            throw new OperationException("卡片[%s]和[%s]的卡包和稀有度完全相同！", name1, name2);
         }
 
         // 修改
-        String tempName = cardModel1.getCardName();
-        cardModel1.setCardName(cardModel2.getCardName());
-        cardModel2.setCardName(tempName);
+        cardModel1.setPackageId(packageId2);
+        cardModel1.setRare(rare2);
+        cardModel2.setPackageId(packageId1);
+        cardModel2.setRare(rare1);
         int result = packageCardMapper.updateByPrimaryKey(cardModel1) + packageCardMapper.updateByPrimaryKey(cardModel2);
         if (result > 0) {
             recordService.setRecord(
                     operator,
                     "卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
-                            cardModel1.getPackageId(), cardModel1.getCardName(), cardModel1.getRare(),
-                            cardModel2.getPackageId(), cardModel2.getCardName(), cardModel2.getRare()
+                    packageId1, cardModel1.getCardName(), rare1,
+                    packageId2, cardModel2.getCardName(), rare2
             );
         }
         if (result == 2) {
             if (isShow != 0) {
                 CardHistoryModel cardHistory1 = new CardHistoryModel();
-                cardHistory1.setPackageId(cardModel1.getPackageId());
+                cardHistory1.setPackageId(packageId1);
                 cardHistory1.setCardPk(cardModel1.getCardPk());
                 cardHistory1.setOldName(name1);
                 cardHistory1.setNewName(name2);
-                cardHistory1.setRare(cardModel1.getRare());
+                cardHistory1.setRare(rare1);
                 cardHistoryMapper.insert(cardHistory1);
 
                 CardHistoryModel cardHistory2 = new CardHistoryModel();
-                cardHistory2.setPackageId(cardModel2.getPackageId());
+                cardHistory2.setPackageId(packageId2);
                 cardHistory2.setCardPk(cardModel2.getCardPk());
                 cardHistory2.setOldName(name2);
                 cardHistory2.setNewName(name1);
-                cardHistory2.setRare(cardModel2.getRare());
+                cardHistory2.setRare(rare2);
                 cardHistoryMapper.insert(cardHistory2);
             }
 

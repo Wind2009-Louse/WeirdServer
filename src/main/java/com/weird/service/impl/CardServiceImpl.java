@@ -299,7 +299,7 @@ public class CardServiceImpl implements CardService {
     public List<CardOwnListDTO> selectList(SearchCardParam param, List<String> cardList) {
         param.setName("");
         param.setPassword("");
-        String key = param.toString() + cardList.hashCode();
+        String key = param.toString();
         log.debug("查询卡片列表：{}", key);
         List<CardOwnListDTO> cache = CacheUtil.getCardOwnListCache(key);
         if (cache == null) {
