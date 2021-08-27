@@ -2,6 +2,7 @@ package com.weird.model.dto;
 
 import com.weird.model.enums.DeckCardTypeEnum;
 import lombok.Data;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
@@ -64,6 +65,11 @@ public class DeckInfoDTO implements Serializable {
      * 拼成的YDK字符串
      */
     String ydk;
+
+    /**
+     * mobile的分享码
+     */
+    String mobileCode;
 
     public boolean checkDeck() {
         return checkList(mainList, 60) || checkList(exList, 15) || checkList(sideList, 15) || StringUtils.isEmpty(deckName);
@@ -146,6 +152,35 @@ public class DeckInfoDTO implements Serializable {
         sb.append("!side\n");
         putCardInBuilder(sideList, sb);
         ydk = sb.toString();
+
+        StringBuilder sb2 = new StringBuilder();
+        sb2.append("ygo://deck?");
+        String mainString = getMobileString(mainList);
+        String exString = getMobileString(exList);
+        String sideString = getMobileString(sideList);
+        boolean inserted = false;
+        if (!StringUtils.isEmpty(mainString)) {
+            sb2.append("main=").append(mainString);
+            inserted = true;
+        }
+        if (!StringUtils.isEmpty(exString)) {
+            if (!inserted) {
+                inserted = true;
+            } else {
+                sb2.append("&");
+            }
+            sb2.append("ex=").append(exString);
+        }
+        if (!StringUtils.isEmpty(sideString)) {
+            if (!inserted) {
+                inserted = true;
+            } else {
+                sb2.append("&");
+            }
+            sb2.append("side=").append(sideString);
+        }
+
+        mobileCode = sb2.toString();
     }
 
     public void putCardInBuilder(List<DeckCardDTO> cardList, StringBuilder sb) {
@@ -154,5 +189,28 @@ public class DeckInfoDTO implements Serializable {
                 sb.append(card.getCode()).append("\n");
             }
         }
+    }
+
+    public String getMobileString(List<DeckCardDTO> cardList) {
+        StringBuilder sb = new StringBuilder();
+        if (CollectionUtils.isEmpty(cardList)) {
+            return "";
+        }
+        boolean inserted = false;
+        for (DeckCardDTO card : cardList) {
+            String toInsert = "";
+            if (card.getCount() > 1) {
+                toInsert = String.format("%d*%d", card.getCode(), card.getCount());
+            } else {
+                toInsert = String.format("%d", card.getCode());
+            }
+            if (!inserted) {
+                inserted = true;
+            } else {
+                sb.append("_");
+            }
+            sb.append(toInsert);
+        }
+        return sb.toString();
     }
 }

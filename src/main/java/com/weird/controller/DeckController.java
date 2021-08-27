@@ -204,7 +204,6 @@ public class DeckController {
         }
 
         // 获取用户持有数量
-
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
         SearchCardParam countParam = new SearchCardParam();
         countParam.setName(checkOwnUser);
