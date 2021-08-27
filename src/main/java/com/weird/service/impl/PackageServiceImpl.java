@@ -301,25 +301,33 @@ public class PackageServiceImpl implements PackageService {
             throw new OperationException("卡片[%s]不存在！", name1);
         }
         int packageId1 = cardModel1.getPackageId();
+        String cardName1 = cardModel1.getCardName();
         String rare1 = cardModel1.getRare();
         int packageId2 = cardModel2.getPackageId();
+        String cardName2 = cardModel2.getCardName();
         String rare2 = cardModel2.getRare();
         if (rare1.equals(rare2) && packageId1 == packageId2) {
             throw new OperationException("卡片[%s]和[%s]的卡包和稀有度完全相同！", name1, name2);
         }
 
-        // 修改
-        cardModel1.setPackageId(packageId2);
-        cardModel1.setRare(rare2);
-        cardModel2.setPackageId(packageId1);
-        cardModel2.setRare(rare1);
+        // 两张卡的稀有度类型不同，用户根据稀有度保留
+        if (PackageUtil.NR_LIST.contains(rare1) ^ PackageUtil.NR_LIST.contains(rare2)) {
+            cardModel1.setCardName(cardName2);
+            cardModel2.setCardName(cardName1);
+            // 两张卡的稀有度类型相同，用户根据卡名保留
+        } else {
+            cardModel1.setPackageId(packageId2);
+            cardModel1.setRare(rare2);
+            cardModel2.setPackageId(packageId1);
+            cardModel2.setRare(rare1);
+        }
         int result = packageCardMapper.updateByPrimaryKey(cardModel1) + packageCardMapper.updateByPrimaryKey(cardModel2);
         if (result > 0) {
             recordService.setRecord(
                     operator,
                     "卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
-                    packageId1, cardModel1.getCardName(), rare1,
-                    packageId2, cardModel2.getCardName(), rare2
+                    packageId1, cardName1, rare1,
+                    packageId2, cardName2, rare2
             );
         }
         if (result == 2) {

@@ -95,4 +95,24 @@ public interface DeckMapper {
      * @return
      */
     List<DeckDetailModel> getDeckDetailByDeckId(@Param("deckId") int deckId);
+
+    /**
+     * 更新卡组
+     *
+     * @param oldCode
+     * @param newCode
+     * @param newType
+     * @return
+     */
+    int updateDeckCodeStepA(@Param("oldCode") long oldCode, @Param("newCode") long newCode, @Param("newType") int newType);
+    int updateDeckCodeStepB(@Param("oldCode") long oldCode, @Param("newCode") long newCode);
+
+    /**
+     * 获取卡组下的卡片信息
+     *
+     * @return
+     */
+    List<DeckDetailModel> getDetailWhenChangeCount(@Param("userId") long userId, @Param("code") long code, @Param("count") int count);
+    int updateDeckCardCount(@Param("count") int count, @Param("pkList") List<Long> pkList);
+    int deleteDeckCardCount(@Param("pkList") List<Long> pkList);
 }

@@ -4,15 +4,14 @@ import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.*;
+import com.weird.model.enums.CardTypeEnum;
+import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchAddCardParam;
 import com.weird.model.param.ReplaceCardParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
-import com.weird.service.CardPreviewService;
-import com.weird.service.CardService;
-import com.weird.service.PackageService;
-import com.weird.service.UserService;
+import com.weird.service.*;
 import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
@@ -22,6 +21,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 卡片列表相关
@@ -40,6 +40,8 @@ public class CardListController {
     CardService cardService;
     @Autowired
     CardPreviewService cardPreviewService;
+    @Autowired
+    DeckService deckService;
 
     /**
      * 【ALL】全卡片搜索
@@ -302,6 +304,29 @@ public class CardListController {
         }
 
         if (packageService.updateCardName(oldCardName, newCardName, newRare, needCoin, isShow, name)) {
+            if (!Objects.equals(oldCardName, newCardName)) {
+                CompletableFuture.runAsync(() -> {
+                    try {
+                        CardPreviewModel oldCard = cardPreviewService.selectPreviewByName(oldCardName);
+                        CardPreviewModel newCard = cardPreviewService.selectPreviewByName(newCardName);
+                        if (oldCard != null && newCard != null) {
+                            long oldCode = oldCard.getId();
+                            long newCode = newCard.getId();
+                            int newType = DeckCardTypeEnum.MAIN.getId();
+                            int newCardType = newCard.getType();
+                            if ((newCardType & CardTypeEnum.FUSION.getValue()) != 0
+                                    || (newCardType & CardTypeEnum.SYNCHRO.getValue()) != 0
+                                    || (newCardType & CardTypeEnum.XYZ.getValue()) != 0
+                                    || (newCardType & CardTypeEnum.LINK.getValue()) != 0) {
+                                newType = DeckCardTypeEnum.EX.getId();
+                            }
+                            deckService.updateDeckCardWhenRenamed(oldCode, newCode, newType);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                });
+            }
             return "修改成功！";
         } else {
             throw new OperationException("修改失败！");

@@ -87,4 +87,24 @@ public interface DeckService {
      * @throws Exception
      */
     String shareDeck(DeckShareParam param, boolean isAdmin) throws Exception;
+
+    /**
+     * 管理员修改卡片名称时，更新用户的卡组
+     *
+     * @param oldCode
+     * @param newCode
+     * @param newType
+     * @return
+     */
+    void updateDeckCardWhenRenamed(long oldCode, long newCode, int newType);
+
+    /**
+     * 用户卡片减少时，修改卡组中的卡片持有数量
+     *
+     * @param userId
+     * @param cardCode
+     * @param newCount
+     */
+    void updateDeckCardCountWhenUpdateCount(long userId, long cardCode, int newCount);
+    void updateDeckCardCountWhenUpdateCount(String userName, long cardCode, int newCount);
 }

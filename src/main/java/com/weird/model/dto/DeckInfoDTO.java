@@ -175,7 +175,7 @@ public class DeckInfoDTO implements Serializable {
             } else {
                 sb2.append("&");
             }
-            sb2.append("ex=").append(exString);
+            sb2.append("extra=").append(exString);
         }
         if (!StringUtils.isEmpty(sideString)) {
             if (!inserted) {

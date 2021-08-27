@@ -137,4 +137,45 @@
         from deck_detail
         where deck_id = #{deckId}
     </select>
+
+    <update id="updateDeckCodeStepA">
+        update deck_detail
+        set code = #{newCode}, type = #{newType}
+        where code = #{oldCode} and type in (1, 2)
+    </update>
+
+    <update id="updateDeckCodeStepB">
+        update deck_detail
+        set code = #{newCode}
+        where code = #{oldCode} and type = 3
+    </update>
+
+    <select id="getDetailWhenChangeCount" resultType="com.weird.model.DeckDetailModel">
+        select
+            d_d.detail_id detailId,
+            d_d.deck_id deckId,
+            d_d.code code,
+            d_d.count count,
+            d_d.type type
+        from deck_detail d_d
+        inner join deck_list d_l on d_l.deck_id = d_d.deck_id
+        where d_l.user_id = #{userId} and d_d.code = #{code} and d_d.count > #{count}
+    </select>
+
+    <update id="updateDeckCardCount">
+        update deck_detail
+        set count = #{count}
+        where detail_id in
+        <foreach collection="pkList" index="index" item="pk" open="(" separator="," close=")">
+            #{pk}
+        </foreach>
+    </update>
+
+    <delete id="deleteDeckCardCount">
+        delete from deck_detail
+        where detail_id in
+        <foreach collection="pkList" index="index" item="pk" open="(" separator="," close=")">
+            #{pk}
+        </foreach>
+    </delete>
 </mapper>

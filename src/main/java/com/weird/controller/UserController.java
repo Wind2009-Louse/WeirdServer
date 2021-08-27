@@ -2,11 +2,14 @@ package com.weird.controller;
 
 import com.alibaba.druid.util.StringUtils;
 import com.weird.aspect.TrimArgs;
+import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
+import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
+import com.weird.service.DeckService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * 用户信息相关
@@ -29,6 +33,12 @@ public class UserController {
 
     @Autowired
     CardService cardService;
+
+    @Autowired
+    CardPreviewService cardPreviewService;
+
+    @Autowired
+    DeckService deckService;
 
     /**
      * 【ALL】查询用户信息
@@ -83,8 +93,19 @@ public class UserController {
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");
         }
-
-        return cardService.updateCardCount(targetUser, cardName, newCount, name);
+        String result = cardService.updateCardCount(targetUser, cardName, newCount, name);
+        CompletableFuture.runAsync(() -> {
+            try {
+                CardPreviewModel card = cardPreviewService.selectPreviewByName(cardName);
+                if (card != null) {
+                    long cardCode = card.getId();
+                    deckService.updateDeckCardCountWhenUpdateCount(targetUser, cardCode, newCount);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
+        return result;
     }
 
     /**
@@ -193,9 +214,9 @@ public class UserController {
     /**
      * 【玩家端】硬币换卡
      *
-     * @param cardName    卡片名
-     * @param name        用户名
-     * @param password    密码
+     * @param cardName 卡片名
+     * @param name     用户名
+     * @param password 密码
      * @return 转换结果
      */
     @RequestMapping("/weird_project/user/card/coin")

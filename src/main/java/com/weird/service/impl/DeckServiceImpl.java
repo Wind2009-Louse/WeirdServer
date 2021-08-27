@@ -208,4 +208,31 @@ public class DeckServiceImpl implements DeckService {
         }
         return "分享成功！";
     }
+
+    @Override
+    public void updateDeckCardWhenRenamed(long oldCode, long newCode, int newType) {
+        deckMapper.updateDeckCodeStepA(oldCode, newCode, newType);
+        deckMapper.updateDeckCodeStepB(oldCode, newCode);
+    }
+
+    @Override
+    public void updateDeckCardCountWhenUpdateCount(String userName, long cardCode, int newCount) {
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(userName);
+        if (user != null) {
+            updateDeckCardCountWhenUpdateCount(user.getUserId(), cardCode, newCount);
+        }
+    }
+
+    @Override
+    public void updateDeckCardCountWhenUpdateCount(long userId, long cardCode, int newCount) {
+        List<DeckDetailModel> dbList = deckMapper.getDetailWhenChangeCount(userId, cardCode, newCount);
+        if (!CollectionUtils.isEmpty(dbList)) {
+            List<Long> pkList = dbList.stream().map(DeckDetailModel::getCode).collect(Collectors.toList());
+            if (newCount > 0) {
+                deckMapper.updateDeckCardCount(newCount, pkList);
+            } else {
+                deckMapper.deleteDeckCardCount(pkList);
+            }
+        }
+    }
 }
