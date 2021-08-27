@@ -74,6 +74,7 @@ CREATE TABLE deck_list (
   user_id int(11) NOT NULL DEFAULT 0,
   deck_name text NOT NULL DEFAULT '' ,
   last_modify_time bigint(20)  NOT NULL DEFAULT 0,
+  share int(11) NOT NULL DEFAULT 0,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE deck_detail (

@@ -272,6 +272,7 @@ CREATE TABLE `deck_list` (
   `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '用户ID',
   `deck_name` text NOT NULL DEFAULT '' COMMENT '卡组名',
   `last_modify_time` bigint(20) NOT NULL DEFAULT 0 COMMENT '最后更新时间',
+  `share` int(11) NOT NULL DEFAULT 0 COMMENT '是否分享（0=不分享，1=分享）',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡组列表';
