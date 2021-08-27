@@ -61,6 +61,12 @@ public class DeckInfoDTO implements Serializable {
      */
     List<DeckCardDTO> sideList;
 
+    int mainCount;
+
+    int exCount;
+
+    int sideCount;
+
     /**
      * 拼成的YDK字符串
      */
@@ -179,8 +185,17 @@ public class DeckInfoDTO implements Serializable {
             }
             sb2.append("side=").append(sideString);
         }
-
         mobileCode = sb2.toString();
+
+        if (!CollectionUtils.isEmpty(mainList)) {
+            mainCount = mainList.stream().mapToInt(DeckCardDTO::getCount).sum();
+        }
+        if (!CollectionUtils.isEmpty(exList)) {
+            exCount = exList.stream().mapToInt(DeckCardDTO::getCount).sum();
+        }
+        if (!CollectionUtils.isEmpty(sideList)) {
+            sideCount = sideList.stream().mapToInt(DeckCardDTO::getCount).sum();
+        }
     }
 
     public void putCardInBuilder(List<DeckCardDTO> cardList, StringBuilder sb) {
