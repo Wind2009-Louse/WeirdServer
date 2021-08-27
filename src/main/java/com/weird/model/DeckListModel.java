@@ -32,4 +32,9 @@ public class DeckListModel implements Serializable {
      */
     long lastModifyTime;
 
+    /**
+     * 分享状态
+     */
+    int share;
+
 }

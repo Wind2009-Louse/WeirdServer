@@ -4,8 +4,8 @@ import com.weird.model.dto.DeckInfoDTO;
 import com.weird.model.dto.DeckListDTO;
 import com.weird.model.param.DeckInfoParam;
 import com.weird.model.param.DeckListParam;
+import com.weird.model.param.DeckShareParam;
 import com.weird.model.param.DeckSubmitParam;
-import com.weird.utils.PageResult;
 
 import java.util.List;
 
@@ -78,4 +78,13 @@ public interface DeckService {
      * @throws Exception
      */
     boolean removeDeck(DeckSubmitParam param) throws Exception;
+
+    /**
+     * 分享卡组
+     *
+     * @param param
+     * @return
+     * @throws Exception
+     */
+    String shareDeck(DeckShareParam param, boolean isAdmin) throws Exception;
 }

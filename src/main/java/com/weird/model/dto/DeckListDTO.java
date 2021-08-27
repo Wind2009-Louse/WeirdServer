@@ -31,4 +31,9 @@ public class DeckListDTO implements Serializable {
      * 最后修改时间
      */
     long lastModifyTime;
+
+    /**
+     * 是否分享中
+     */
+    int share;
 }

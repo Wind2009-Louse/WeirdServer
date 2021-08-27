@@ -51,6 +51,15 @@ public interface DeckMapper {
     int updateDeck(@Param("param") DeckInfoDTO param);
 
     /**
+     * 修改卡组分享状态
+     *
+     * @param deckId
+     * @param share
+     * @return
+     */
+    int updateDeckShare(@Param("deckId") long deckId, @Param("share") int share);
+
+    /**
      * 添加卡组中的卡片
      * @param list
      * @return

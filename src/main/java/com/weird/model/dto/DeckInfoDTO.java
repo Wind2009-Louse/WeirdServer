@@ -41,6 +41,11 @@ public class DeckInfoDTO implements Serializable {
     long lastModifyTime;
 
     /**
+     * 是否分享中的卡组
+     */
+    int share;
+
+    /**
      * 主卡组列表
      */
     List<DeckCardDTO> mainList;

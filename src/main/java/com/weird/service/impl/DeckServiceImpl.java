@@ -11,6 +11,7 @@ import com.weird.model.dto.DeckListDTO;
 import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.param.DeckInfoParam;
 import com.weird.model.param.DeckListParam;
+import com.weird.model.param.DeckShareParam;
 import com.weird.model.param.DeckSubmitParam;
 import com.weird.service.DeckService;
 import com.weird.utils.BeanConverter;
@@ -180,5 +181,31 @@ public class DeckServiceImpl implements DeckService {
         }
 
         return deckMapper.deleteDeckByDeckId(deckId) + deckMapper.deleteCardByDeckId(deckId) > 0;
+    }
+
+    @Override
+    public String shareDeck(DeckShareParam param, boolean isAdmin) throws Exception {
+        UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
+        if (user == null) {
+            throw new OperationException("找不到用户：[%s]！", param.getName());
+        }
+
+        DeckListModel dbDeck = deckMapper.getDeckListInfoByDeckId(param.getDeckId());
+        if (dbDeck == null || (dbDeck.getUserId() != user.getUserId() && user.getIsAdmin() == 0)) {
+            throw new OperationException("该卡组无法修改状态！");
+        }
+
+        if (dbDeck.getShare() == param.getShare()) {
+            throw new OperationException("该卡组分享状态未改变！");
+        }
+
+        if (deckMapper.updateDeckShare(dbDeck.getDeckId(), param.getShare()) <= 0) {
+            throw new OperationException("修改分享状态失败！");
+        }
+
+        if (param.getShare() == 0) {
+            return "取消分享成功！";
+        }
+        return "分享成功！";
     }
 }

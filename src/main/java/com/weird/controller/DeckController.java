@@ -22,10 +22,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.openmbean.OpenDataException;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -63,7 +60,9 @@ public class DeckController {
         // 管理权限验证
         List<DeckListDTO> resultList;
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
-            param.setTargetUser(param.getName());
+            if (param.getShare() <= 0) {
+                param.setTargetUser(param.getName());
+            }
             resultList = deckService.searchPage(param);
         } else {
             resultList = deckService.searchPageAdmin(param);
@@ -177,8 +176,17 @@ public class DeckController {
         if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
             throw new OperationException("你未登录！");
         }
+        boolean isAdmin = loginTypeEnum == LoginTypeEnum.ADMIN;
 
-        DeckInfoDTO deckInfo = deckService.getDeckInfo(param, loginTypeEnum == LoginTypeEnum.ADMIN);
+        DeckInfoDTO deckInfo = deckService.getDeckInfo(param, true);
+        String checkOwnUser = deckInfo.getUserName();
+        // 不是卡组持有者、不是分享中的卡组、不是管理员，不能查看卡组
+        if (!Objects.equals(checkOwnUser, param.getName()) && !isAdmin) {
+            if (deckInfo.getShare() <= 0) {
+                throw new OperationException("无权查看此卡组！");
+            }
+            checkOwnUser = param.getName();
+        }
 
         List<DeckCardDTO> allCardList = new LinkedList<>();
         allCardList.addAll(deckInfo.getMainList());
@@ -196,10 +204,10 @@ public class DeckController {
         }
 
         // 获取用户持有数量
-        String userName = deckInfo.getUserName();
+
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
         SearchCardParam countParam = new SearchCardParam();
-        countParam.setName(userName);
+        countParam.setName(checkOwnUser);
         List<CardListDTO> cardCountList = cardService.selectListUser(countParam, nameList);
         Map<String, CardListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, Function.identity()));
         for (DeckCardDTO card : allCardList) {
@@ -257,5 +265,15 @@ public class DeckController {
         } else {
             throw new OperationException("删除失败！");
         }
+    }
+
+    @RequestMapping("/weird_project/deck/share")
+    public String shareDeck(@RequestBody DeckShareParam param) throws Exception {
+        LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
+        if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
+            throw new OperationException("你未登录！");
+        }
+
+        return deckService.shareDeck(param, loginTypeEnum == LoginTypeEnum.ADMIN);
     }
 }

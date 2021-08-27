@@ -34,6 +34,11 @@ public class DeckListParam extends UserCheckParam implements Serializable {
     int sortWay;
 
     /**
+     * 搜索分享卡组
+     */
+    int share;
+
+    /**
      * 当前页码
      */
     @JsonProperty(defaultValue = "1")

@@ -11,10 +11,14 @@
             d_l.deck_id deckId,
             d_l.deck_name deckName,
             u.user_name userName,
-            d_l.last_modify_time lastModifyTime
+            d_l.last_modify_time lastModifyTime,
+            d_l.share share
         from deck_list d_l
         inner join user_data u on u.user_id = d_l.user_id
-        where u.user_name = #{param.name} and u.password = #{param.password}
+        where deck_id > 0
+        <if test="param.share &lt;= 0">
+            and u.user_name = #{param.name} and u.password = #{param.password}
+        </if>
         <include refid="selectDeckListParam"/>
         <if test="param.sortType == 1 or param.sortType == 2">
             order by
@@ -35,10 +39,11 @@
             d_l.deck_id deckId,
             d_l.deck_name deckName,
             u.user_name userName,
-            d_l.last_modify_time lastModifyTime
+            d_l.last_modify_time lastModifyTime,
+            d_l.share share
         from deck_list d_l
         inner join user_data u on u.user_id = d_l.user_id
-        where deckId > 0
+        where deck_id > 0
         <include refid="selectDeckListParam"/>
         <if test="param.sortType == 1 or param.sortType == 2">
             order by
@@ -61,13 +66,16 @@
         <if test="param.targetUser != null and param.targetUser != ''">
             and u.user_name like "%"||#{param.targetUser}||"%"
         </if>
+        <if test="param.share > 0">
+            and d_l.share > 0
+        </if>
     </sql>
 
     <insert id="addDeck" parameterType="com.weird.model.dto.DeckInfoDTO"
             useGeneratedKeys="true" keyProperty="deckId">
-        insert into deck_list (user_id, deck_name, last_modify_time)
+        insert into deck_list (user_id, deck_name, last_modify_time, share)
         values
-        (#{param.userId}, #{param.deckName}, #{param.lastModifyTime})
+        (#{param.userId}, #{param.deckName}, #{param.lastModifyTime}, #{param.share})
     </insert>
 
     <update id="updateDeck" parameterType="com.weird.model.dto.DeckInfoDTO">
@@ -83,6 +91,12 @@
         where deck_id = #{param.deckId}
     </update>
 
+    <update id="updateDeckShare">
+        update deck_list
+        set share = #{share}
+        where deck_id = #{deckId}
+    </update>
+
     <insert id="batchAddDeckCard">
         insert into deck_detail (deck_id, code, count, type)
         values
@@ -96,7 +110,8 @@
             deck_id deckId,
             user_id userId,
             deck_name deckName,
-            last_modify_time lastModifyTime
+            last_modify_time lastModifyTime,
+            share share
         from deck_list
         where deck_id = #{deckId}
         limit 1
