@@ -187,6 +187,7 @@ public class DeckController {
             }
             checkOwnUser = param.getName();
         }
+        boolean adminCheckSelf = Objects.equals(checkOwnUser, param.getName()) && isAdmin;
 
         List<DeckCardDTO> allCardList = new LinkedList<>();
         allCardList.addAll(deckInfo.getMainList());
@@ -214,7 +215,11 @@ public class DeckController {
             if (cardData != null) {
                 card.setPackageName(cardData.getPackageName());
                 card.setRare(cardData.getRare());
-                card.setOwn(cardData.getCount());
+                if (adminCheckSelf) {
+                    card.setOwn(3);
+                } else {
+                    card.setOwn(cardData.getCount());
+                }
             }
         }
 
