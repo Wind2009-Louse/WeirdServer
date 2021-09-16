@@ -14,6 +14,7 @@ import com.weird.model.param.DeckListParam;
 import com.weird.model.param.DeckShareParam;
 import com.weird.model.param.DeckSubmitParam;
 import com.weird.service.DeckService;
+import com.weird.service.RecordService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
@@ -22,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -42,6 +40,9 @@ public class DeckServiceImpl implements DeckService {
 
     @Autowired
     UserDataMapper userDataMapper;
+
+    @Autowired
+    RecordService recordService;
 
     @Override
     public List<DeckListDTO> searchPage(DeckListParam param) throws Exception {
@@ -71,6 +72,7 @@ public class DeckServiceImpl implements DeckService {
         }
 
         addDeckDetailToDB(deck);
+        recordService.setRecord(user.getUserName(), "创建了卡组[%s]", deck.getDeckName());
         return true;
     }
 
@@ -94,6 +96,28 @@ public class DeckServiceImpl implements DeckService {
         deckMapper.deleteCardByDeckId(deckId);
 
         addDeckDetailToDB(deck);
+        String oldDeckName = dbDeck.getDeckName();
+        String newDeckName = deck.getDeckName();
+        if (deck.getUserId() == user.getUserId()) {
+            if (Objects.equals(oldDeckName, newDeckName)) {
+                recordService.setRecord(user.getUserName(), "修改了卡组[%s]", oldDeckName);
+            } else {
+                recordService.setRecord(user.getUserName(), "修改了卡组[%s]为[%s]", oldDeckName, newDeckName);
+            }
+        } else {
+            UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
+            String deckOwnerName;
+            if (deckOwner != null) {
+                deckOwnerName = deckOwner.getUserName();
+            } else {
+                deckOwnerName = "Unknown";
+            }
+            if (Objects.equals(oldDeckName, newDeckName)) {
+                recordService.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
+            } else {
+                recordService.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
+            }
+        }
         return true;
     }
 
@@ -163,7 +187,34 @@ public class DeckServiceImpl implements DeckService {
         updateParam.setDeckId(deckId);
         updateParam.setDeckName(deck.getDeckName());
         updateParam.setLastModifyTime(System.currentTimeMillis());
-        return deckMapper.updateDeck(updateParam) > 0;
+        boolean result = deckMapper.updateDeck(updateParam) > 0;
+
+        if (result) {
+            String oldDeckName = dbDeck.getDeckName();
+            String newDeckName = deck.getDeckName();
+            if (deck.getUserId() == user.getUserId()) {
+                if (Objects.equals(oldDeckName, newDeckName)) {
+                    recordService.setRecord(user.getUserName(), "重命名了卡组[%s]", oldDeckName);
+                } else {
+                    recordService.setRecord(user.getUserName(), "重命名了卡组[%s]为[%s]", oldDeckName, newDeckName);
+                }
+            } else {
+                UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
+                String deckOwnerName;
+                if (deckOwner != null) {
+                    deckOwnerName = deckOwner.getUserName();
+                } else {
+                    deckOwnerName = "Unknown";
+                }
+                if (Objects.equals(oldDeckName, newDeckName)) {
+                    recordService.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
+                } else {
+                    recordService.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
+                }
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -180,7 +231,23 @@ public class DeckServiceImpl implements DeckService {
             throw new OperationException("该卡组无法删除！");
         }
 
-        return deckMapper.deleteDeckByDeckId(deckId) + deckMapper.deleteCardByDeckId(deckId) > 0;
+        boolean result = deckMapper.deleteDeckByDeckId(deckId) + deckMapper.deleteCardByDeckId(deckId) > 0;
+        if (result) {
+            String deckName = dbDeck.getDeckName();
+            if (deck.getUserId() == user.getUserId()) {
+                recordService.setRecord(user.getUserName(), "删除了卡组[%s]", deckName);
+            } else {
+                UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
+                String deckOwnerName;
+                if (deckOwner != null) {
+                    deckOwnerName = deckOwner.getUserName();
+                } else {
+                    deckOwnerName = "Unknown";
+                }
+                recordService.setRecord(user.getUserName(), "删除了[%s]的卡组[%s]", deckOwnerName, deckName);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -203,10 +270,27 @@ public class DeckServiceImpl implements DeckService {
             throw new OperationException("修改分享状态失败！");
         }
 
+        String deckName = dbDeck.getDeckName();
+        String operation;
         if (param.getShare() == 0) {
-            return "取消分享成功！";
+            operation = "取消分享";
+        } else {
+            operation = "分享";
         }
-        return "分享成功！";
+        if (dbDeck.getUserId() == user.getUserId()) {
+            recordService.setRecord(user.getUserName(), "%s了卡组[%s]", operation, deckName);
+        } else {
+            UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
+            String deckOwnerName;
+            if (deckOwner != null) {
+                deckOwnerName = deckOwner.getUserName();
+            } else {
+                deckOwnerName = "Unknown";
+            }
+            recordService.setRecord(user.getUserName(), "%s了[%s]的卡组[%s]", operation, deckOwnerName, deckName);
+        }
+
+        return operation + "成功！";
     }
 
     @Override
