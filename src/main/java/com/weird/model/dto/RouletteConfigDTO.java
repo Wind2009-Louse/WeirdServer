@@ -21,4 +21,9 @@ public class RouletteConfigDTO implements Serializable {
      * 配置项比例
      */
     int rate;
+
+    /**
+     * 配置项背景色
+     */
+    String color;
 }

@@ -28,4 +28,12 @@ public interface RouletteMapper {
      * @return 插入数量
      */
     int batchInsertConfig(@Param("list") List<RouletteConfigModel> list);
+
+    /**
+     * 添加转盘记录
+     * @param userName
+     * @param detail
+     * @return
+     */
+    int addHistory(@Param("userName") String userName, @Param("detail") String detail);
 }

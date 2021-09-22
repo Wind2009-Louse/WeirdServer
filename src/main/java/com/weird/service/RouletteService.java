@@ -1,6 +1,7 @@
 package com.weird.service;
 
 import com.weird.model.dto.RouletteConfigDTO;
+import com.weird.model.dto.RouletteResultDTO;
 import com.weird.utils.OperationException;
 
 import java.util.List;
@@ -27,4 +28,12 @@ public interface RouletteService {
      * @return 更新结果
      */
     String updateConfig(List<RouletteConfigDTO> list, String operator) throws OperationException;
+
+    /**
+     * 进行转盘
+     *
+     * @param userName 转盘用户
+     * @return 转盘结果
+     */
+    RouletteResultDTO roulette(String userName) throws OperationException;
 }

@@ -5,10 +5,11 @@
         <id column="config_id" jdbcType="BIGINT" property="configId"/>
         <result column="detail" jdbcType="VARCHAR" property="detail"/>
         <result column="rate" jdbcType="INTEGER" property="rate"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
     </resultMap>
     <select id="selectConfigList" resultType="com.weird.model.dto.RouletteConfigDTO">
         select
-            detail, rate
+            detail, rate, color
         from roulette_config
         order by config_id
     </select>
@@ -16,11 +17,16 @@
         delete from roulette_config
     </delete>
     <insert id="batchInsertConfig">
-        insert into roulette_config (`detail`, `rate`)
+        insert into roulette_config (`detail`, `rate`, `color`)
         values
         <foreach collection="list" item="item" separator=",">
-            (#{item.detail}, #{item.rate})
+            (#{item.detail}, #{item.rate}, #{item.color})
         </foreach>
+    </insert>
+    <insert id="addHistory">
+        insert into roulette_history (`user_name`, `detail`)
+        values
+        (#{userName}, #{detail})
     </insert>
 
 </mapper>

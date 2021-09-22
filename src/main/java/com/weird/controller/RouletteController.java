@@ -2,8 +2,10 @@ package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RouletteConfigDTO;
+import com.weird.model.dto.RouletteResultDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.RouletteConfigParam;
+import com.weird.model.param.UserCheckParam;
 import com.weird.service.RouletteService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
@@ -53,5 +55,21 @@ public class RouletteController {
         }
 
         return rouletteService.updateConfig(param.getList(), param.getName());
+    }
+
+    /**
+     * 【ALL】转盘
+     *
+     * @param param 配置参数
+     * @return 更新结果
+     */
+    @PostMapping("/weird_project/roulette/run")
+    public RouletteResultDTO roulette(@RequestBody UserCheckParam param) throws OperationException {
+        // 管理权限验证
+        if (userService.checkLogin(param.getName(), param.getPassword()) == LoginTypeEnum.UNLOGIN) {
+            throw new OperationException("你未登录！");
+        }
+
+        return rouletteService.roulette(param.getName());
     }
 }
