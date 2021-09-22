@@ -140,6 +140,7 @@ public class UserServiceImpl implements UserService {
         newModel.setDustCount(0);
         newModel.setDuelPoint(0);
         newModel.setNonawardCount(0);
+        newModel.setRoulette(2);
         userDataMapper.insert(newModel);
         String hint = String.format("添加新用户：[%s]", name);
         recordService.setRecord(operator, hint);
@@ -585,6 +586,42 @@ public class UserServiceImpl implements UserService {
 
         String successHint = String.format("%s的硬币被修改：%d->%d", name, model.getCoin(), newCount);
         model.setCoin(newCount);
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+
+    @Override
+    public String updateRoulette(String name, int newCount, String operator) throws Exception {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到用户：[%s]！", name);
+        }
+
+        String successHint = String.format("%s的转盘次数被修改：%d->%d", name, model.getRoulette(), newCount);
+        model.setRoulette(newCount);
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordService.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+
+    @Override
+    public String updateRollCount(String name, int newCount, String operator) throws Exception {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到用户：[%s]！", name);
+        }
+
+        String successHint = String.format("%s的抽卡计数被修改：%d->%d", name, model.getRollCount(), newCount);
+        model.setRollCount(newCount);
         int updateCount = userDataMapper.updateByPrimaryKey(model);
         if (updateCount > 0) {
             recordService.setRecord(operator, successHint);

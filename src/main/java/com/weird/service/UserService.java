@@ -157,6 +157,24 @@ public interface UserService {
     String updateCoin(String name, int newCount, String operator) throws Exception;
 
     /**
+     * 修改转盘次数
+     *
+     * @param name     用户名
+     * @param newCount 新硬币数量
+     * @param operator 操作人
+     */
+    String updateRoulette(String name, int newCount, String operator) throws Exception;
+
+    /**
+     * 修改转盘次数
+     *
+     * @param name     用户名
+     * @param newCount 新硬币数量
+     * @param operator 操作人
+     */
+    String updateRollCount(String name, int newCount, String operator) throws Exception;
+
+    /**
      * 交换两个用户持有的卡片
      *
      * @param dto 参数

@@ -41,4 +41,14 @@ public class UserDataDTO implements Serializable {
      * 硬币数量
      */
     private Integer coin;
+
+    /**
+     * 转盘次数
+     */
+    private Integer roulette;
+
+    /**
+     * 抽卡次数
+     */
+    private Integer rollCount;
 }

@@ -20,10 +20,13 @@
         <result column="weekly_dust_change_r" jdbcType="INTEGER" property="weeklyDustChangeR"/>
         <result column="weekly_dust_change_alter" jdbcType="INTEGER" property="weeklyDustChangeAlter"/>
         <result column="coin" jdbcType="INTEGER" property="coin"/>
+        <result column="roulette" jdbcType="INTEGER" property="roulette"/>
+        <result column="roll_count" jdbcType="INTEGER" property="rollCount"/>
     </resultMap>
     <sql id="Base_Column_List">
         user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point, daily_win,
-        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter, coin
+        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter, coin,
+        roulette, roll_count
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -80,6 +83,12 @@
             <if test="coin != null">
                 coin,
             </if>
+            <if test="roulette != null">
+                roulette,
+            </if>
+            <if test="rollCount != null">
+                roll_count,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -123,6 +132,12 @@
             </if>
             <if test="coin != null">
                 #{coin,jdbcType=INTEGER},
+            </if>
+            <if test="roulette != null">
+                #{roulette,jdbcType=INTEGER},
+            </if>
+            <if test="rollCount != null">
+                #{roll_count,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
@@ -168,6 +183,12 @@
             <if test="coin != null">
                 coin = #{coin,jdbcType=INTEGER},
             </if>
+            <if test="roulette != null">
+                roulette = #{roulette,jdbcType=INTEGER},
+            </if>
+            <if test="rollCount != null">
+                roll_count = #{rollCount,jdbcType=INTEGER},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
@@ -185,7 +206,9 @@
         weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
         weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
         weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
-        coin = #{coin,jdbcType=INTEGER}
+        coin = #{coin,jdbcType=INTEGER},
+        roulette = #{roulette,jdbcType=INTEGER},
+        roll_count = #{rollCount,jdbcType=INTEGER}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
 
@@ -225,12 +248,14 @@
         is_admin, nonaward_count, dust_count,
         duel_point, daily_win, daily_lost,
         daily_award, weekly_dust_change_n, weekly_dust_change_r,
-        weekly_dust_change_alter, coin)
+        weekly_dust_change_alter, coin,
+        roulette, roll_count)
         values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER},
         #{duelPoint,jdbcType=INTEGER}, #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER},
         #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
-        #{weeklyDustChangeAlter,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER})
+        #{weeklyDustChangeAlter,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER},
+        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER})
     </insert>
 
     <update id="updateDaily">
@@ -244,6 +269,7 @@
         update user_data
         set weekly_dust_change_n = 0,
             weekly_dust_change_r = 0,
-            weekly_dust_change_alter = 0
+            weekly_dust_change_alter = 0,
+            roulette = 2
     </update>
 </mapper>

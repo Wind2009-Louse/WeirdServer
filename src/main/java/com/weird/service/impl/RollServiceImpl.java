@@ -133,6 +133,17 @@ public class RollServiceImpl implements RollService {
             }
         }
 
+        // 更新抽卡计数和转盘次数
+        int roulette = userModel.getRoulette();
+        int rollCount = userModel.getRollCount();
+        rollCount += 1;
+        if (rollCount >= 50) {
+            roulette += rollCount / 50;
+            rollCount %= 50;
+        }
+        userModel.setRoulette(roulette);
+        userModel.setRollCount(rollCount);
+
         // 更新用户数据
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
             throw new OperationException("更新用户数据失败！");
@@ -267,6 +278,8 @@ public class RollServiceImpl implements RollService {
 
         int dustCount = userModel.getDustCount();
         int nonawardCount = userModel.getNonawardCount();
+        int rollCount = userModel.getRollCount();
+        int roulette = userModel.getRoulette();
         addCards(userModel, cardModels, rollModel.getRollId());
 
         StringBuilder sb = new StringBuilder();
@@ -274,9 +287,11 @@ public class RollServiceImpl implements RollService {
         for (PackageCardModel card : cardModels) {
             sb.append(String.format("[%s](%s), ", card.getCardName(), card.getRare()));
         }
-        sb.append(String.format("尘:%d->%d，月见黑:%d->%d",
+        sb.append(String.format("尘:%d->%d，月见黑:%d->%d，抽卡计数:%d->%d，转盘次数:%d->%d",
                 dustCount, userModel.getDustCount(),
-                nonawardCount, userModel.getNonawardCount()));
+                nonawardCount, userModel.getNonawardCount(),
+                rollCount, userModel.getRollCount(),
+                roulette, userModel.getRoulette()));
         recordService.setRecord(operator, sb.toString());
         clearCardOwnListCache();
         clearRollListWithDetailCache();
@@ -368,6 +383,7 @@ public class RollServiceImpl implements RollService {
         userModel.setDustCount(dustCount);
         if (cardModels.size() == 3) {
             userModel.setNonawardCount(userModel.getNonawardCount() - 1);
+            userModel.setRollCount(userModel.getRollCount() - 1);
         }
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
             throw new OperationException("更新用户信息失败！");

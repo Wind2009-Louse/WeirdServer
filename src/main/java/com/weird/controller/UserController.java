@@ -325,6 +325,58 @@ public class UserController {
     }
 
     /**
+     * 【管理端】修改用户转盘次数
+     *
+     * @param targetUser 用户名
+     * @param roulette   新转盘次数
+     * @param name       操作用户名称
+     * @param password   操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/weird_project/user/roulette")
+    public String updateRoulette(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "roulette") int roulette,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (targetUser == null || targetUser.length() == 0) {
+            throw new OperationException("用户名为空！");
+        }
+
+        return userService.updateRoulette(targetUser, roulette, name);
+    }
+
+    /**
+     * 【管理端】修改用户抽卡计数
+     *
+     * @param targetUser 用户名
+     * @param rollCount  新抽卡计数
+     * @param name       操作用户名称
+     * @param password   操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/weird_project/user/rollCount")
+    public String updateRollCount(
+            @RequestParam(value = "target") String targetUser,
+            @RequestParam(value = "rollCount") int rollCount,
+            @RequestParam(value = "name") String name,
+            @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (targetUser == null || targetUser.length() == 0) {
+            throw new OperationException("用户名为空！");
+        }
+
+        return userService.updateRollCount(targetUser, rollCount, name);
+    }
+
+    /**
      * 【管理端】添加新用户
      * 新用户密码默认为123456
      *

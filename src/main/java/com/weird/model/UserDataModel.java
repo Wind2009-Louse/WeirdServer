@@ -81,4 +81,14 @@ public class UserDataModel implements Serializable {
      * 每周换自选闪的次数
      */
     private int weeklyDustChangeAlter;
+
+    /**
+     * 转盘次数
+     */
+    private int roulette;
+
+    /**
+     * 抽卡次数
+     */
+    private int rollCount;
 }
