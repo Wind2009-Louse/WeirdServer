@@ -23,10 +23,22 @@
             (#{item.detail}, #{item.rate}, #{item.color})
         </foreach>
     </insert>
+
     <insert id="addHistory">
         insert into roulette_history (`user_name`, `detail`)
         values
         (#{userName}, #{detail})
     </insert>
+    <select id="countHistory" resultType="java.lang.Integer">
+        select count(1) from roulette_history
+    </select>
+    <select id="searchHistory" resultType="com.weird.model.dto.RouletteHistoryDTO">
+        select
+            user_name userName,
+            detail detail,
+            db_created_time time
+        from roulette_history
+        order by history_id desc
+    </select>
 
 </mapper>

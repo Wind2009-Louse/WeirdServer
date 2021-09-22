@@ -6,18 +6,23 @@ import com.weird.mapper.main.UserDataMapper;
 import com.weird.model.RouletteConfigModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.RouletteConfigDTO;
+import com.weird.model.dto.RouletteHistoryDTO;
 import com.weird.model.dto.RouletteResultDTO;
+import com.weird.model.param.PageParam;
 import com.weird.service.RecordService;
 import com.weird.service.RouletteService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
+import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Pattern;
 
 /**
  * 转盘服务实现
@@ -37,6 +42,8 @@ public class RouletteServiceImpl implements RouletteService {
     @Autowired
     RecordService recordService;
 
+    static final Pattern colorPattern = Pattern.compile("^#[0-9a-fA-F]{6}$");
+
     @Override
     public List<RouletteConfigDTO> listConfig() {
         return rouletteMapper.selectConfigList();
@@ -46,6 +53,17 @@ public class RouletteServiceImpl implements RouletteService {
     public String updateConfig(List<RouletteConfigDTO> list, String operator) throws OperationException {
         if (CollectionUtils.isEmpty(list)) {
             throw new OperationException("配置项不能为空！");
+        }
+        for (RouletteConfigDTO config : list) {
+            if (config == null) {
+                throw new OperationException("存在空配置！");
+            }
+            if (config.getRate() <= 0) {
+                throw new OperationException("比例需要大于0！");
+            }
+            if (!colorPattern.matcher(config.getColor()).matches()) {
+                throw new OperationException("%s不符合颜色要求！", config.getColor());
+            }
         }
         recordService.setRecord(operator,
                 "转盘配置修改为%s",
@@ -114,5 +132,17 @@ public class RouletteServiceImpl implements RouletteService {
             return result;
         }
         throw new OperationException("转盘失败，请重试！");
+    }
+
+    @Override
+    public PageResult<RouletteHistoryDTO> history(PageParam param) throws Exception {
+        PageResult<RouletteHistoryDTO> result = new PageResult<>();
+        int count = rouletteMapper.countHistory();
+        List<RouletteHistoryDTO> historyList = Collections.emptyList();
+        if (count > 0) {
+            historyList = rouletteMapper.searchHistory();
+        }
+        result.addPageInfo(historyList, param.getPage(), param.getPageSize());
+        return result;
     }
 }

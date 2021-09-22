@@ -2,6 +2,7 @@ package com.weird.mapper.main;
 
 import com.weird.model.RouletteConfigModel;
 import com.weird.model.dto.RouletteConfigDTO;
+import com.weird.model.dto.RouletteHistoryDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -36,4 +37,18 @@ public interface RouletteMapper {
      * @return
      */
     int addHistory(@Param("userName") String userName, @Param("detail") String detail);
+
+    /**
+     * 转盘记录数量查询
+     *
+     * @return
+     */
+    int countHistory();
+
+    /**
+     * 转盘记录查询
+     *
+     * @return
+     */
+    List<RouletteHistoryDTO> searchHistory();
 }

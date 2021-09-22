@@ -26,5 +26,5 @@ public class RouletteHistoryDTO implements Serializable {
     /**
      * 操作时间
      */
-    Date createdTime;
+    Date time;
 }

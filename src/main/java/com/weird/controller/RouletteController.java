@@ -2,13 +2,16 @@ package com.weird.controller;
 
 import com.weird.aspect.TrimArgs;
 import com.weird.model.dto.RouletteConfigDTO;
+import com.weird.model.dto.RouletteHistoryDTO;
 import com.weird.model.dto.RouletteResultDTO;
 import com.weird.model.enums.LoginTypeEnum;
+import com.weird.model.param.PageParam;
 import com.weird.model.param.RouletteConfigParam;
 import com.weird.model.param.UserCheckParam;
 import com.weird.service.RouletteService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
+import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -71,5 +74,16 @@ public class RouletteController {
         }
 
         return rouletteService.roulette(param.getName());
+    }
+
+    /**
+     * 【ALL】转盘记录
+     *
+     * @param param 配置参数
+     * @return 更新结果
+     */
+    @PostMapping("/weird_project/roulette/history")
+    public PageResult<RouletteHistoryDTO> history(@RequestBody PageParam param) throws Exception {
+        return rouletteService.history(param);
     }
 }
