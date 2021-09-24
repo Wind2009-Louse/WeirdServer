@@ -16,11 +16,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
@@ -55,6 +59,9 @@ public class RollServiceImpl implements RollService {
     @Autowired
     RecordService recordService;
 
+    @Autowired
+    BroadcastBotUtil broadcastBotUtil;
+
     /**
      * 将抽卡内容添加到用户上
      *
@@ -70,7 +77,7 @@ public class RollServiceImpl implements RollService {
 
         // 每张卡判断是否变尘
         int addDust = 0;
-        boolean awarded = false;
+        List<PackageCardModel> rareCardList = new ArrayList<>(3);
         for (PackageCardModel card : cardModels) {
             RollDetailModel rollDetailModel = new RollDetailModel();
             rollDetailModel.setRollId(rollId);
@@ -100,7 +107,7 @@ public class RollServiceImpl implements RollService {
 
             // 月见黑
             if (!PackageUtil.NR_LIST.contains(card.getRare())) {
-                awarded = true;
+                rareCardList.add(card);
             }
 
             // 写回数据库
@@ -124,8 +131,10 @@ public class RollServiceImpl implements RollService {
         }
 
         // 非正常抽卡不算月见黑
-        if (cardModels.size() == 3) {
-            if (awarded) {
+        boolean isNormalRoll = cardModels.size() == 3;
+        int lastNonawardCount = userModel.getNonawardCount();
+        if (isNormalRoll) {
+            if (!CollectionUtils.isEmpty(rareCardList)) {
                 int nonawardCount = userModel.getNonawardCount();
                 userModel.setNonawardCount(nonawardCount - nonawardCount % 100);
             } else {
@@ -138,8 +147,10 @@ public class RollServiceImpl implements RollService {
         int rollCount = userModel.getRollCount();
         rollCount += 1;
         if (rollCount >= 50) {
-            roulette += rollCount / 50;
+            final int newRouletteCount = rollCount / 50;
+            roulette += newRouletteCount;
             rollCount %= 50;
+            broadcastBotUtil.sendMsgAsync(String.format("%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
         }
         userModel.setRoulette(roulette);
         userModel.setRollCount(rollCount);
@@ -148,6 +159,56 @@ public class RollServiceImpl implements RollService {
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
             throw new OperationException("更新用户数据失败！");
         }
+
+        int rareCardCount = 0;
+        if (rareCardList.size() == 1) {
+            PackageCardModel card = rareCardList.get(0);
+            rareCardCount = userCardListMapper.selectCardOwnCount(card.getCardPk());
+        }
+
+        // 广播
+        int finalRareCardCount = rareCardCount;
+        CompletableFuture.runAsync(() -> {
+            String info = "";
+
+            // 月见黑提示
+            int currentNonawardCount = userModel.getNonawardCount();
+            if (currentNonawardCount > 0) {
+                switch (currentNonawardCount % 100) {
+                    case 90:
+                        info = String.format("%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
+                        break;
+                    case 0:
+                        info = String.format("功夫不负有心人，%s 的月见黑达到了 %d！", userModel.getUserName(), currentNonawardCount);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            // 闪卡提示
+            if (rareCardList.size() == 1) {
+                PackageCardModel card = rareCardList.get(0);
+                if (isNormalRoll) {
+                    info = String.format("可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s！",
+                            userModel.getUserName(),
+                            lastNonawardCount,
+                            finalRareCardCount,
+                            card.getRare(),
+                            card.getCardName());
+                } else {
+                    info = String.format("恭喜 %s 抽到了全服第%d张[%s]%s！",
+                            userModel.getUserName(),
+                            finalRareCardCount,
+                            card.getRare(),
+                            card.getCardName());
+                }
+            }
+
+            if (!StringUtils.isEmpty(info)) {
+                broadcastBotUtil.sendMsgAsync(info);
+            }
+        });
 
         return true;
     }

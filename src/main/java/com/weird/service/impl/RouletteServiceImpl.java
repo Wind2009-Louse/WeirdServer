@@ -12,6 +12,7 @@ import com.weird.model.param.PageParam;
 import com.weird.service.RecordService;
 import com.weird.service.RouletteService;
 import com.weird.utils.BeanConverter;
+import com.weird.utils.BroadcastBotUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -41,6 +42,9 @@ public class RouletteServiceImpl implements RouletteService {
 
     @Autowired
     RecordService recordService;
+
+    @Autowired
+    BroadcastBotUtil broadcastBotUtil;
 
     static final Pattern colorPattern = Pattern.compile("^#[0-9a-fA-F]{6}$");
 
@@ -125,6 +129,21 @@ public class RouletteServiceImpl implements RouletteService {
                     config.getDetail(), randRate, rouletteCount);
             try {
                 rouletteMapper.addHistory(userName, config.getDetail());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+            try {
+                String concatStr = "";
+                if (rateSum / config.getRate() >= 20) {
+                    concatStr = "，真是羡煞旁人啊";
+                }
+                String broadcastMsg = String.format(
+                        "恭喜 %s 通过转盘抽奖获得 %s%s！",
+                        userName,
+                        config.getDetail(),
+                        concatStr
+                );
+                broadcastBotUtil.sendMsgAsync(broadcastMsg, 5000);
             } catch (Exception e) {
                 log.error(e.getMessage());
             }

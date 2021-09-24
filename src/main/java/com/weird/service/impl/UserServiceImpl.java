@@ -11,6 +11,7 @@ import com.weird.model.param.ReplaceCardParam;
 import com.weird.service.RecordService;
 import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
+import com.weird.utils.BroadcastBotUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -54,6 +55,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     RecordService recordService;
+
+    @Autowired
+    BroadcastBotUtil broadcastBotUtil;
 
     final String DEFAULT_PASSWORD = "123456";
     final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
@@ -316,6 +320,15 @@ public class UserServiceImpl implements UserService {
         clearCardOwnListCache();
         recordService.setRecord(userName, "[%s]合成了一张[%s]，剩余尘：%d。", userName, cardName, userModel.getDustCount());
 
+        if (isRare) {
+            int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+            broadcastBotUtil.sendMsgAsync(
+                    String.format(
+                            "%s 使用300尘合成了全服第%d张[%s]%s，实力进一步提升！",
+                            userName, rareCardCount, cardModel.getRare(), cardName)
+            );
+        }
+
         return true;
     }
 
@@ -431,6 +444,13 @@ public class UserServiceImpl implements UserService {
                 packageName,
                 rareCard.getCardName(),
                 rareCard.getRare());
+
+        int rareCardCount = userCardListMapper.selectCardOwnCount(rareCard.getCardPk());
+        broadcastBotUtil.sendMsgAsync(
+                String.format(
+                        "加美希尔表示震惊！%s 随机抽到了全服第%d张[%s]%s！",
+                        userName, rareCardCount, rareCard.getRare(), rareCard.getCardName())
+        );
 
         return resultToPlayer;
     }

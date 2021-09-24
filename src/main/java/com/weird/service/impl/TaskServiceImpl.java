@@ -2,6 +2,7 @@ package com.weird.service.impl;
 
 import com.weird.mapper.main.UserDataMapper;
 import com.weird.service.TaskService;
+import com.weird.utils.BroadcastBotUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +17,9 @@ import org.springframework.transaction.annotation.Transactional;
 public class TaskServiceImpl implements TaskService {
     @Autowired
     UserDataMapper userDataMapper;
+
+    @Autowired
+    BroadcastBotUtil broadcastBotUtil;
 
     /**
      * 更新日常统计
@@ -36,6 +40,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public int updateWeekly() throws Exception {
+        broadcastBotUtil.sendMsgAsync("新的一周了，合成次数和转盘次已重置，快来试试运气吧！");
         return userDataMapper.updateWeekly();
     }
 }

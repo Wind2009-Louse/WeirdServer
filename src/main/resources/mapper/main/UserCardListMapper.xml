@@ -242,7 +242,7 @@
     </select>
 
     <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="true">
-        select count(1)
+        select sum(count)
         from user_card_list
         where card_pk = #{cardPk}
     </select>
