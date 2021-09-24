@@ -26,4 +26,14 @@ public class RollDetailModel implements Serializable {
      * 是否转化为尘
      */
     private Byte isDust;
+
+    /**
+     * 卡名
+     */
+    private String cardName;
+
+    /**
+     * 稀有度
+     */
+    private String rare;
 }

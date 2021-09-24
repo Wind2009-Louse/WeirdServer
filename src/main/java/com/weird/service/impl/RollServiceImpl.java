@@ -84,6 +84,8 @@ public class RollServiceImpl implements RollService {
             int cardPk = card.getCardPk();
             rollDetailModel.setCardPk(cardPk);
             rollDetailModel.setIsDust((byte) 0);
+            rollDetailModel.setCardName(card.getCardName());
+            rollDetailModel.setRare(card.getRare());
 
             // 获取当前拥有的数量
             UserCardListModel cardCountModel = userCardListMapper.selectByUserCard(userId, cardPk);
@@ -247,7 +249,7 @@ public class RollServiceImpl implements RollService {
         String subKey = param.toString();
         List<RollListDTO> allRollList = CacheUtil.getRollListCache(subKey);
         if (allRollList == null) {
-            allRollList = rollListMapper.selectByParam(param.getPackageNameList(), param.getUserNameList(), startString, endString);
+            allRollList = rollListMapper.selectByParam(param.getPackageNameList(), param.getUserNameList(), startString, endString, param.getCardName());
             CacheUtil.putRollListCache(subKey, allRollList);
         }
 
@@ -265,20 +267,14 @@ public class RollServiceImpl implements RollService {
 
             List<RollDetailDTO> cardResult = new LinkedList<>();
             for (RollDetailModel rollCardModel : cardList) {
-                // 根据ID查询卡名和稀有度
-                int cardPk = rollCardModel.getCardPk();
-                PackageCardModel cardModel = packageCardMapper.selectByPrimaryKey(cardPk);
-                if (cardModel == null) {
-                    throw new OperationException("卡片[%d]查询失败！", cardPk);
-                }
                 RollDetailDTO detailDTO = new RollDetailDTO();
-                detailDTO.setCardName(cardModel.getCardName());
-                detailDTO.setRare(cardModel.getRare());
+                detailDTO.setCardName(rollCardModel.getCardName());
+                detailDTO.setRare(rollCardModel.getRare());
                 detailDTO.setIsDust(rollCardModel.getIsDust());
 
                 // 根据卡名查询效果详细
                 if (rollList.size() < CardPreviewUtil.HIDE_PREVIEW_COUNT) {
-                    CardPreviewModel previewModel = cardPreviewService.selectPreviewByName(cardModel.getCardName());
+                    CardPreviewModel previewModel = cardPreviewService.selectPreviewByName(rollCardModel.getCardName());
                     if (previewModel != null) {
                         detailDTO.setDesc(CardPreviewUtil.getPreview(previewModel));
                         detailDTO.setPicId(previewModel.getId());

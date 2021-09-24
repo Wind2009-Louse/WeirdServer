@@ -26,6 +26,11 @@ public class SearchRollParam implements Serializable, Fixable {
     List<String> userNameList;
 
     /**
+     * 卡片名称
+     */
+    String cardName;
+
+    /**
      * 开始时间
      */
     long startTime;

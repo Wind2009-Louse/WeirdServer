@@ -113,6 +113,9 @@
             <if test="endTime != null and endTime != ''">
                 and roll_list.db_created_time &lt;= #{endTime}
             </if>
+            <if test="cardName != null and cardName != ''">
+                and exists (select 1 from roll_detail where roll_detail.roll_id = roll_list.roll_id and roll_detail.card_name like "%"||#{cardName}||"%")
+            </if>
         </where>
         order by roll_list.db_created_time desc
     </select>

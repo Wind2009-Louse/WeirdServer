@@ -22,5 +22,6 @@ public interface RollListMapper {
     List<RollListDTO> selectByParam(@Param("packageNameList") List<String> packageNameList,
                                     @Param("userNameList") List<String> userNameList,
                                     @Param("startTime") String startTime,
-                                    @Param("endTime") String endTime);
+                                    @Param("endTime") String endTime,
+                                    @Param("cardName") String cardName);
 }

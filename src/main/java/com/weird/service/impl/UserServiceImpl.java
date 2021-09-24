@@ -311,6 +311,8 @@ public class UserServiceImpl implements UserService {
         rollDetailModel.setRollId(rollModel.getRollId());
         rollDetailModel.setCardPk(cardModel.getCardPk());
         rollDetailModel.setIsDust((byte) 0);
+        rollDetailModel.setCardName(cardModel.getCardName());
+        rollDetailModel.setRare(cardModel.getRare());
         if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
             throw new OperationException("插入转换记录时出错！");
         }
@@ -432,6 +434,8 @@ public class UserServiceImpl implements UserService {
         rollDetailModel.setRollId(rollModel.getRollId());
         rollDetailModel.setCardPk(rareCard.getCardPk());
         rollDetailModel.setIsDust((byte) 0);
+        rollDetailModel.setCardName(rareCard.getCardName());
+        rollDetailModel.setRare(rareCard.getRare());
         if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
             throw new OperationException("插入转换记录时出错！");
         }

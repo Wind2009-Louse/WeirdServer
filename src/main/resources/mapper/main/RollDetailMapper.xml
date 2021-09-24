@@ -5,11 +5,13 @@
         <result column="roll_id" jdbcType="BIGINT" property="rollId"/>
         <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
         <result column="is_dust" jdbcType="TINYINT" property="isDust"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
     </resultMap>
     <insert id="insert" parameterType="com.weird.model.RollDetailModel">
-        insert into roll_detail (roll_id, card_pk, is_dust
+        insert into roll_detail (roll_id, card_pk, is_dust, card_name, rare
         )
-        values (#{rollId,jdbcType=BIGINT}, #{cardPk,jdbcType=INTEGER}, #{isDust,jdbcType=TINYINT}
+        values (#{rollId,jdbcType=BIGINT}, #{cardPk,jdbcType=INTEGER}, #{isDust,jdbcType=TINYINT}, #{cardName}, #{rare}
         )
     </insert>
     <insert id="insertSelective" parameterType="com.weird.model.RollDetailModel">
@@ -24,6 +26,12 @@
             <if test="isDust != null">
                 is_dust,
             </if>
+            <if test="cardName != null">
+                card_name,
+            </if>
+            <if test="rare != null">
+                rare,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="rollId != null">
@@ -35,11 +43,17 @@
             <if test="isDust != null">
                 #{isDust,jdbcType=TINYINT},
             </if>
+            <if test="cardName != null">
+                #{cardName},
+            </if>
+            <if test="rare != null">
+                #{rare},
+            </if>
         </trim>
     </insert>
 
     <!-- 自定义 -->
     <select id="selectCardPkById" resultMap="BaseResultMap">
-        select roll_id, card_pk, is_dust from roll_detail where roll_id = #{roll_id}
+        select roll_id, card_pk, is_dust, card_name, rare from roll_detail where roll_id = #{roll_id}
     </select>
 </mapper>
