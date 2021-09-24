@@ -55,6 +55,8 @@ CREATE TABLE user_data (
   weekly_dust_change_n int NOT NULL DEFAULT '0' ,
   weekly_dust_change_r int NOT NULL DEFAULT '0' ,
   weekly_dust_change_alter int NOT NULL DEFAULT '0' ,
+  roulette int NOT NULL DEFAULT '0' ,
+  roll_count int NOT NULL DEFAULT '0' ,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE record (
@@ -83,6 +85,19 @@ CREATE TABLE deck_detail (
   code bigint(20)  NOT NULL DEFAULT 0,
   count int(11) NOT NULL DEFAULT 0,
   type int(11) NOT NULL DEFAULT 0,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
+CREATE TABLE roulette_history (
+  history_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  user_name varchar(45) NOT NULL DEFAULT '' ,
+  detail text NOT NULL DEFAULT '' ,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
+CREATE TABLE roulette_config (
+  config_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  detail text NOT NULL DEFAULT '',
+  rate INTEGER NOT NULL DEFAULT 0,
+  color text NOT NULL DEFAULT '',
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE INDEX idx_deck_id on deck_detail (deck_id);

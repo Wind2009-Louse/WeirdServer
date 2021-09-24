@@ -244,6 +244,8 @@ CREATE TABLE `user_data` (
   `weekly_dust_change_n` int NOT NULL DEFAULT '0' COMMENT '每周换NR的次数',
   `weekly_dust_change_r` int NOT NULL DEFAULT '0' COMMENT '每周换随机闪的次数',
   `weekly_dust_change_alter` int NOT NULL DEFAULT '0' COMMENT '每周换自选闪的次数',
+  `roulette` int NOT NULL DEFAULT '0' COMMENT '剩余转盘次数',
+  `roll_count` int NOT NULL DEFAULT '0' COMMENT '抽卡计数',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`user_id`)
@@ -312,6 +314,57 @@ CREATE TABLE `deck_detail` (
 LOCK TABLES `deck_detail` WRITE;
 /*!40000 ALTER TABLE `deck_detail` DISABLE KEYS */;
 /*!40000 ALTER TABLE `deck_detail` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `roulette_config`
+--
+
+DROP TABLE IF EXISTS `roulette_config`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `roulette_config` (
+  `config_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '配置ID',
+  `detail` text NOT NULL DEFAULT '' COMMENT '配置内容',
+  `rate` int NOT NULL DEFAULT '0' COMMENT '配置比率',
+  `detail` text NOT NULL DEFAULT '' COMMENT '配置项颜色',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转盘配置表';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `roulette_config`
+--
+
+LOCK TABLES `roulette_config` WRITE;
+/*!40000 ALTER TABLE `roulette_config` DISABLE KEYS */;
+/*!40000 ALTER TABLE `roulette_config` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `roulette_history`
+--
+
+DROP TABLE IF EXISTS `roulette_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `roulette_history` (
+  `history_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '历史ID',
+  `user_name` varchar(45) NOT NULL DEFAULT '' COMMENT '转盘用户',
+  `detail` text NOT NULL DEFAULT '' COMMENT '转盘结果',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转盘历史记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `roulette_history`
+--
+
+LOCK TABLES `roulette_history` WRITE;
+/*!40000 ALTER TABLE `roulette_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `roulette_history` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
