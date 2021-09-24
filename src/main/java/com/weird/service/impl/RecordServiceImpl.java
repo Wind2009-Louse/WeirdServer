@@ -39,7 +39,7 @@ public class RecordServiceImpl implements RecordService {
 
             recordMapper.insert(record);
         } catch (Exception e) {
-            log.error("插入记录失败：",e);
+            log.error("插入记录失败：{}",e.getMessage());
         }
     }
 
@@ -49,7 +49,7 @@ public class RecordServiceImpl implements RecordService {
             String detail = String.format(format, args);
             setRecord(userName, detail);
         } catch (Exception e) {
-            log.error("转换格式出错：", e);
+            log.error("转换格式出错：{}", e.getMessage());
         }
     }
 

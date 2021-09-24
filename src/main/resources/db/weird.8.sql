@@ -106,6 +106,8 @@ CREATE TABLE `roll_detail` (
   `roll_id` bigint NOT NULL AUTO_INCREMENT COMMENT '抽卡记录ID',
   `card_pk` int NOT NULL COMMENT '抽卡PK',
   `is_dust` tinyint NOT NULL COMMENT '是否转化为尘',
+  `card_name` varchar(200) NOT NULL DEFAULT '' COMMENT '卡名',
+  `rare` varchar(45) NOT NULL DEFAULT 'N' COMMENT '稀有度',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽卡详细记录';

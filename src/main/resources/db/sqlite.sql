@@ -25,6 +25,8 @@ CREATE TABLE roll_detail (
   roll_id bigint(20) NOT NULL ,
   card_pk int(11) NOT NULL ,
   is_dust tinyint(4) NOT NULL ,
+  card_name varchar(200) NOT NULL DEFAULT '' ,
+  rare varchar(45) NOT NULL DEFAULT 'N' ,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE roll_list (
@@ -101,6 +103,7 @@ CREATE TABLE roulette_config (
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE INDEX idx_deck_id on deck_detail (deck_id);
+CREATE INDEX roll_id_idx ON roll_detail (roll_id);
 INSERT INTO user_data (user_name,password,is_admin,nonaward_count,dust_count,duel_point) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('user_data',1);

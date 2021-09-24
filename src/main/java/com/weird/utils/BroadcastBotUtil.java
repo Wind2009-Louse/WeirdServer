@@ -92,7 +92,7 @@ public class BroadcastBotUtil {
                 CloseableHttpResponse result = httpClient.execute(postRequest);
                 String resultString = EntityUtils.toString(result.getEntity());
             } catch (Exception e) {
-                log.error("发送广播失败：", e);
+                log.error("发送广播失败：{}", e.getMessage());
             } finally {
                 if (httpClient != null) {
                     try {
