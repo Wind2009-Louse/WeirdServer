@@ -1,7 +1,7 @@
 package com.weird.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
-import com.weird.mapper.main.RecordMapper;
+import com.weird.mapper.record.RecordMapper;
 import com.weird.model.RecordModel;
 import com.weird.model.param.RecordParam;
 import com.weird.service.RecordService;

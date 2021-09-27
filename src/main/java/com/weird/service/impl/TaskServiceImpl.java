@@ -40,7 +40,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public int updateWeekly() throws Exception {
-        broadcastBotUtil.sendMsgAsync("新的一周了，合成次数和转盘次已重置，快来试试运气吧！");
+        broadcastBotUtil.sendMsgAsync("新的一周了，合成次数和转盘次数已重置，快来试试运气吧！");
         return userDataMapper.updateWeekly();
     }
 }

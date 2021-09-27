@@ -1,9 +1,7 @@
 package com.weird.service;
 
-import com.weird.mapper.main.RecordMapper;
 import com.weird.model.RecordModel;
 import com.weird.model.param.RecordParam;
-import com.weird.model.param.RollParam;
 import com.weird.utils.PageResult;
 
 /**
@@ -24,9 +22,9 @@ public interface RecordService {
     /**
      * 记录操作日志
      *
-     * @param userName  操作人
-     * @param format    操作内容格式
-     * @param args      格式化参数
+     * @param userName 操作人
+     * @param format   操作内容格式
+     * @param args     格式化参数
      */
     void setRecord(String userName, String format, Object... args);
 

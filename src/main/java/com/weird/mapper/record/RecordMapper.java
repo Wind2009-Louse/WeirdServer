@@ -1,4 +1,4 @@
-package com.weird.mapper.main;
+package com.weird.mapper.record;
 
 import com.weird.model.RecordModel;
 import com.weird.model.param.RecordParam;
