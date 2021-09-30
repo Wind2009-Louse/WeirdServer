@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.comparator.Comparators;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -41,18 +42,22 @@ public class ScheduleBroadcastHandler {
     static final String BROADCAST_DAILY_BEGIN = "午间广播开始啦！";
     static final String BROADCAST_DAILY_ALL = "%s最近两周，大家一共抽了%s包卡，其中%d包出了闪，闪率为%.2f%%！";
     static final String BROADCAST_DAILY_MOST_ROLL = "最勤奋的玩家是%s，这些天抽了%s包之多，其中有%d包出闪，闪率为%.2f%%！";
-    static final String BROADCAST_DAILY_BEST_ROLL = "最狗的玩家是%s，竟然在了%s包卡中出了%d张闪，闪率高达%.2f%%！非人哉！";
+    static final String BROADCAST_DAILY_BEST_ROLL = "最狗的玩家是%s，竟然在了%s包卡中，抽出了%d张闪，闪率高达%.2f%%！非人哉！";
     static final String BROADCAST_DAILY_WORST_ROLL = "最黑的玩家是%s，最近的%s包卡中只有%d张闪，闪率只有可怜的%.2f%%！不过不要灰心，再接再厉！";
+    static final String BROADCAST_DAILY_NEAR_ROLL = "与平均闪率最接近的玩家是%s，%s包卡抽了%d张闪，闪率为%.2f%%，这很合理！";
+
     static final String BROADCAST_DAILY_HOT_PACKAGE = "最近最受欢迎的卡包是%s，这段时间里已经卖出了%d包！";
     static final String BROADCAST_DAILY_BEST_PACKAGE = "出货率最高的卡包是%s，大家在%s包中抽到了%d张闪，足足%.2f%%的闪率！";
     static final String BROADCAST_DAILY_WORST_PACKAGE = "而出货率最低的卡包是%s，拼命抽了%s包，却只有%d张闪，闪率区区%.2f%%！";
     static final String BROADCAST_DAILY_END = "午间广播结束，感谢大家的收听，再见！";
 
-    static final String BROADCAST_WEEKLY = "周日到了，百八也重置了，大家不要忘记了！";
-
     static final String BROADCAST_MONTHLY_BEGIN = "一个月过去了，一起回顾一下过去一个月的抽卡记录吧！";
     static final String BROADCAST_MONTHLY_ALL = "%s过去一个月，大家一共抽了%s包卡，其中%d包出了闪，闪率为%.2f%%！";
+    static final String BROADCAST_MONTHLY_USER = "以下为上个月中所有人的抽卡结果统计：";
+    static final String BROADCAST_MONTHLY_PACKAGE = "以下为上个月中所有人的抽卡结果统计：";
     static final String BROADCAST_MONTHLY_END = "大家下个月再见！";
+
+    static final String BROADCAST_WEEKLY = "周日到了，百八也重置了，大家不要忘记了！";
 
     /**
      * 百八提醒
@@ -92,12 +97,13 @@ public class ScheduleBroadcastHandler {
         Map<String, RollBroadcastBO> deckBoMap = new HashMap<>();
         calculateRollResult(totalBO, userBoMap, deckBoMap, dataList);
 
-        List<String> broadcastList = new ArrayList<>(9);
+        List<String> broadcastList = new ArrayList<>(10);
         broadcastList.add(BROADCAST_DAILY_BEGIN);
         broadcastList.add(putDataToFormat(BROADCAST_DAILY_ALL, totalBO));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_MOST_ROLL, userBoMap.values(), RollBroadcastBO::getTotalCount, false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_ROLL, userBoMap.values(), RollBroadcastBO::getRareRate, false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_WORST_ROLL, userBoMap.values(), o -> -o.getRareRate(), false));
+        broadcastList.add(getStringByMost(BROADCAST_DAILY_NEAR_ROLL, userBoMap.values(), o -> -Math.abs(o.getRareRate() - totalBO.getRareRate()), false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_HOT_PACKAGE, deckBoMap.values(), RollBroadcastBO::getTotalCount, true));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_PACKAGE, deckBoMap.values(), RollBroadcastBO::getRareRate, false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_WORST_PACKAGE, deckBoMap.values(), o -> -o.getRareRate(), false));
@@ -142,15 +148,13 @@ public class ScheduleBroadcastHandler {
         Map<String, RollBroadcastBO> deckBoMap = new HashMap<>();
         calculateRollResult(totalBO, userBoMap, deckBoMap, dataList);
 
-        List<String> broadcastList = new ArrayList<>(9);
+        List<String> broadcastList = new ArrayList<>(7);
         broadcastList.add(BROADCAST_MONTHLY_BEGIN);
         broadcastList.add(putDataToFormat(BROADCAST_MONTHLY_ALL, totalBO));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_MOST_ROLL, userBoMap.values(), RollBroadcastBO::getTotalCount, false));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_ROLL, userBoMap.values(), RollBroadcastBO::getRareRate, false));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_WORST_ROLL, userBoMap.values(), o -> -o.getRareRate(), false));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_HOT_PACKAGE, deckBoMap.values(), RollBroadcastBO::getTotalCount, true));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_PACKAGE, deckBoMap.values(), RollBroadcastBO::getRareRate, false));
-        broadcastList.add(getStringByMost(BROADCAST_DAILY_WORST_PACKAGE, deckBoMap.values(), o -> -o.getRareRate(), false));
+        broadcastList.add(BROADCAST_MONTHLY_USER);
+        broadcastList.add(buildRollTable(userBoMap.values(), "玩家"));
+        broadcastList.add(BROADCAST_MONTHLY_PACKAGE);
+        broadcastList.add(buildRollTable(deckBoMap.values(), "卡包"));
         broadcastList.add(BROADCAST_MONTHLY_END);
 
         beginBroadcast(broadcastList);
@@ -269,6 +273,16 @@ public class ScheduleBroadcastHandler {
                 countList,
                 0,
                 0f);
+    }
+
+    private String buildRollTable(Collection<RollBroadcastBO> targetList, String tableName) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(String.format("%s\t闪数\t总数\t闪率\n", tableName));
+        targetList.stream().sorted((o1, o2) -> Comparators.comparable().compare(o2.getRareRate(), o1.getRareRate())).forEach(o -> {
+            sb.append(String.format("%s\t%d\t%d\t%.2f%%\n", o.getName(), o.getRareCount(), o.getTotalCount(), o.getRareRate()));
+        });
+
+        return sb.toString();
     }
 
     /**
