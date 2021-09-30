@@ -109,7 +109,7 @@ public class BroadcastFacade {
             try {
                 JSONObject jsonObject = new JSONObject();
                 jsonObject.put("group_id", id);
-                jsonObject.put("message", "【广播】" + msg);
+                jsonObject.put("message", msg);
 
                 HttpPost postRequest = new HttpPost(APIUrl);
                 postRequest.addHeader(HTTP.CONTENT_TYPE, HEADER_JSON);

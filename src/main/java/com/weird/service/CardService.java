@@ -73,4 +73,12 @@ public interface CardService {
      * @return 查询结果
      */
     List<CardHistoryDTO> selectHistory(SearchHistoryParam param, List<String> cardList);
+
+    /**
+     * 根据卡片序号，获取卡片的持有量
+     *
+     * @param cardName
+     * @return
+     */
+    int getCardOwnCountByCardName(String cardName);
 }

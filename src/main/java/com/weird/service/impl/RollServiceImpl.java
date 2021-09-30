@@ -153,7 +153,7 @@ public class RollServiceImpl implements RollService {
             final int newRouletteCount = rollCount / 50;
             roulette += newRouletteCount;
             rollCount %= 50;
-            broadcastFacade.sendMsgAsync(String.format("%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
+            broadcastFacade.sendMsgAsync(String.format("【广播】%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
         }
         userModel.setRoulette(roulette);
         userModel.setRollCount(rollCount);
@@ -179,10 +179,10 @@ public class RollServiceImpl implements RollService {
             if (currentNonawardCount > 0) {
                 switch (currentNonawardCount % 100) {
                     case 90:
-                        info = String.format("%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
+                        info = String.format("【广播】%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
                         break;
                     case 0:
-                        info = String.format("功夫不负有心人，%s 的月见黑达到了 %d！", userModel.getUserName(), currentNonawardCount);
+                        info = String.format("【广播】功夫不负有心人，%s 的月见黑达到了 %d！", userModel.getUserName(), currentNonawardCount);
                         break;
                     default:
                         break;
@@ -193,14 +193,14 @@ public class RollServiceImpl implements RollService {
             if (rareCardList.size() == 1) {
                 PackageCardModel card = rareCardList.get(0);
                 if (isNormalRoll) {
-                    info = String.format("可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s！",
+                    info = String.format("【广播】可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s！",
                             userModel.getUserName(),
                             lastNonawardCount,
                             finalRareCardCount,
                             card.getRare(),
                             card.getCardName());
                 } else {
-                    info = String.format("恭喜 %s 抽到了全服第%d张[%s]%s！",
+                    info = String.format("【广播】恭喜 %s 抽到了全服第%d张[%s]%s！",
                             userModel.getUserName(),
                             finalRareCardCount,
                             card.getRare(),

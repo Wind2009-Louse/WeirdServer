@@ -341,4 +341,9 @@ public class CardServiceImpl implements CardService {
             return cardHistoryMapper.selectByCardPk(cardIndexList);
         }
     }
+
+    @Override
+    public int getCardOwnCountByCardName(String cardName) {
+        return userCardListMapper.selectCardOwnCountByName(cardName);
+    }
 }

@@ -138,7 +138,7 @@ public class RouletteServiceImpl implements RouletteService {
                     concatStr = "，真是羡煞旁人啊";
                 }
                 String broadcastMsg = String.format(
-                        "恭喜 %s 通过转盘抽奖获得 %s%s！",
+                        "【广播】恭喜 %s 通过转盘抽奖获得 %s%s！",
                         userName,
                         config.getDetail(),
                         concatStr

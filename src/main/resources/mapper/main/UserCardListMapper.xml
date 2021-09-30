@@ -247,6 +247,13 @@
         where card_pk = #{cardPk}
     </select>
 
+    <select id="selectCardOwnCountByName" resultType="java.lang.Integer" useCache="false">
+        select sum(user_card_list.count)
+        from user_card_list
+        inner join package_card on package_card.card_pk = user_card_list.card_pk
+        where package_card.card_name = #{cardName}
+    </select>
+
     <insert id="insertBatch">
         insert into user_card_list (user_id, card_pk, count)
         values

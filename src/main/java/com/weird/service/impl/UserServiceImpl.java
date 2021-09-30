@@ -326,7 +326,7 @@ public class UserServiceImpl implements UserService {
             int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
             broadcastFacade.sendMsgAsync(
                     String.format(
-                            "%s 使用300尘合成了全服第%d张[%s]%s，实力进一步提升！",
+                            "【指定合成】%s 使用300尘合成了全服第%d张[%s]%s，实力进一步提升！",
                             userName, rareCardCount, cardModel.getRare(), cardName)
             );
         }
@@ -452,7 +452,7 @@ public class UserServiceImpl implements UserService {
         int rareCardCount = userCardListMapper.selectCardOwnCount(rareCard.getCardPk());
         broadcastFacade.sendMsgAsync(
                 String.format(
-                        "加美希尔表示震惊！%s 随机抽到了全服第%d张[%s]%s！",
+                        "【随机抽取】加美希尔表示震惊！%s 随机抽到了全服第%d张[%s]%s！",
                         userName, rareCardCount, rareCard.getRare(), rareCard.getCardName())
         );
 

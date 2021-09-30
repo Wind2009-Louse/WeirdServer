@@ -92,6 +92,8 @@ public interface UserCardListMapper {
      */
     int selectCardOwnCount(@Param("cardPk") int cardPk);
 
+    int selectCardOwnCountByName(@Param("cardName") String cardName);
+
     /**
      * 批量插入记录
      *
