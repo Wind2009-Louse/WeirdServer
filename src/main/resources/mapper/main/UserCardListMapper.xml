@@ -110,7 +110,7 @@
         collection.card_pk inCollection
         from package_info
         inner join package_card on package_info.package_id = package_card.package_id
-        inner join user_data on user_data.user_name = #{name}
+        left join user_data on user_data.user_name = #{name}
         left  join user_card_list on user_card_list.card_pk = package_card.card_pk and user_card_list.user_id = user_data.user_id
         left  join collection on collection.user_id = user_data.user_id and collection.card_pk = package_card.card_pk
         <where>
