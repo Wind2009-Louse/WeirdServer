@@ -1,5 +1,6 @@
 package com.weird.facade;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -41,6 +42,12 @@ public class BroadcastFacade {
     @Value("${broadcast.group}")
     private String groupID;
 
+    @Value("${broadcast.retry.times:3}")
+    private int retryTimes;
+
+    @Value("${broadcast.retry.second:5}")
+    private int retrySecond;
+
     private final static String HEADER_JSON = "application/json";
 
     public void sendMsgAsync(String msg, int sleepMill) {
@@ -53,16 +60,6 @@ public class BroadcastFacade {
     }
 
     public void sendMsg(String msg, int sleepMill) {
-        try {
-            if (sleepMill > 0) {
-                Thread.sleep(sleepMill);
-            }
-        } catch (InterruptedException e) {
-        }
-        sendMsg(msg);
-    }
-
-    public void sendMsg(String msg) {
         if (!enable) {
             return;
         }
@@ -71,6 +68,38 @@ public class BroadcastFacade {
             return;
         }
 
+        int retryTimes = this.retryTimes;
+        try {
+            if (sleepMill > 0) {
+                Thread.sleep(sleepMill);
+            }
+        } catch (InterruptedException e) {
+        }
+        while (retryTimes >= 0) {
+            JSONObject jsonObject;
+            if (retryTimes < this.retryTimes) {
+                jsonObject = sendMsg("(R)" + msg);
+            } else {
+                jsonObject = sendMsg(msg);
+            }
+            if (!"ok".equals(jsonObject.get("status"))) {
+                log.warn("发送消息失败：{}。提示信息：{}", msg, jsonObject.toJSONString());
+                retryTimes --;
+            } else {
+                break;
+            }
+            if (retryTimes >= 0) {
+                try {
+                    if (sleepMill > 0) {
+                        Thread.sleep(retrySecond);
+                    }
+                } catch (InterruptedException e) {
+                }
+            }
+        }
+    }
+
+    public JSONObject sendMsg(String msg) {
         String[] groupList = groupID.split(",");
         for (String id : groupList) {
             if (StringUtils.isEmpty(id)) {
@@ -91,6 +120,7 @@ public class BroadcastFacade {
                 httpClient = HttpClientBuilder.create().build();
                 CloseableHttpResponse result = httpClient.execute(postRequest);
                 String resultString = EntityUtils.toString(result.getEntity());
+                return JSON.parseObject(resultString);
             } catch (Exception e) {
                 log.error("发送广播失败：{}", e.getMessage());
             } finally {
@@ -103,6 +133,7 @@ public class BroadcastFacade {
                 }
             }
         }
+        return null;
     }
 
 }
