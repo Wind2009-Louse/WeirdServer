@@ -1,4 +1,4 @@
-package com.weird.utils;
+package com.weird.facade;
 
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
  */
 @Component
 @Slf4j
-public class BroadcastBotUtil {
+public class BroadcastFacade {
     @Value("${broadcast.enable}")
     private boolean enable;
 

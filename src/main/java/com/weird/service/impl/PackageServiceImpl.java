@@ -2,6 +2,7 @@ package com.weird.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.CardHistoryMapper;
 import com.weird.mapper.main.PackageCardMapper;
 import com.weird.mapper.main.PackageInfoMapper;
@@ -10,7 +11,6 @@ import com.weird.model.PackageCardModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.param.BatchAddCardParam;
 import com.weird.service.PackageService;
-import com.weird.service.RecordService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -43,7 +43,7 @@ public class PackageServiceImpl implements PackageService {
     CardHistoryMapper cardHistoryMapper;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     /**
      * 根据名称查找卡包列表
@@ -72,7 +72,7 @@ public class PackageServiceImpl implements PackageService {
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
-        recordService.setRecord(operator, "添加卡包：[%s]", name);
+        recordFacade.setRecord(operator, "添加卡包：[%s]", name);
         return packageInfoMapper.insert(newPackage) > 0;
     }
 
@@ -96,7 +96,7 @@ public class PackageServiceImpl implements PackageService {
         }
 
         oldPackage.setPackageName(newName);
-        recordService.setRecord(operator, "卡包更改名字：[%s]->[%s]", oldName, newName);
+        recordFacade.setRecord(operator, "卡包更改名字：[%s]->[%s]", oldName, newName);
         clearCardOwnListCache();
         clearRollListWithDetailCache();
         return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
@@ -131,7 +131,7 @@ public class PackageServiceImpl implements PackageService {
         newCardModel.setCardName(cardName);
         newCardModel.setPackageId(packageId);
         newCardModel.setRare(rare);
-        recordService.setRecord(operator, "在卡包[%s]中添加卡片[%s](%s)", packageName, cardName, rare);
+        recordFacade.setRecord(operator, "在卡包[%s]中添加卡片[%s](%s)", packageName, cardName, rare);
         return packageCardMapper.insert(newCardModel) > 0;
     }
 
@@ -170,7 +170,7 @@ public class PackageServiceImpl implements PackageService {
                     sb.append(entry.getKey());
                     sb.append("卡没有全部更新，请重试！\n");
                 }
-                recordService.setRecord(
+                recordFacade.setRecord(
                         param.getName(),
                         "[%s]添加%s卡：%s", param.getPackageName(), entry.getKey(), JSON.toJSONString(entry.getValue()));
             }
@@ -248,7 +248,7 @@ public class PackageServiceImpl implements PackageService {
         int result = packageCardMapper.updateByPrimaryKey(cardModel);
         if (result > 0) {
             if (!StringUtils.isEmpty(coinChange)) {
-                recordService.setRecord(operator, coinChange);
+                recordFacade.setRecord(operator, coinChange);
             }
             if (isShow != 0 && isRenamed) {
                 if (StringUtils.equals(oldRare, newRare)) {
@@ -281,7 +281,7 @@ public class PackageServiceImpl implements PackageService {
             clearCardOwnListCache();
             clearRollListWithDetailCache();
             if (isRenamed) {
-                recordService.setRecord(operator, "卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare);
+                recordFacade.setRecord(operator, "卡片[%s](%s)重命名为[%s](%s)", oldName, oldRare, newName, newRare);
             }
             return true;
         }
@@ -323,7 +323,7 @@ public class PackageServiceImpl implements PackageService {
         }
         int result = packageCardMapper.updateByPrimaryKey(cardModel1) + packageCardMapper.updateByPrimaryKey(cardModel2);
         if (result > 0) {
-            recordService.setRecord(
+            recordFacade.setRecord(
                     operator,
                     "卡片[%d-%s](%s)、[%d-%s](%s)稀有度互换",
                     packageId1, cardName1, rare1,

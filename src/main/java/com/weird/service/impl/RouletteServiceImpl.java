@@ -1,6 +1,8 @@
 package com.weird.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.weird.facade.BroadcastFacade;
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.RouletteMapper;
 import com.weird.mapper.main.UserDataMapper;
 import com.weird.model.RouletteConfigModel;
@@ -9,10 +11,8 @@ import com.weird.model.dto.RouletteConfigDTO;
 import com.weird.model.dto.RouletteHistoryDTO;
 import com.weird.model.dto.RouletteResultDTO;
 import com.weird.model.param.PageParam;
-import com.weird.service.RecordService;
 import com.weird.service.RouletteService;
 import com.weird.utils.BeanConverter;
-import com.weird.utils.BroadcastBotUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -41,10 +41,10 @@ public class RouletteServiceImpl implements RouletteService {
     UserDataMapper userDataMapper;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Autowired
-    BroadcastBotUtil broadcastBotUtil;
+    BroadcastFacade broadcastFacade;
 
     static final Pattern colorPattern = Pattern.compile("^#[0-9a-fA-F]{6}$");
 
@@ -69,7 +69,7 @@ public class RouletteServiceImpl implements RouletteService {
                 throw new OperationException("%s不符合颜色要求！", config.getColor());
             }
         }
-        recordService.setRecord(operator,
+        recordFacade.setRecord(operator,
                 "转盘配置修改为%s",
                 JSON.toJSONString(list));
         List<RouletteConfigModel> modelList = BeanConverter.convertList(list, RouletteConfigModel.class);
@@ -125,7 +125,7 @@ public class RouletteServiceImpl implements RouletteService {
                 }
             }
 
-            recordService.setRecord(userName, "转盘抽奖结果:%s(%d),当前次数:%d",
+            recordFacade.setRecord(userName, "转盘抽奖结果:%s(%d),当前次数:%d",
                     config.getDetail(), randRate, rouletteCount);
             try {
                 rouletteMapper.addHistory(userName, config.getDetail());
@@ -143,7 +143,7 @@ public class RouletteServiceImpl implements RouletteService {
                         config.getDetail(),
                         concatStr
                 );
-                broadcastBotUtil.sendMsgAsync(broadcastMsg, 5000);
+                broadcastFacade.sendMsgAsync(broadcastMsg, 5000);
             } catch (Exception e) {
                 log.error(e.getMessage());
             }

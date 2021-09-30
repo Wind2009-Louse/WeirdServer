@@ -1,5 +1,6 @@
 package com.weird.service.impl;
 
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.CollectionMapper;
 import com.weird.mapper.main.PackageCardMapper;
 import com.weird.mapper.main.UserCardListMapper;
@@ -10,7 +11,6 @@ import com.weird.model.enums.CollectionOperationEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.CollectionParam;
 import com.weird.service.CollectionService;
-import com.weird.service.RecordService;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class CollectionServiceImpl implements CollectionService {
     PackageCardMapper packageCardMapper;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Autowired
     UserCardListMapper userCardListMapper;
@@ -90,7 +90,7 @@ public class CollectionServiceImpl implements CollectionService {
                     throw new OperationException("重复收藏！");
                 }
                 if (collectionMapper.addCollection(userId, cardPk) > 0) {
-                    recordService.setRecord(userName, "[%s]将[%s]添加为收藏", userName, cardName);
+                    recordFacade.setRecord(userName, "[%s]将[%s]添加为收藏", userName, cardName);
                     return true;
                 } else {
                     return false;
@@ -100,7 +100,7 @@ public class CollectionServiceImpl implements CollectionService {
                     throw new OperationException("未收藏该卡片！");
                 }
                 if (collectionMapper.delCollection(userId, cardPk) > 0) {
-                    recordService.setRecord(userName, "[%s]将[%s]从收藏移除", userName, cardName);
+                    recordFacade.setRecord(userName, "[%s]将[%s]从收藏移除", userName, cardName);
                     return true;
                 } else {
                     return false;

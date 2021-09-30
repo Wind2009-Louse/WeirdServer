@@ -1,5 +1,6 @@
 package com.weird.service.impl;
 
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.DeckMapper;
 import com.weird.mapper.main.UserDataMapper;
 import com.weird.model.DeckDetailModel;
@@ -14,7 +15,6 @@ import com.weird.model.param.DeckListParam;
 import com.weird.model.param.DeckShareParam;
 import com.weird.model.param.DeckSubmitParam;
 import com.weird.service.DeckService;
-import com.weird.service.RecordService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +42,7 @@ public class DeckServiceImpl implements DeckService {
     UserDataMapper userDataMapper;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Override
     public List<DeckListDTO> searchPage(DeckListParam param) throws Exception {
@@ -72,7 +72,7 @@ public class DeckServiceImpl implements DeckService {
         }
 
         addDeckDetailToDB(deck);
-        recordService.setRecord(user.getUserName(), "创建了卡组[%s]", deck.getDeckName());
+        recordFacade.setRecord(user.getUserName(), "创建了卡组[%s]", deck.getDeckName());
         return true;
     }
 
@@ -100,9 +100,9 @@ public class DeckServiceImpl implements DeckService {
         String newDeckName = deck.getDeckName();
         if (deck.getUserId() == user.getUserId()) {
             if (Objects.equals(oldDeckName, newDeckName)) {
-                recordService.setRecord(user.getUserName(), "修改了卡组[%s]", oldDeckName);
+                recordFacade.setRecord(user.getUserName(), "修改了卡组[%s]", oldDeckName);
             } else {
-                recordService.setRecord(user.getUserName(), "修改了卡组[%s]为[%s]", oldDeckName, newDeckName);
+                recordFacade.setRecord(user.getUserName(), "修改了卡组[%s]为[%s]", oldDeckName, newDeckName);
             }
         } else {
             UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
@@ -113,9 +113,9 @@ public class DeckServiceImpl implements DeckService {
                 deckOwnerName = "Unknown";
             }
             if (Objects.equals(oldDeckName, newDeckName)) {
-                recordService.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
+                recordFacade.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
             } else {
-                recordService.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
+                recordFacade.setRecord(user.getUserName(), "修改了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
             }
         }
         return true;
@@ -194,9 +194,9 @@ public class DeckServiceImpl implements DeckService {
             String newDeckName = deck.getDeckName();
             if (deck.getUserId() == user.getUserId()) {
                 if (Objects.equals(oldDeckName, newDeckName)) {
-                    recordService.setRecord(user.getUserName(), "重命名了卡组[%s]", oldDeckName);
+                    recordFacade.setRecord(user.getUserName(), "重命名了卡组[%s]", oldDeckName);
                 } else {
-                    recordService.setRecord(user.getUserName(), "重命名了卡组[%s]为[%s]", oldDeckName, newDeckName);
+                    recordFacade.setRecord(user.getUserName(), "重命名了卡组[%s]为[%s]", oldDeckName, newDeckName);
                 }
             } else {
                 UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
@@ -207,9 +207,9 @@ public class DeckServiceImpl implements DeckService {
                     deckOwnerName = "Unknown";
                 }
                 if (Objects.equals(oldDeckName, newDeckName)) {
-                    recordService.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
+                    recordFacade.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]", deckOwnerName, oldDeckName);
                 } else {
-                    recordService.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
+                    recordFacade.setRecord(user.getUserName(), "重命名了[%s]的卡组[%s]为[%s]", deckOwnerName, oldDeckName, newDeckName);
                 }
             }
         }
@@ -235,7 +235,7 @@ public class DeckServiceImpl implements DeckService {
         if (result) {
             String deckName = dbDeck.getDeckName();
             if (deck.getUserId() == user.getUserId()) {
-                recordService.setRecord(user.getUserName(), "删除了卡组[%s]", deckName);
+                recordFacade.setRecord(user.getUserName(), "删除了卡组[%s]", deckName);
             } else {
                 UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
                 String deckOwnerName;
@@ -244,7 +244,7 @@ public class DeckServiceImpl implements DeckService {
                 } else {
                     deckOwnerName = "Unknown";
                 }
-                recordService.setRecord(user.getUserName(), "删除了[%s]的卡组[%s]", deckOwnerName, deckName);
+                recordFacade.setRecord(user.getUserName(), "删除了[%s]的卡组[%s]", deckOwnerName, deckName);
             }
         }
         return result;
@@ -278,7 +278,7 @@ public class DeckServiceImpl implements DeckService {
             operation = "分享";
         }
         if (dbDeck.getUserId() == user.getUserId()) {
-            recordService.setRecord(user.getUserName(), "%s了卡组[%s]", operation, deckName);
+            recordFacade.setRecord(user.getUserName(), "%s了卡组[%s]", operation, deckName);
         } else {
             UserDataModel deckOwner = userDataMapper.selectByPrimaryKey(dbDeck.getUserId());
             String deckOwnerName;
@@ -287,7 +287,7 @@ public class DeckServiceImpl implements DeckService {
             } else {
                 deckOwnerName = "Unknown";
             }
-            recordService.setRecord(user.getUserName(), "%s了[%s]的卡组[%s]", operation, deckOwnerName, deckName);
+            recordFacade.setRecord(user.getUserName(), "%s了[%s]的卡组[%s]", operation, deckOwnerName, deckName);
         }
 
         return operation + "成功！";

@@ -2,10 +2,10 @@ package com.weird.controller;
 
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
+import com.weird.facade.RecordFacade;
 import com.weird.model.RecordModel;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.RecordParam;
-import com.weird.service.RecordService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 @SearchParamFix
 public class RecordController {
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Autowired
     UserService userService;
@@ -36,6 +36,6 @@ public class RecordController {
             throw new OperationException("权限不足！");
         }
 
-        return recordService.searchPage(param);
+        return recordFacade.searchPage(param);
     }
 }

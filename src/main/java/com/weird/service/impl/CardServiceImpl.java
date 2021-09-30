@@ -1,7 +1,6 @@
 package com.weird.service.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.*;
 import com.weird.model.PackageCardModel;
 import com.weird.model.UserCardListModel;
@@ -15,7 +14,6 @@ import com.weird.model.param.CollectionParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.model.param.SearchHistoryParam;
 import com.weird.service.CardService;
-import com.weird.service.RecordService;
 import com.weird.utils.CacheUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
@@ -26,7 +24,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 
@@ -49,7 +50,7 @@ public class CardServiceImpl implements CardService {
     CardHistoryMapper cardHistoryMapper;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Autowired
     CollectionMapper collectionMapper;
@@ -91,7 +92,7 @@ public class CardServiceImpl implements CardService {
             model.setCount(count);
             clearCardOwnListCache();
             if (userCardListMapper.update(model) > 0) {
-                recordService.setRecord(operator, hint);
+                recordFacade.setRecord(operator, hint);
                 return hint;
             } else {
                 throw new OperationException("修改失败！");
@@ -107,7 +108,7 @@ public class CardServiceImpl implements CardService {
             model.setCount(count);
             clearCardOwnListCache();
             if (userCardListMapper.insert(model) > 0) {
-                recordService.setRecord(operator, hint);
+                recordFacade.setRecord(operator, hint);
                 return hint;
             } else {
                 throw new OperationException("添加失败！");
@@ -164,7 +165,7 @@ public class CardServiceImpl implements CardService {
                     failCount++;
                     continue;
                 }
-                recordService.setRecord(param.getName(),
+                recordFacade.setRecord(param.getName(),
                         "修改[%s]的[%s]数量（%d->%d）", userName, cardName, model.getCount(), entry.getValue());
                 model.setCount(entry.getValue());
                 updateList.add(model);
@@ -174,7 +175,7 @@ public class CardServiceImpl implements CardService {
                     failCount++;
                     continue;
                 }
-                recordService.setRecord(param.getName(),
+                recordFacade.setRecord(param.getName(),
                         "添加[%s]的[%s]数量（%d->%d）", userName, cardName, 0, entry.getValue());
                 model = new UserCardListModel();
                 model.setUserId(userId);

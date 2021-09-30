@@ -1,10 +1,10 @@
 package com.weird.handler;
 
+import com.weird.facade.BroadcastFacade;
 import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.RollService;
-import com.weird.utils.BroadcastBotUtil;
 import com.weird.utils.PackageUtil;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class ScheduleBroadcastHandler {
     RollService rollService;
 
     @Autowired
-    BroadcastBotUtil broadcastBotUtil;
+    BroadcastFacade broadcastFacade;
 
     static final String BROADCAST_DAILY_BEGIN = "午间广播开始啦！";
     static final String BROADCAST_DAILY_ALL = "%s最近两周，大家一共抽了%s包卡，其中%d包出了闪，闪率为%.2f%%！";
@@ -60,7 +60,7 @@ public class ScheduleBroadcastHandler {
     @Async
     @Scheduled(cron = "0 0 0 * * 7")
     public void weeklyMoreRareBroadcast() {
-        broadcastBotUtil.sendMsgAsync(BROADCAST_WEEKLY);
+        broadcastFacade.sendMsgAsync(BROADCAST_WEEKLY);
     }
 
     /**
@@ -279,7 +279,7 @@ public class ScheduleBroadcastHandler {
     private void beginBroadcast(List<String> broadcastList) {
         CompletableFuture.runAsync(() -> {
             for (String broadcast : broadcastList) {
-                broadcastBotUtil.sendMsgAsync(broadcast);
+                broadcastFacade.sendMsgAsync(broadcast);
                 try {
                     Thread.sleep(5000);
                 } catch (Exception e) {

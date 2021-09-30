@@ -1,6 +1,8 @@
 package com.weird.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.weird.facade.BroadcastFacade;
+import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.RollDetailDTO;
@@ -9,7 +11,6 @@ import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.RollStatusEnum;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.CardPreviewService;
-import com.weird.service.RecordService;
 import com.weird.service.RollService;
 import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -57,10 +58,10 @@ public class RollServiceImpl implements RollService {
     CardPreviewService cardPreviewService;
 
     @Autowired
-    RecordService recordService;
+    RecordFacade recordFacade;
 
     @Autowired
-    BroadcastBotUtil broadcastBotUtil;
+    BroadcastFacade broadcastFacade;
 
     /**
      * 将抽卡内容添加到用户上
@@ -152,7 +153,7 @@ public class RollServiceImpl implements RollService {
             final int newRouletteCount = rollCount / 50;
             roulette += newRouletteCount;
             rollCount %= 50;
-            broadcastBotUtil.sendMsgAsync(String.format("%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
+            broadcastFacade.sendMsgAsync(String.format("%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
         }
         userModel.setRoulette(roulette);
         userModel.setRollCount(rollCount);
@@ -208,7 +209,7 @@ public class RollServiceImpl implements RollService {
             }
 
             if (!StringUtils.isEmpty(info)) {
-                broadcastBotUtil.sendMsgAsync(info);
+                broadcastFacade.sendMsgAsync(info);
             }
         });
 
@@ -349,7 +350,7 @@ public class RollServiceImpl implements RollService {
                 nonawardCount, userModel.getNonawardCount(),
                 rollCount, userModel.getRollCount(),
                 roulette, userModel.getRoulette()));
-        recordService.setRecord(operator, sb.toString());
+        recordFacade.setRecord(operator, sb.toString());
         clearCardOwnListCache();
         clearRollListWithDetailCache();
 
@@ -400,7 +401,7 @@ public class RollServiceImpl implements RollService {
 
         rollListModel.setIsDisabled((byte) newStatus);
 
-        recordService.setRecord(operator,
+        recordFacade.setRecord(operator,
                 "[%s]的状态变为%s", JSON.toJSONString(rollListModel), RollStatusEnum.getById(newStatus));
         if (rollListMapper.updateByPrimaryKey(rollListModel) <= 0) {
             throw new OperationException("修改抽卡记录状态失败！");
