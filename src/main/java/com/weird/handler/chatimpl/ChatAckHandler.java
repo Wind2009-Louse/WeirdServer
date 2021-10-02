@@ -1,5 +1,6 @@
 package com.weird.handler.chatimpl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +18,8 @@ public class ChatAckHandler implements ChatHandler {
     BroadcastFacade broadcastFacade;
 
     @Override
-    public void handle(String message) {
+    public void handle(JSONObject o) {
+        String message = o.getString("raw_message");
         if ("syn".equals(message)) {
             broadcastFacade.sendMsgAsync("ack");
         }

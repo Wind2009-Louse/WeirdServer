@@ -1,5 +1,7 @@
 package com.weird.handler;
 
+import com.alibaba.fastjson.JSONObject;
+
 /**
  * 处理聊天信息的处理器
  *
@@ -10,7 +12,7 @@ public interface ChatHandler {
     /**
      * 处理聊天内容
      *
-     * @param message
+     * @param o 聊天内容
      */
-    void handle(String message);
+    void handle(JSONObject o);
 }

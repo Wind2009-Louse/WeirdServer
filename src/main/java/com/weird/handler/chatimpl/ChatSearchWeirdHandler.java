@@ -1,5 +1,6 @@
 package com.weird.handler.chatimpl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
@@ -35,7 +36,8 @@ public class ChatSearchWeirdHandler implements ChatHandler {
     final static String SPLIT_STR = ">查诡异 ";
 
     @Override
-    public void handle(String message) {
+    public void handle(JSONObject o) {
+        String message = o.getString("raw_message");
         if (message.startsWith(SPLIT_STR)) {
             String cardArgs = message.substring(SPLIT_STR.length()).trim();
             if (StringUtils.isEmpty(cardArgs)) {

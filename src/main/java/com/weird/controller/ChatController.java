@@ -3,7 +3,6 @@ package com.weird.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
-import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +27,10 @@ public class ChatController {
 
     @RequestMapping("/ping")
     public void ping(@RequestBody JSONObject o) {
+        log.info(o.toJSONString());
         try {
-            String message = o.getString("raw_message");
             for (ChatHandler chatHandler : chatHandlerList) {
-                chatHandler.handle(message);
+                chatHandler.handle(o);
             }
         } catch (Exception e) {
             log.error(o.toJSONString(), e);
