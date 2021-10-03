@@ -28,7 +28,7 @@ public class ChatRoomHandler implements ChatHandler {
 
     final static String RECORD_STR = "M#";
 
-    final static long TIME_GAP = 1000 * 60 * 60;
+    final static long TIME_GAP = 1000 * 60 * 90;
 
     final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
@@ -43,7 +43,7 @@ public class ChatRoomHandler implements ChatHandler {
             roomList.add(chatRoomBO);
         } else if (CALL_STR.equals(message)) {
             StringBuilder sb = new StringBuilder();
-            sb.append("最近1小时内的房间记录：");
+            sb.append("最近90分钟内的房间记录：");
             List<String> historyList = new ArrayList<>();
             Iterator<ChatRoomBO> iterator = roomList.iterator();
             while (iterator.hasNext()) {
@@ -51,6 +51,7 @@ public class ChatRoomHandler implements ChatHandler {
                 long chatTime = chatRoomBO.getChatTime();
                 if (System.currentTimeMillis() - chatTime > TIME_GAP) {
                     iterator.remove();
+                    continue;
                 }
                 historyList.add(0, String.format("\n[%s]%s: %s", TIME_FORMAT.format(new Date(chatTime)), chatRoomBO.getUserName(), chatRoomBO.getDetail()));
             }
