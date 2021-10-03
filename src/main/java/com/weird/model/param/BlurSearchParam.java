@@ -71,8 +71,15 @@ public class BlurSearchParam implements Serializable {
     List<Long> cardDefenseG;
     List<Long> cardDefenseLe;
     List<Long> cardDefenseL;
-    
+
+    /**
+     * 卡片刻度
+     */
     Long cardScale;
+    List<Long> cardScaleGe;
+    List<Long> cardScaleG;
+    List<Long> cardScaleLe;
+    List<Long> cardScaleL;
 
     List<CardTypeEnum> cardTypeList;
     List<CardAttributeEnum> cardAttributeList;
@@ -102,8 +109,12 @@ public class BlurSearchParam implements Serializable {
         cardDefenseG = new LinkedList<>();
         cardDefenseLe = new LinkedList<>();
         cardDefenseL = new LinkedList<>();
-        
+
         cardScale = null;
+        cardScaleGe = new LinkedList<>();
+        cardScaleG = new LinkedList<>();
+        cardScaleLe = new LinkedList<>();
+        cardScaleL = new LinkedList<>();
     }
 
     public void build() {

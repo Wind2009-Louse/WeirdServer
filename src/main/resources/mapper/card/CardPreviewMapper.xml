@@ -187,6 +187,34 @@
                 </foreach>
             </if>
 
+            <if test="param.cardScale != null">
+                and (d.level &amp; 0xff0000) / 0xffff = #{param.cardScale}
+            </if>
+            <if test="param.cardScaleGe != null and param.cardScaleGe.size() > 0">
+                and
+                <foreach collection="param.cardScaleGe" index="index" item="value" separator="and">
+                    (d.level &amp; 0xff0000) / 0xffff &gt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardScaleG != null and param.cardScaleG.size() > 0">
+                and
+                <foreach collection="param.cardScaleG" index="index" item="value" separator="and">
+                    (d.level &amp; 0xff0000) / 0xffff &gt; #{value}
+                </foreach>
+            </if>
+            <if test="param.cardScaleLe != null and param.cardScaleLe.size() > 0">
+                and
+                <foreach collection="param.cardScaleLe" index="index" item="value" separator="and">
+                    (d.level &amp; 0xff0000) / 0xffff &lt;= #{value}
+                </foreach>
+            </if>
+            <if test="param.cardScaleL != null and param.cardScaleL.size() > 0">
+                and
+                <foreach collection="param.cardScaleL" index="index" item="value" separator="and">
+                    (d.level &amp; 0xff0000) / 0xffff &lt; #{value}
+                </foreach>
+            </if>
+
         </where>
     </select>
 </mapper>

@@ -103,7 +103,6 @@ public class CardPreviewServiceImpl implements CardPreviewService {
         }
         param.build();
 
-        // TODO 刻度搜索
         return cardPreviewMapper.multiBlurSearch(param);
     }
 }

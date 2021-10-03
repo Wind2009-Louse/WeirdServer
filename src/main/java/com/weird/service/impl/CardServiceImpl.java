@@ -344,6 +344,10 @@ public class CardServiceImpl implements CardService {
 
     @Override
     public int getCardOwnCountByCardName(String cardName) {
-        return userCardListMapper.selectCardOwnCountByName(cardName);
+        Integer result = userCardListMapper.selectCardOwnCountByName(cardName);
+        if (result == null) {
+            return 0;
+        }
+        return result;
     }
 }
