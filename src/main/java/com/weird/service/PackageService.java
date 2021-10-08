@@ -38,6 +38,16 @@ public interface PackageService {
     boolean updatePackageName(String oldName, String newName, String operator) throws Exception;
 
     /**
+     * 更新卡包描述
+     *
+     * @param packageName 卡包名称
+     * @param detail      卡包描述
+     * @param operator    操作者
+     * @return 是否更新成功
+     */
+    boolean updatePackageDetail(String packageName, String detail, String operator) throws Exception;
+
+    /**
      * 在卡包中添加卡片
      *
      * @param packageName 卡包名

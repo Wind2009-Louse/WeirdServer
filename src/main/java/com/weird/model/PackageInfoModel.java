@@ -21,4 +21,9 @@ public class PackageInfoModel implements Serializable {
      * 卡包名称
      */
     private String packageName;
+
+    /**
+     * 卡包详情
+     */
+    private String detail;
 }

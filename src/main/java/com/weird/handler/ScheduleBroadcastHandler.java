@@ -191,7 +191,7 @@ public class ScheduleBroadcastHandler {
         if (onlyTotalCount) {
             return String.format(formatString, target.getName(), target.getTotalCount());
         } else {
-            if (0 == best.intValue() && !CollectionUtils.isEmpty(zeroTargetList)) {
+            if (0 == best.floatValue() && !CollectionUtils.isEmpty(zeroTargetList)) {
                 return putZeroDataToFormat(formatString, zeroTargetList);
             } else {
                 return putDataToFormat(formatString, target);

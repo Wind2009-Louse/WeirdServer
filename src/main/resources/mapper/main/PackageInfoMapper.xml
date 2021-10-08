@@ -8,9 +8,10 @@
     <resultMap id="BaseResultMap" type="com.weird.model.PackageInfoModel">
         <id column="package_id" jdbcType="INTEGER" property="packageId"/>
         <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
+        <result column="detail" jdbcType="VARCHAR" property="detail"/>
     </resultMap>
     <sql id="Base_Column_List">
-        package_id, package_name
+        package_id, package_name, detail
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -31,6 +32,9 @@
             <if test="packageName != null">
                 package_name,
             </if>
+            <if test="detail != null">
+                detail,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="packageId != null">
@@ -38,6 +42,9 @@
             </if>
             <if test="packageName != null">
                 #{packageName,jdbcType=VARCHAR},
+            </if>
+            <if test="detail != null">
+                detail,
             </if>
         </trim>
     </insert>
@@ -47,20 +54,24 @@
             <if test="packageName != null">
                 package_name = #{packageName,jdbcType=VARCHAR},
             </if>
+            <if test="detail != null">
+                detail = #{detail},
+            </if>
         </set>
         where package_id = #{packageId,jdbcType=INTEGER}
     </update>
     <update id="updateByPrimaryKey" parameterType="com.weird.model.PackageInfoModel">
         update package_info
-        set package_name = #{packageName,jdbcType=VARCHAR}
+        set package_name = #{packageName,jdbcType=VARCHAR},
+        detail = #{detail}
         where package_id = #{packageId,jdbcType=INTEGER}
     </update>
 
     <!-- 自定义 -->
     <insert id="insert" parameterType="com.weird.model.PackageInfoModel"
             useGeneratedKeys="true" keyProperty="packageId">
-        insert into package_info (package_name)
-        values (#{packageName})
+        insert into package_info (package_name, detail)
+        values (#{packageName}, #{detail})
     </insert>
 
     <select id="selectByNameDistinct" resultMap="BaseResultMap">

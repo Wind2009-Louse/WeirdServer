@@ -103,6 +103,32 @@ public class PackageServiceImpl implements PackageService {
     }
 
     /**
+     * 更新卡包描述
+     *
+     * @param packageName 卡包名称
+     * @param detail      卡包描述
+     * @param operator    操作者
+     * @return 是否更新成功
+     */
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updatePackageDetail(String packageName, String detail, String operator) throws Exception {
+        PackageInfoModel oldPackage = packageInfoMapper.selectByNameDistinct(packageName);
+        if (oldPackage == null) {
+            throw new OperationException("找不到该卡包：[%s]！", packageName);
+        }
+        if (oldPackage.getDetail().equals(detail)) {
+            throw new OperationException("描述未修改！");
+        }
+
+        oldPackage.setDetail(detail);
+        recordFacade.setRecord(operator, "卡包[%s]修改描述为：%s", packageName, detail);
+        clearCardOwnListCache();
+        clearRollListWithDetailCache();
+        return packageInfoMapper.updateByPrimaryKey(oldPackage) > 0;
+    }
+
+    /**
      * 在卡包中添加卡片
      *
      * @param packageName 卡包名

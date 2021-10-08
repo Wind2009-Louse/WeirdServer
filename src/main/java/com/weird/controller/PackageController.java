@@ -101,6 +101,35 @@ public class PackageController {
     }
 
     /**
+     * 【管理端】修改卡包描述
+     *
+     * @param packageName    卡包名
+     * @param detail         卡包描述
+     * @param name           操作用户名称
+     * @param password       操作用户密码
+     * @return 是否修改成功
+     */
+    @RequestMapping("/weird_project/package/updateDetail")
+    public String updatePackageDetail(@RequestParam(value = "package") String packageName,
+                                      @RequestParam(value = "detail") String detail,
+                                      @RequestParam(value = "name") String name,
+                                      @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        if (StringUtils.isEmpty(packageName)) {
+            throw new OperationException("卡包名为空！");
+        }
+
+        if (packageService.updatePackageDetail(packageName, detail, name)) {
+            return "修改成功！";
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+
+    /**
      * 【管理端】卡包排序
      *
      * @param param 排序参数
