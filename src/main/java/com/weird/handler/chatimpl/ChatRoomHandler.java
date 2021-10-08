@@ -44,17 +44,7 @@ public class ChatRoomHandler implements ChatHandler {
         } else if (CALL_STR.equals(message)) {
             StringBuilder sb = new StringBuilder();
             sb.append("最近90分钟内的房间记录：");
-            List<String> historyList = new ArrayList<>();
-            Iterator<ChatRoomBO> iterator = roomList.iterator();
-            while (iterator.hasNext()) {
-                ChatRoomBO chatRoomBO = iterator.next();
-                long chatTime = chatRoomBO.getChatTime();
-                if (System.currentTimeMillis() - chatTime > TIME_GAP) {
-                    iterator.remove();
-                    continue;
-                }
-                historyList.add(0, String.format("\n[%s]%s: %s", TIME_FORMAT.format(new Date(chatTime)), chatRoomBO.getUserName(), chatRoomBO.getDetail()));
-            }
+            List<String> historyList = getRoomList();
             if (CollectionUtils.isEmpty(historyList)) {
                 sb.append("\n无");
             } else {
@@ -65,5 +55,20 @@ public class ChatRoomHandler implements ChatHandler {
 
             broadcastFacade.sendMsgAsync(sb.toString());
         }
+    }
+
+    private synchronized List<String> getRoomList() {
+        List<String> historyList = new ArrayList<>();
+        Iterator<ChatRoomBO> iterator = roomList.iterator();
+        while (iterator.hasNext()) {
+            ChatRoomBO chatRoomBO = iterator.next();
+            long chatTime = chatRoomBO.getChatTime();
+            if (System.currentTimeMillis() - chatTime > TIME_GAP) {
+                iterator.remove();
+                continue;
+            }
+            historyList.add(0, String.format("\n[%s]%s: %s", TIME_FORMAT.format(new Date(chatTime)), chatRoomBO.getUserName(), chatRoomBO.getDetail()));
+        }
+        return historyList;
     }
 }

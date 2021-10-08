@@ -19,7 +19,7 @@ public enum CardTypeEnum {
     FUSION("融合", 0x40),
     FUSION_M("融合怪兽", 0x40),
     RITUAL("仪式",0x80),
-    RITUAL_M("仪式怪兽",0x80),
+    RITUAL_M("仪式怪兽",0x81),
     SPIRIT("灵魂", 0x200),
     SPIRIT_M("灵魂怪兽", 0x200),
     UNION("同盟", 0x400),
