@@ -41,9 +41,9 @@ public class ScheduleBroadcastHandler {
     BroadcastFacade broadcastFacade;
 
     static final String BROADCAST_DAILY_BEGIN = "【午间广播】午间广播开始啦！";
-    static final String BROADCAST_DAILY_ALL = "【午间广播】%s最近两周，大家一共抽了%s包卡，其中%d包出了闪，闪率为%.2f%%！";
+    static final String BROADCAST_DAILY_ALL = "【午间广播】最近两周，大家%s抽了%s包卡，其中%d包出了闪，闪率为%.2f%%！";
     static final String BROADCAST_DAILY_MOST_ROLL = "【午间广播】最勤奋的玩家是%s，这些天抽了%s包之多，其中有%d包出闪，闪率为%.2f%%！";
-    static final String BROADCAST_DAILY_BEST_ROLL = "【午间广播】最狗的玩家是%s，竟然在了%s包卡中，抽出了%d张闪，闪率高达%.2f%%！非人哉！";
+    static final String BROADCAST_DAILY_BEST_ROLL = "【午间广播】最狗的玩家是%s，竟然在%s包卡中，抽出了%d张闪，闪率高达%.2f%%！非人哉！";
     static final String BROADCAST_DAILY_WORST_ROLL = "【午间广播】最黑的玩家是%s，最近的%s包卡中只有%d张闪，闪率只有可怜的%.2f%%！不过不要灰心，再接再厉！";
     static final String BROADCAST_DAILY_NEAR_ROLL = "【午间广播】与平均闪率最接近的玩家是%s，%s包卡抽了%d张闪，闪率为%.2f%%，这很合理！";
 

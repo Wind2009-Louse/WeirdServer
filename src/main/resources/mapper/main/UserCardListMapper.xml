@@ -69,7 +69,8 @@
         select package_info.package_name,
         package_card.card_name,
         package_card.need_coin,
-        package_card.rare
+        package_card.rare,
+        3 count
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         <where>
             <if test="packageNameList != null and packageNameList.size() > 0">

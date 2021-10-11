@@ -136,27 +136,32 @@ public class RollServiceImpl implements RollService {
         // 非正常抽卡不算月见黑
         boolean isNormalRoll = cardModels.size() == 3;
         int lastNonawardCount = userModel.getNonawardCount();
+        String firstAwardHint = "";
         if (isNormalRoll) {
             if (!CollectionUtils.isEmpty(rareCardList)) {
                 int nonawardCount = userModel.getNonawardCount();
                 userModel.setNonawardCount(nonawardCount - nonawardCount % 100);
+                if (userModel.getDailyAward() <= 0) {
+                    userModel.setDailyAward(1);
+                    firstAwardHint = String.format("，这也是%s今天的第一张闪卡", userModel.getUserName());
+                }
             } else {
                 userModel.setNonawardCount(userModel.getNonawardCount() + 1);
             }
-        }
 
-        // 更新抽卡计数和转盘次数
-        int roulette = userModel.getRoulette();
-        int rollCount = userModel.getRollCount();
-        rollCount += 1;
-        if (rollCount >= 50) {
-            final int newRouletteCount = rollCount / 50;
-            roulette += newRouletteCount;
-            rollCount %= 50;
-            broadcastFacade.sendMsgAsync(String.format("【广播】%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
+            // 更新抽卡计数和转盘次数
+            int roulette = userModel.getRoulette();
+            int rollCount = userModel.getRollCount();
+            rollCount += 1;
+            if (rollCount >= 50) {
+                final int newRouletteCount = rollCount / 50;
+                roulette += newRouletteCount;
+                rollCount %= 50;
+                broadcastFacade.sendMsgAsync(String.format("【广播】%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
+            }
+            userModel.setRoulette(roulette);
+            userModel.setRollCount(rollCount);
         }
-        userModel.setRoulette(roulette);
-        userModel.setRollCount(rollCount);
 
         // 更新用户数据
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
@@ -171,6 +176,7 @@ public class RollServiceImpl implements RollService {
 
         // 广播
         int finalRareCardCount = rareCardCount;
+        String finalFirstAwardHint = firstAwardHint;
         CompletableFuture.runAsync(() -> {
             String info = "";
 
@@ -193,18 +199,20 @@ public class RollServiceImpl implements RollService {
             if (rareCardList.size() == 1) {
                 PackageCardModel card = rareCardList.get(0);
                 if (isNormalRoll) {
-                    info = String.format("【广播】可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s！",
+                    info = String.format("【广播】可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s%s！",
                             userModel.getUserName(),
                             lastNonawardCount,
                             finalRareCardCount,
                             card.getRare(),
-                            card.getCardName());
+                            card.getCardName(),
+                            finalFirstAwardHint);
                 } else {
-                    info = String.format("【广播】恭喜 %s 抽到了全服第%d张[%s]%s！",
+                    info = String.format("【广播】恭喜 %s 抽到了全服第%d张[%s]%s%s！",
                             userModel.getUserName(),
                             finalRareCardCount,
                             card.getRare(),
-                            card.getCardName());
+                            card.getCardName(),
+                            finalFirstAwardHint);
                 }
             }
 
