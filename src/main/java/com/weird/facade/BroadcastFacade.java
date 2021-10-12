@@ -59,7 +59,22 @@ public class BroadcastFacade {
         sendMsgAsync(msg, 0);
     }
 
-    public void sendMsg(String msg, int sleepMill) {
+    public void sendMsgAsync(JSONObject sendObject, int sleepMill) {
+        Runnable runnable = () -> sendMsg(sendObject, sleepMill);
+        CompletableFuture.runAsync(runnable);
+    }
+
+    public void sendMsgAsync(JSONObject sendObject) {
+        sendMsgAsync(sendObject, 0);
+    }
+
+    /**
+     * 发送到广播群组
+     *
+     * @param msg       发送信息
+     * @param sleepMill 延迟时间
+     */
+    private void sendMsg(String msg, int sleepMill) {
         if (!enable) {
             return;
         }
@@ -68,6 +83,7 @@ public class BroadcastFacade {
             return;
         }
 
+        // 延迟
         int retryTimes = this.retryTimes;
         try {
             if (sleepMill > 0) {
@@ -75,16 +91,71 @@ public class BroadcastFacade {
             }
         } catch (InterruptedException e) {
         }
-        while (retryTimes >= 0) {
-            JSONObject jsonObject;
-            if (retryTimes < this.retryTimes) {
-                jsonObject = sendMsg("(R)" + msg);
-            } else {
-                jsonObject = sendMsg(msg);
+
+        String[] groupList = groupID.split(",");
+        for (String id : groupList) {
+            if (StringUtils.isEmpty(id)) {
+                continue;
             }
-            if (!"ok".equals(jsonObject.get("status"))) {
-                log.warn("发送消息失败：{}。提示信息：{}", msg, jsonObject.toJSONString());
-                retryTimes --;
+            JSONObject sendObject = new JSONObject();
+            sendObject.put("group_id", id);
+            sendObject.put("message", msg);
+            while (retryTimes >= 0) {
+                if (retryTimes < this.retryTimes) {
+                    sendObject.put("message", "(R)" + msg);
+                }
+                JSONObject responseObject = sendMsg(sendObject);
+                if (!"ok".equals(responseObject.get("status"))) {
+                    log.warn("发送消息失败：{}。提示信息：{}", msg, responseObject.toJSONString());
+                    retryTimes--;
+                } else {
+                    break;
+                }
+                if (retryTimes >= 0) {
+                    try {
+                        if (sleepMill > 0) {
+                            Thread.sleep(retrySecond);
+                        }
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 发送指定信息
+     *
+     * @param sendObject 发送内容
+     * @param sleepMill  延迟时间
+     */
+    private void sendMsg(JSONObject sendObject, int sleepMill) {
+        if (!enable || sendObject == null) {
+            return;
+        }
+        if (StringUtils.isEmpty(APIUrl) || StringUtils.isEmpty(groupID)) {
+            log.error("未配置广播信息！");
+            return;
+        }
+        String msg = sendObject.getString("msg");
+
+        // 延迟
+        int retryTimes = this.retryTimes;
+        try {
+            if (sleepMill > 0) {
+                Thread.sleep(sleepMill);
+            }
+        } catch (InterruptedException e) {
+        }
+
+        while (retryTimes >= 0) {
+            if (retryTimes < this.retryTimes) {
+                sendObject.put("message", "(R)" + msg);
+            }
+            JSONObject responseObject = sendMsg(sendObject);
+            if (!"ok".equals(responseObject.get("status"))) {
+                log.warn("发送消息失败：{}。提示信息：{}", msg, responseObject.toJSONString());
+                retryTimes--;
             } else {
                 break;
             }
@@ -99,41 +170,36 @@ public class BroadcastFacade {
         }
     }
 
-    public JSONObject sendMsg(String msg) {
-        String[] groupList = groupID.split(",");
-        for (String id : groupList) {
-            if (StringUtils.isEmpty(id)) {
-                continue;
-            }
-            CloseableHttpClient httpClient = null;
-            try {
-                JSONObject jsonObject = new JSONObject();
-                jsonObject.put("group_id", id);
-                jsonObject.put("message", msg);
+    /**
+     * 实际发送消息的方法
+     *
+     * @param jsonObject 发送内容
+     * @return 返回结果
+     */
+    private JSONObject sendMsg(JSONObject jsonObject) {
+        CloseableHttpClient httpClient = null;
+        try {
+            HttpPost postRequest = new HttpPost(APIUrl);
+            postRequest.addHeader(HTTP.CONTENT_TYPE, HEADER_JSON);
+            StringEntity param = new StringEntity(jsonObject.toJSONString(), StandardCharsets.UTF_8);
+            param.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, HEADER_JSON));
+            postRequest.setEntity(param);
 
-                HttpPost postRequest = new HttpPost(APIUrl);
-                postRequest.addHeader(HTTP.CONTENT_TYPE, HEADER_JSON);
-                StringEntity param = new StringEntity(jsonObject.toJSONString(), StandardCharsets.UTF_8);
-                param.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, HEADER_JSON));
-                postRequest.setEntity(param);
-
-                httpClient = HttpClientBuilder.create().build();
-                CloseableHttpResponse result = httpClient.execute(postRequest);
-                String resultString = EntityUtils.toString(result.getEntity());
-                return JSON.parseObject(resultString);
-            } catch (Exception e) {
-                log.error("发送广播失败：{}", e.getMessage());
-            } finally {
-                if (httpClient != null) {
-                    try {
-                        httpClient.close();
-                    } catch (Exception e) {
-                        log.error(e.getMessage());
-                    }
+            httpClient = HttpClientBuilder.create().build();
+            CloseableHttpResponse result = httpClient.execute(postRequest);
+            String resultString = EntityUtils.toString(result.getEntity());
+            return JSON.parseObject(resultString);
+        } catch (Exception e) {
+            log.error("发送信息失败：{}", e.getMessage());
+        } finally {
+            if (httpClient != null) {
+                try {
+                    httpClient.close();
+                } catch (Exception e) {
+                    log.error(e.getMessage());
                 }
             }
         }
         return null;
     }
-
 }

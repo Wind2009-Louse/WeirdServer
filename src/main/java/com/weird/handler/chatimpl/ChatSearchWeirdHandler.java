@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static com.weird.utils.BroadcastUtil.buildResponse;
+
 /**
  * 诡异查卡
  *
@@ -45,7 +47,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
             List<String> cardNameList = cardPreviewService.blurSearch(cardArgs);
             if (CollectionUtils.isEmpty(cardNameList)) {
-                broadcastFacade.sendMsgAsync(String.format("以下条件查不到卡：%s", cardArgs));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", cardArgs), o));
                 return;
             }
             SearchCardParam param = new SearchCardParam();
@@ -56,17 +58,17 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
             List<CardListDTO> dbCardList = cardService.selectListUser(param, cardNameList);
             if (CollectionUtils.isEmpty(dbCardList)) {
-                broadcastFacade.sendMsgAsync(String.format("以下条件查不到卡：%s", cardArgs));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", cardArgs), o));
                 return;
             }
             int listSize = dbCardList.size();
             if (listSize == 1) {
-                printCardDetail(dbCardList.get(0));
+                printCardDetail(dbCardList.get(0), o);
                 return;
             }
             CardListDTO firstTarget = dbCardList.stream().filter(c -> c.getCardName().equals(cardArgs)).findFirst().orElse(null);
             if (firstTarget != null) {
-                printCardDetail(firstTarget);
+                printCardDetail(firstTarget, o);
                 return;
             }
 
@@ -75,15 +77,15 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             for (int i = 0; i < 10 && i < listSize; ++i) {
                 sb.append(String.format("\n%d: [%s]%s", i + 1, dbCardList.get(i).getRare(), dbCardList.get(i).getCardName()));
             }
-            broadcastFacade.sendMsgAsync(sb.toString());
+            broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
         }
     }
 
-    private void printCardDetail(CardListDTO card) {
+    private void printCardDetail(CardListDTO card, JSONObject request) {
         String cardName = card.getCardName();
         CardPreviewModel cardData = cardPreviewService.selectPreviewByName(cardName);
         if (cardData == null) {
-            broadcastFacade.sendMsgAsync(String.format("查询到卡片[%s]，但在获取效果时出错。", cardName));
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("查询到卡片[%s]，但在获取效果时出错。", cardName), request));
             return;
         }
 
@@ -95,6 +97,6 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
         }
 
-        broadcastFacade.sendMsgAsync(cardDesc);
+        broadcastFacade.sendMsgAsync(buildResponse(cardDesc, request));
     }
 }

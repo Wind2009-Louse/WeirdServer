@@ -1,7 +1,9 @@
 package com.weird.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.comparator.Comparators;
 
 import java.util.Collection;
@@ -14,6 +16,7 @@ import java.util.Map;
  * @author Nidhogg
  * @date 2021.9.30
  */
+@Slf4j
 public class BroadcastUtil {
     /**
      * 根据查询到的抽卡信息，统计抽卡数据
@@ -63,5 +66,25 @@ public class BroadcastUtil {
         });
 
         return sb.toString();
+    }
+
+    static public JSONObject buildResponse(String msg, JSONObject request) {
+        JSONObject response = new JSONObject();
+        response.put("message", msg);
+
+        String messageType = request.getString("message_type");
+        switch (messageType) {
+            case "group":
+                response.put("group_id", request.get("group_id"));
+                break;
+            case "private":
+                response.put("user_id", request.get("user_id"));
+                break;
+            default:
+                log.warn("无法对{}回复[{}]。", request.toJSONString(), msg);
+                return null;
+        }
+
+        return response;
     }
 }

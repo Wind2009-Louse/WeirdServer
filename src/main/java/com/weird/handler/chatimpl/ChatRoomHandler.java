@@ -11,6 +11,8 @@ import org.springframework.util.CollectionUtils;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import static com.weird.utils.BroadcastUtil.buildResponse;
+
 /**
  * 房间记录
  *
@@ -22,7 +24,7 @@ public class ChatRoomHandler implements ChatHandler {
     @Autowired
     BroadcastFacade broadcastFacade;
 
-    static List<ChatRoomBO> roomList = new LinkedList<>();
+    static Map<String, List<ChatRoomBO>> roomMap = new HashMap<>();
 
     final static String CALL_STR = ">查房";
 
@@ -35,6 +37,14 @@ public class ChatRoomHandler implements ChatHandler {
     @Override
     public void handle(JSONObject o) {
         String message = o.getString("raw_message");
+        if (!"group".equals(o.getString("message_type"))) {
+            return;
+        }
+        String groupId = o.getString("group_id");
+        if (!roomMap.containsKey(groupId)) {
+            roomMap.put(groupId, new LinkedList<>());
+        }
+        List<ChatRoomBO> roomList = roomMap.getOrDefault(groupId, Collections.emptyList());
         if (message.contains(RECORD_STR)) {
             ChatRoomBO chatRoomBO = new ChatRoomBO();
             chatRoomBO.setChatTime(System.currentTimeMillis());
@@ -44,7 +54,7 @@ public class ChatRoomHandler implements ChatHandler {
         } else if (CALL_STR.equals(message)) {
             StringBuilder sb = new StringBuilder();
             sb.append("最近90分钟内的房间记录：");
-            List<String> historyList = getRoomList();
+            List<String> historyList = getRoomList(roomList);
             if (CollectionUtils.isEmpty(historyList)) {
                 sb.append("\n无");
             } else {
@@ -53,11 +63,11 @@ public class ChatRoomHandler implements ChatHandler {
                 }
             }
 
-            broadcastFacade.sendMsgAsync(sb.toString());
+            broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
         }
     }
 
-    private synchronized List<String> getRoomList() {
+    private synchronized List<String> getRoomList(List<ChatRoomBO> roomList) {
         List<String> historyList = new ArrayList<>();
         Iterator<ChatRoomBO> iterator = roomList.iterator();
         while (iterator.hasNext()) {

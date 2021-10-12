@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 
 import java.util.List;
 
+import static com.weird.utils.BroadcastUtil.buildResponse;
+
 /**
  * 查卡
  *
@@ -40,29 +42,29 @@ public class ChatSearchCardHandler implements ChatHandler {
             List<String> cardNameList = cardPreviewService.blurSearch(cardArgs);
             final int listSize = cardNameList.size();
             if (CollectionUtils.isEmpty(cardNameList)) {
-                broadcastFacade.sendMsgAsync(String.format("以下条件查不到卡：%s", cardArgs));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", cardArgs), o));
             } else if (cardNameList.contains(cardArgs)) {
-                searchByName(cardArgs);
+                searchByName(cardArgs, o);
             } else if (listSize > 1) {
                 StringBuilder sb = new StringBuilder();
                 sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(只显示前10条)，再次搜索：", listSize));
                 for (int i = 0; i < 10 && i < listSize; ++i) {
                     sb.append(String.format("\n%d: %s", i + 1, cardNameList.get(i)));
                 }
-                broadcastFacade.sendMsgAsync(sb.toString());
+                broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
             } else {
                 String cardName = cardNameList.get(0);
-                searchByName(cardName);
+                searchByName(cardName, o);
             }
         }
     }
 
-    private void searchByName(String cardName) {
+    private void searchByName(String cardName, JSONObject request) {
         CardPreviewModel cardData = cardPreviewService.selectPreviewByName(cardName);
         if (cardData == null) {
-            broadcastFacade.sendMsgAsync(String.format("查询到卡片[%s]，但在获取效果时出错。", cardName));
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("查询到卡片[%s]，但在获取效果时出错。", cardName), request));
         } else {
-            broadcastFacade.sendMsgAsync(CardPreviewUtil.getPreview(cardData));
+            broadcastFacade.sendMsgAsync(buildResponse(CardPreviewUtil.getPreview(cardData), request));
         }
     }
 }

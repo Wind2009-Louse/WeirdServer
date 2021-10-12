@@ -18,8 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.weird.utils.BroadcastUtil.buildRollTable;
-import static com.weird.utils.BroadcastUtil.calculateRollResult;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 诡异查闪率
@@ -49,7 +48,7 @@ public class ChatRareCheckHandler implements ChatHandler {
             }
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastSearchTime <= 1000 * 60 * 30) {
-                broadcastFacade.sendMsgAsync("为避免数据库负担，闪率统计只能半小时执行一次。");
+                broadcastFacade.sendMsgAsync(buildResponse("为避免数据库负担，闪率统计只能半小时执行一次。", o));
                 return;
             }
             try {
@@ -82,7 +81,7 @@ public class ChatRareCheckHandler implements ChatHandler {
                 calculateRollResult(totalBO, userBoMap, deckBoMap, dataList);
                 List<RollBroadcastBO> userDataList = new ArrayList<>(userBoMap.values());
                 userDataList.add(totalBO);
-                broadcastFacade.sendMsgAsync(String.format("%s天内闪率统计\n", day) + buildRollTable(userDataList, "玩家"));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("%s天内闪率统计\n", day) + buildRollTable(userDataList, "玩家"), o));
 
                 lastSearchTime = currentTime;
             } catch (Exception e) {
