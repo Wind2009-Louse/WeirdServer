@@ -823,4 +823,25 @@ public class UserServiceImpl implements UserService {
         recordFacade.setRecord(param.getName(), result);
         return result;
     }
+
+    @Override
+    public UserDataDTO getUserByQQ(String qq) {
+        return BeanConverter.convert(userDataMapper.selectByQQInAllDistinct(qq), UserDataDTO.class);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean updateQQ(String name, String qq) throws OperationException {
+        UserDataModel model = userDataMapper.selectByNameInAllDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到该用户名！");
+        }
+        model.setQq(qq);
+
+        userDataMapper.clearQQ(qq);
+
+        String hint = String.format("[%s]的绑定QQ修改为%s", name, qq);
+        recordFacade.setRecord("system", hint);
+        return userDataMapper.updateByPrimaryKey(model) > 0;
+    }
 }

@@ -47,6 +47,10 @@ public interface UserDataMapper {
 
     UserDataModel selectByNameInAllDistinct(@Param("name") String name);
 
+    UserDataModel selectByQQInAllDistinct(@Param("qq") String qq);
+
+    int clearQQ(@Param("qq") String qq);
+
     /**
      * 更新日常统计
      *

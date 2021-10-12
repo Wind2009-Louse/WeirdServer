@@ -28,6 +28,11 @@ public class UserDataModel implements Serializable {
     private String password;
 
     /**
+     * 关联QQ号
+     */
+    private String qq;
+
+    /**
      * 是否管理员
      */
     private Byte isAdmin;

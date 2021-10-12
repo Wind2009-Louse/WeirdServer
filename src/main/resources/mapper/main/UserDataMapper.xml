@@ -9,6 +9,7 @@
         <id column="user_id" jdbcType="INTEGER" property="userId"/>
         <result column="user_name" jdbcType="VARCHAR" property="userName"/>
         <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="qq" jdbcType="VARCHAR" property="qq"/>
         <result column="is_admin" jdbcType="TINYINT" property="isAdmin"/>
         <result column="nonaward_count" jdbcType="INTEGER" property="nonawardCount"/>
         <result column="dust_count" jdbcType="INTEGER" property="dustCount"/>
@@ -26,7 +27,7 @@
     <sql id="Base_Column_List">
         user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point, daily_win,
         daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter, coin,
-        roulette, roll_count
+        roulette, roll_count, qq
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
         select
@@ -89,6 +90,9 @@
             <if test="rollCount != null">
                 roll_count,
             </if>
+            <if test="qq != null">
+                qq,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -138,6 +142,9 @@
             </if>
             <if test="rollCount != null">
                 #{roll_count,jdbcType=INTEGER},
+            </if>
+            <if test="qq != null">
+                #{qq,jdbcType=VARCHAR},
             </if>
         </trim>
     </insert>
@@ -189,6 +196,9 @@
             <if test="rollCount != null">
                 roll_count = #{rollCount,jdbcType=INTEGER},
             </if>
+            <if test="qq != null">
+                qq = #{qq,jdbcType=VARCHAR},
+            </if>
         </set>
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
@@ -208,7 +218,8 @@
         weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
         coin = #{coin,jdbcType=INTEGER},
         roulette = #{roulette,jdbcType=INTEGER},
-        roll_count = #{rollCount,jdbcType=INTEGER}
+        roll_count = #{rollCount,jdbcType=INTEGER},
+        qq = #{qq,jdbcType=VARCHAR}
         where user_id = #{userId,jdbcType=INTEGER}
     </update>
 
@@ -242,6 +253,19 @@
         where user_name = #{name}
     </select>
 
+    <select id="selectByQQInAllDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where qq = #{qq}
+    </select>
+
+    <update id="clearQQ">
+        update user_data
+        set qq = ""
+        where qq = #{qq}
+    </update>
+
     <insert id="insert" parameterType="com.weird.model.UserDataModel"
             useGeneratedKeys="true" keyProperty="userId">
         insert into user_data (user_name, password,
@@ -249,13 +273,13 @@
         duel_point, daily_win, daily_lost,
         daily_award, weekly_dust_change_n, weekly_dust_change_r,
         weekly_dust_change_alter, coin,
-        roulette, roll_count)
+        roulette, roll_count, qq)
         values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER},
         #{duelPoint,jdbcType=INTEGER}, #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER},
         #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
         #{weeklyDustChangeAlter,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER},
-        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER})
+        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateDaily">

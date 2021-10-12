@@ -4,6 +4,7 @@ import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.ReplaceCardParam;
+import com.weird.utils.OperationException;
 
 import java.util.List;
 
@@ -190,4 +191,20 @@ public interface UserService {
      * @throws Exception
      */
     String exchangeOwnCard(ReplaceCardParam param) throws Exception;
+
+    /**
+     * 根据QQ号查找用户
+     *
+     * @param qq QQ号
+     * @return 用户
+     */
+    UserDataDTO getUserByQQ(String qq);
+
+    /**
+     * 根据用户名查找用户
+     *
+     * @param name 用户名
+     * @return 用户
+     */
+    boolean updateQQ(String name, String qq) throws OperationException;
 }
