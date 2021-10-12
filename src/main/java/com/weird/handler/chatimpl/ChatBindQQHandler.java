@@ -81,7 +81,7 @@ public class ChatBindQQHandler implements ChatHandler {
             }
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {
-                response += "你暂未绑定帐号！";
+                response += "你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 [用户名] [密码]";
             } else {
                 response += String.format("\n绑定用户：%s\n尘：%d\n月见黑：%d\n转盘次数：%d\n抽卡计数：%d/50",
                         userData.getUserName(),

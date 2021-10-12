@@ -5,15 +5,19 @@ import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
+import com.weird.model.dto.UserDataDTO;
 import com.weird.model.param.SearchCardParam;
 import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
+import com.weird.service.UserService;
 import com.weird.utils.CardPreviewUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.weird.utils.BroadcastUtil.buildResponse;
@@ -34,6 +38,9 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
     @Autowired
     CardService cardService;
+
+    @Autowired
+    UserService userService;
 
     final static String SPLIT_STR = ">查诡异 ";
 
@@ -82,6 +89,9 @@ public class ChatSearchWeirdHandler implements ChatHandler {
     }
 
     private void printCardDetail(CardListDTO card, JSONObject request) {
+        String userQQ = request.getString("user_id");
+        UserDataDTO userData = userService.getUserByQQ(userQQ);
+
         String cardName = card.getCardName();
         CardPreviewModel cardData = cardPreviewService.selectPreviewByName(cardName);
         if (cardData == null) {
@@ -90,11 +100,25 @@ public class ChatSearchWeirdHandler implements ChatHandler {
         }
 
         String cardDesc = CardPreviewUtil.getPreview(cardData);
-        int ownCount = cardService.getCardOwnCountByCardName(card.getCardName());
+
+        int ownCount = 0;
+        int selfOwnCount = 0;
+        SearchCardParam param = new SearchCardParam();
+        param.setCardName(cardName);
+        List<CardOwnListDTO> cardOwnList = cardService.selectList(param, Collections.singletonList(cardName));
+        for (CardOwnListDTO ownData : cardOwnList) {
+            ownCount += ownData.getCount();
+            if (userData != null && ownData.getUserName().equals(userData.getUserName())) {
+                selfOwnCount += ownData.getCount();
+            }
+        }
 
         cardDesc += String.format("\n所属：[%s]%s\n持有数量：%d", card.getRare(), card.getPackageName(), ownCount);
         if (card.getNeedCoin() > 0) {
             cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
+        }
+        if (ownCount > 0 && userData != null) {
+            cardDesc += String.format("\n你持有：%d", selfOwnCount);
         }
 
         broadcastFacade.sendMsgAsync(buildResponse(cardDesc, request));
