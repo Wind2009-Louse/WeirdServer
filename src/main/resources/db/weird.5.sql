@@ -23,7 +23,8 @@ DROP TABLE IF EXISTS `card_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `card_history` (
-  `package_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `package_id` int(11) NOT NULL COMMENT '卡包ID',
   `card_pk` int(11) NOT NULL COMMENT '卡片PK',
   `old_name` varchar(45) NOT NULL DEFAULT '' COMMENT '原卡名',
   `new_name` varchar(45) NOT NULL DEFAULT '' COMMENT '现卡名',

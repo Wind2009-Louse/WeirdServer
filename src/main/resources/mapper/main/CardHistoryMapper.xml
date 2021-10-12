@@ -54,7 +54,7 @@
             </if>
 
         </where>
-        order by db_created_time desc
+        order by id desc
     </select>
 
     <resultMap id="ResultMap" type="com.weird.model.dto.CardHistoryDTO">
@@ -78,6 +78,6 @@
             <foreach collection="cards" item="cardPk" open="(" close=")" separator=",">
                 #{cardPk}
             </foreach>
-        order by his.db_created_time desc
+        order by his.id desc
     </select>
 </mapper>

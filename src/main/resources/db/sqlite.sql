@@ -1,6 +1,7 @@
 PRAGMA foreign_keys=OFF;
 BEGIN TRANSACTION;
 CREATE TABLE card_history (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
   package_id int(11) NOT NULL,
   card_pk int(11) NOT NULL,
   old_name varchar(45) NOT NULL DEFAULT '' ,
