@@ -48,7 +48,7 @@ public class ChatRareCheckHandler implements ChatHandler {
             }
             long currentTime = System.currentTimeMillis();
             if (currentTime - lastSearchTime <= 1000 * 60 * 30) {
-                broadcastFacade.sendMsgAsync(buildResponse("为避免数据库负担，闪率统计只能半小时执行一次。", o));
+                broadcastFacade.sendMsgAsync(buildResponse("为减轻数据库负担，闪率统计只能半小时执行一次。", o));
                 return;
             }
             try {

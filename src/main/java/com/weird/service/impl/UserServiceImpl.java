@@ -844,4 +844,9 @@ public class UserServiceImpl implements UserService {
         recordFacade.setRecord("system", hint);
         return userDataMapper.updateByPrimaryKey(model) > 0;
     }
+
+    @Override
+    public boolean unbindQQ(String qq) {
+        return userDataMapper.clearQQ(qq) > 0;
+    }
 }

@@ -207,4 +207,12 @@ public interface UserService {
      * @return 用户
      */
     boolean updateQQ(String name, String qq) throws OperationException;
+
+    /**
+     * 解除对应QQ号的绑定关系
+     *
+     * @param qq QQ号
+     * @return 是否解除失败
+     */
+    boolean unbindQQ(String qq);
 }
