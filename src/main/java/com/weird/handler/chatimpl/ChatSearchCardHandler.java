@@ -12,6 +12,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.regex.Matcher;
 
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
@@ -36,6 +37,18 @@ public class ChatSearchCardHandler implements ChatHandler {
         String message = o.getString("raw_message");
         if (message.startsWith(SPLIT_STR)) {
             String cardArgs = message.substring(SPLIT_STR.length()).trim();
+            int pageCount = 1;
+            Matcher matcher = PAGE_PATTERN.matcher(cardArgs);
+            if (matcher.matches()) {
+                try {
+                    pageCount = Integer.parseInt(matcher.group(2));
+                    cardArgs = matcher.group(1);
+                } catch (NumberFormatException ne) {
+
+                }
+            }
+            pageCount = Math.max(1, pageCount);
+
             if (StringUtils.isEmpty(cardArgs)) {
                 return;
             }
@@ -47,9 +60,11 @@ public class ChatSearchCardHandler implements ChatHandler {
                 searchByName(cardArgs, o);
             } else if (listSize > 1) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(只显示前10条)，再次搜索：", listSize));
-                for (int i = 0; i < 10 && i < listSize; ++i) {
-                    sb.append(String.format("\n%d: %s", i + 1, cardNameList.get(i)));
+                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示10条)，再次搜索：", listSize));
+                int totalPage = listSize / 10 + 1;
+                pageCount = (Math.min(totalPage, pageCount) - 1) * 10;
+                for (int i = 0; i < 10 && i + pageCount < listSize; ++i) {
+                    sb.append(String.format("\n%d: %s", i + pageCount + 1, cardNameList.get(i + pageCount)));
                 }
                 broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
             } else {

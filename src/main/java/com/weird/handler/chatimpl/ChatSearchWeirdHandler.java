@@ -19,6 +19,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
 
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
@@ -49,23 +50,37 @@ public class ChatSearchWeirdHandler implements ChatHandler {
         String message = o.getString("raw_message");
         if (message.startsWith(SPLIT_STR)) {
             String cardArgs = message.substring(SPLIT_STR.length()).trim();
-            if (StringUtils.isEmpty(cardArgs)) {
+
+            int pageCount = 1;
+            Matcher matcher = PAGE_PATTERN.matcher(cardArgs);
+            if (matcher.matches()) {
+                try {
+                    pageCount = Integer.parseInt(matcher.group(2));
+                    cardArgs = matcher.group(1);
+                } catch (NumberFormatException ne) {
+
+                }
+            }
+            pageCount = Math.max(1, pageCount);
+
+            String finalCardArgs = cardArgs;
+            if (StringUtils.isEmpty(finalCardArgs)) {
                 return;
             }
-            List<String> cardNameList = cardPreviewService.blurSearch(cardArgs);
+            List<String> cardNameList = cardPreviewService.blurSearch(finalCardArgs);
             if (CollectionUtils.isEmpty(cardNameList)) {
-                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", cardArgs), o));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", finalCardArgs), o));
                 return;
             }
             SearchCardParam param = new SearchCardParam();
-            param.setCardName(cardArgs);
+            param.setCardName(finalCardArgs);
             param.setName("");
             param.setPage(1);
             param.setPageSize(10);
 
             List<CardListDTO> dbCardList = cardService.selectListUser(param, cardNameList);
             if (CollectionUtils.isEmpty(dbCardList)) {
-                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", cardArgs), o));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", finalCardArgs), o));
                 return;
             }
             int listSize = dbCardList.size();
@@ -73,16 +88,19 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 printCardDetail(dbCardList.get(0), o);
                 return;
             }
-            CardListDTO firstTarget = dbCardList.stream().filter(c -> c.getCardName().equals(cardArgs)).findFirst().orElse(null);
+            CardListDTO firstTarget = dbCardList.stream().filter(c -> c.getCardName().equals(finalCardArgs)).findFirst().orElse(null);
             if (firstTarget != null) {
                 printCardDetail(firstTarget, o);
                 return;
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(只显示前10条)，再次搜索：", listSize));
-            for (int i = 0; i < 10 && i < listSize; ++i) {
-                sb.append(String.format("\n%d: [%s]%s", i + 1, dbCardList.get(i).getRare(), dbCardList.get(i).getCardName()));
+            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示10条)，再次搜索：", listSize));
+            int totalPage = listSize / 10 + 1;
+            pageCount = (Math.min(totalPage, pageCount) - 1) * 10;
+            for (int i = 0; i < 10 && i + pageCount < listSize; ++i) {
+                final CardListDTO data = dbCardList.get(i + pageCount);
+                sb.append(String.format("\n%d: [%s]%s", i + pageCount + 1, data.getRare(), data.getCardName()));
             }
             broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
         }
