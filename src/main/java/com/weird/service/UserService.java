@@ -215,4 +215,12 @@ public interface UserService {
      * @return 是否解除失败
      */
     boolean unbindQQ(String qq);
+
+    /**
+     * 检查该用户是否为管理员
+     *
+     * @param userName 用户名
+     * @return 是否为管理员
+     */
+    boolean adminCheck(String userName);
 }

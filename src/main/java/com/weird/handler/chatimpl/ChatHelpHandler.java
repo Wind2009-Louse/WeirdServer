@@ -68,8 +68,12 @@ public class ChatHelpHandler implements ChatHandler {
                 case "功能名":
                     printInfo = "请输入具体的功能名称，“功能名”自身并不是一个功能。";
                     break;
+
+                case "抽卡":
+                    printInfo = "抽卡功能：\n>抽卡 卡包 数量\n玩家发起抽卡请求（每个玩家只能同时发起一次）。\n>抽卡/>抽卡 列表\n查看当前已经发起的抽卡请求。\n>抽卡 取消 编号\n发起者或者管理员取消抽卡请求。\n>抽卡 编号\n管理员进行指定的抽卡操作。";
+                    break;
                 default:
-                    printInfo = "目前功能：\n帐号相关：认证/绑定、信息、解绑、转盘\n查询：查卡、查诡异、查房、查闪率\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名";
+                    printInfo = "目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名";
                     break;
             }
             broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));

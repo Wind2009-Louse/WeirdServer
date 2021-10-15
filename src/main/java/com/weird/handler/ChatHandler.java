@@ -14,5 +14,5 @@ public interface ChatHandler {
      *
      * @param o 聊天内容
      */
-    void handle(JSONObject o);
+    void handle(JSONObject o) throws Exception;
 }

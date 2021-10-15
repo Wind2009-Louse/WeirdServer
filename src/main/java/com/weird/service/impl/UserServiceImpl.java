@@ -167,6 +167,7 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("用户名或密码错误！");
         }
         model.setPassword(newPassword);
+        model.setQq("");
         String hint = String.format("[%s]的密码发生修改", name);
         recordFacade.setRecord(name, hint);
         return userDataMapper.updateByPrimaryKey(model) > 0;
@@ -189,6 +190,7 @@ public class UserServiceImpl implements UserService {
             return true;
         }
         model.setPassword(DEFAULT_PASSWORD_MD5);
+        model.setQq("");
         String hint = String.format("[%s]的密码发生修改", name);
         recordFacade.setRecord(operator, hint);
         return userDataMapper.updateByPrimaryKey(model) > 0;
@@ -848,5 +850,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean unbindQQ(String qq) {
         return userDataMapper.clearQQ(qq) > 0;
+    }
+
+    @Override
+    public boolean adminCheck(String userName) {
+        UserDataModel model = userDataMapper.selectByNameInAllDistinct(userName);
+        return (model != null && model.getIsAdmin() > 0);
     }
 }

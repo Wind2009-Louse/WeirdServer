@@ -6,6 +6,7 @@ import com.weird.handler.ChatHandler;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.UserService;
+import com.weird.utils.StringExtendUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -50,12 +51,13 @@ public class ChatBindQQHandler implements ChatHandler {
                     return;
                 }
 
-                String[] argList = args.split(" ");
-                if (argList.length != 2) {
+                List<String> argList = StringExtendUtil.split(args, " ");
+                if (argList.size() != 2) {
                     broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>认证 用户名 密码", o));
+                    return;
                 }
-                String userName = argList[0];
-                String rawPassword = argList[1];
+                String userName = argList.get(0);
+                String rawPassword = argList.get(1);
                 String password = DigestUtils.md5DigestAsHex(rawPassword.getBytes());
 
                 if (userService.checkLogin(userName, password) == LoginTypeEnum.UNLOGIN) {
@@ -65,10 +67,7 @@ public class ChatBindQQHandler implements ChatHandler {
                         boolean updateResult = userService.updateQQ(userName, userQQ);
                         if (updateResult) {
                             String result = String.format("你已成功绑定帐号[%s]！", userName);
-                            if (inGroup) {
-                                result = String.format("[CQ:at,qq=%s] ", userQQ) + result;
-                            }
-                            broadcastFacade.sendMsgAsync(buildResponse(result, o));
+                            broadcastFacade.sendMsgAsync(buildResponse(result, o, true));
                         }
                     } catch (Exception e) {
                         log.error(e.getMessage());
@@ -82,9 +81,6 @@ public class ChatBindQQHandler implements ChatHandler {
 
         String response = "";
         if (SPLIT_STR_INFO.equals(message)) {
-            if (inGroup) {
-                response = String.format("[CQ:at,qq=%s] ", userQQ);
-            }
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {
                 response += "你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 用户名 密码";
@@ -102,9 +98,6 @@ public class ChatBindQQHandler implements ChatHandler {
                 response += "你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 用户名 密码";
             } else {
                 if (userService.unbindQQ(userQQ)) {
-                    if (inGroup) {
-                        response = String.format("[CQ:at,qq=%s] ", userQQ);
-                    }
                     response += String.format("已解除和[%s]的绑定关系！", userData.getUserName());
                 } else {
                     response = "解除绑定失败！";
@@ -112,7 +105,7 @@ public class ChatBindQQHandler implements ChatHandler {
             }
         }
         if (!StringUtils.isEmpty(response)) {
-            broadcastFacade.sendMsgAsync(buildResponse(response, o));
+            broadcastFacade.sendMsgAsync(buildResponse(response, o, true));
         }
     }
 }

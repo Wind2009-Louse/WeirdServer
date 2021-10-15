@@ -69,6 +69,16 @@ public class BroadcastUtil {
     }
 
     static public JSONObject buildResponse(String msg, JSONObject request) {
+        return buildResponse(msg, request, false);
+    }
+
+    static public JSONObject buildResponse(String msg, JSONObject request, boolean at) {
+        if (at) {
+            boolean inGroup = "group".equals(request.getString("message_type"));
+            if (inGroup) {
+                msg = String.format("[CQ:at,qq=%s] ", request.getString("user_id")) + msg;
+            }
+        }
         JSONObject response = new JSONObject();
         response.put("message", msg);
 
