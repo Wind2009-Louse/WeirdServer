@@ -1,5 +1,6 @@
 package com.weird.model.bo;
 
+import com.alibaba.fastjson.JSONObject;
 import com.weird.model.PackageInfoModel;
 import lombok.Data;
 
@@ -29,6 +30,11 @@ public class RollRequestBO implements Serializable {
     PackageInfoModel packageInfo;
 
     /**
+     * 发起的请求
+     */
+    JSONObject request;
+
+    /**
      * 抽卡数量
      */
     int rollCount;
@@ -40,10 +46,11 @@ public class RollRequestBO implements Serializable {
         rollCount = -1;
     }
 
-    public RollRequestBO(String userName, PackageInfoModel packageInfo, int rollCount) {
+    public RollRequestBO(String userName, PackageInfoModel packageInfo, int rollCount, JSONObject request) {
         this.requestTime = System.currentTimeMillis();
         this.userName = userName;
         this.packageInfo = packageInfo;
         this.rollCount = rollCount;
+        this.request = request;
     }
 }

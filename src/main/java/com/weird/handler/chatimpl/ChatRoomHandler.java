@@ -46,9 +46,20 @@ public class ChatRoomHandler implements ChatHandler {
         }
         List<ChatRoomBO> roomList = roomMap.getOrDefault(groupId, Collections.emptyList());
         if (message.contains(RECORD_STR)) {
+            String userId = o.getString("user_id");
+            String userName = o.getJSONObject("sender").getString("card");
+            for (ChatRoomBO data : roomList) {
+                if (data.getUserId().equals(userId)) {
+                    data.setChatTime(System.currentTimeMillis());
+                    data.setUserName(userName);
+                    data.setDetail(message);
+                    return;
+                }
+            }
             ChatRoomBO chatRoomBO = new ChatRoomBO();
             chatRoomBO.setChatTime(System.currentTimeMillis());
-            chatRoomBO.setUserName(o.getJSONObject("sender").getString("card"));
+            chatRoomBO.setUserName(userName);
+            chatRoomBO.setUserId(userId);
             chatRoomBO.setDetail(message);
             roomList.add(chatRoomBO);
         } else if (CALL_STR.equals(message)) {
@@ -69,6 +80,7 @@ public class ChatRoomHandler implements ChatHandler {
 
     private synchronized List<String> getRoomList(List<ChatRoomBO> roomList) {
         List<String> historyList = new ArrayList<>();
+        roomList.sort(Comparator.comparing(o -> -o.getChatTime()));
         Iterator<ChatRoomBO> iterator = roomList.iterator();
         while (iterator.hasNext()) {
             ChatRoomBO chatRoomBO = iterator.next();

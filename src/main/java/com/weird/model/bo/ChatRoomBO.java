@@ -23,6 +23,11 @@ public class ChatRoomBO implements Serializable {
     String userName;
 
     /**
+     * 消息发送者ID
+     */
+    String userId;
+
+    /**
      * 消息内容
      */
     String detail;

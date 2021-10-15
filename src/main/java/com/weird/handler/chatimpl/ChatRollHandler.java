@@ -129,7 +129,7 @@ public class ChatRollHandler implements ChatHandler {
         }
         final PackageInfoModel pack = packageList.get(0);
 
-        RollRequestBO requestBO = new RollRequestBO(userData.getUserName(), pack, rollCount);
+        RollRequestBO requestBO = new RollRequestBO(userData.getUserName(), pack, rollCount, o);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
         rollMap.put(hash, requestBO);
         broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽取%d包[%s]，管理员可用以下指令进行同意：\n>抽卡 %s",
@@ -199,13 +199,13 @@ public class ChatRollHandler implements ChatHandler {
                     exceptBuilder.append("\n").append(e.getMessage());
                 }
                 if (resultIndex % 10 == 1) {
-                    broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), o, true));
+                    broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
                     resultBuilder.setLength(0);
                 }
             }
 
             if (resultBuilder.length() > 0) {
-                broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), o, true));
+                broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
             }
             String exceptString = exceptBuilder.toString();
             if (!StringUtils.isEmpty(exceptString)) {
@@ -232,7 +232,7 @@ public class ChatRollHandler implements ChatHandler {
     private void printRollList(JSONObject o) {
         updateRollRequest();
         StringBuilder sb = new StringBuilder();
-        sb.append("最近90分钟内的抽卡请求：");
+        sb.append("最近90分钟内的未处理抽卡请求：");
         if (rollMap.size() == 0) {
             sb.append("\n无");
         } else {

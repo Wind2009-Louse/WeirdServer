@@ -271,6 +271,13 @@ public class DeckController {
         }
     }
 
+    /**
+     * 分享卡组
+     *
+     * @param param 参数
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/weird_project/deck/share")
     public String shareDeck(@RequestBody DeckShareParam param) throws Exception {
         LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
@@ -279,5 +286,33 @@ public class DeckController {
         }
 
         return deckService.shareDeck(param, loginTypeEnum == LoginTypeEnum.ADMIN);
+    }
+
+    @RequestMapping("/weird_project/deck/importCard")
+    public String importCard(@RequestBody DeckSubmitParam param) throws Exception {
+        LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
+        if (loginTypeEnum != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        // 如果有YDK，根据YDK组建卡组列表
+        DeckInfoDTO deck = param.getDeck();
+        deck.buildDeckList();
+
+        BatchUpdateUserCardParam updateParam = new BatchUpdateUserCardParam();
+        updateParam.setTarget(deck.getUserName());
+        Map<String, Integer> cardCountMap = new HashMap<>();
+        List<DeckCardDTO> allCardList = new LinkedList<>(deck.getMainList());
+        allCardList.addAll(deck.getExList());
+        allCardList.addAll(deck.getSideList());
+        for (DeckCardDTO deckCard : allCardList) {
+            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(deckCard.getCode());
+            if (preview != null) {
+                cardCountMap.put(preview.getName(), deckCard.getCount());
+            }
+        }
+        updateParam.setCounts(cardCountMap);
+
+        return cardService.updateCardCountBatch(updateParam);
     }
 }
