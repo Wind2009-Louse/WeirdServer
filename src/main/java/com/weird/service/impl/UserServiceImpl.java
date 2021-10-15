@@ -145,6 +145,7 @@ public class UserServiceImpl implements UserService {
         newModel.setDuelPoint(0);
         newModel.setNonawardCount(0);
         newModel.setRoulette(2);
+        newModel.setQq("");
         userDataMapper.insert(newModel);
         String hint = String.format("添加新用户：[%s]", name);
         recordFacade.setRecord(operator, hint);
