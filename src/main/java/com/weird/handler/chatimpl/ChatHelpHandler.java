@@ -3,6 +3,7 @@ package com.weird.handler.chatimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
+import com.weird.handler.RunnerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +19,9 @@ import static com.weird.utils.BroadcastUtil.buildResponse;
 public class ChatHelpHandler implements ChatHandler {
     @Autowired
     BroadcastFacade broadcastFacade;
+
+    @Autowired
+    RunnerHandler runnerHandler;
 
     final static String SPLIT_STR = ">帮助";
 
@@ -73,7 +77,8 @@ public class ChatHelpHandler implements ChatHandler {
                     printInfo = "抽卡功能：\n>抽卡 卡包 数量\n玩家发起抽卡请求（每个玩家只能同时发起一次）。\n>抽卡/>抽卡 列表\n查看当前已经发起的抽卡请求。\n>抽卡 取消 编号\n发起者或者管理员取消抽卡请求。\n>抽卡 编号\n管理员进行指定的抽卡操作。";
                     break;
                 default:
-                    printInfo = "目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名";
+                    String startTime = runnerHandler.getStartTime();
+                    printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
                     break;
             }
             broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));
