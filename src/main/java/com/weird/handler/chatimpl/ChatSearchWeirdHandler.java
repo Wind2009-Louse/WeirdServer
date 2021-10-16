@@ -122,8 +122,12 @@ public class ChatSearchWeirdHandler implements ChatHandler {
         int ownCount = 0;
         int selfOwnCount = 0;
         SearchCardParam param = new SearchCardParam();
+        param.setCardName(cardName);
         List<CardOwnListDTO> cardOwnList = cardService.selectList(param, Collections.singletonList(cardName));
         for (CardOwnListDTO ownData : cardOwnList) {
+            if (!cardName.equals(ownData.getCardName())) {
+                continue;
+            }
             ownCount += ownData.getCount();
             if (userData != null && ownData.getUserName().equals(userData.getUserName())) {
                 selfOwnCount += ownData.getCount();

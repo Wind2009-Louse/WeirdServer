@@ -80,7 +80,7 @@ public class ChatRoomHandler implements ChatHandler {
 
     private synchronized List<String> getRoomList(List<ChatRoomBO> roomList) {
         List<String> historyList = new ArrayList<>();
-        roomList.sort(Comparator.comparing(o -> -o.getChatTime()));
+        roomList.sort(Comparator.comparing(ChatRoomBO::getChatTime));
         Iterator<ChatRoomBO> iterator = roomList.iterator();
         while (iterator.hasNext()) {
             ChatRoomBO chatRoomBO = iterator.next();
