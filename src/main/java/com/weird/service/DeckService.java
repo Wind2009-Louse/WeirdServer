@@ -107,4 +107,11 @@ public interface DeckService {
      */
     void updateDeckCardCountWhenUpdateCount(long userId, long cardCode, int newCount);
     void updateDeckCardCountWhenUpdateCount(String userName, long cardCode, int newCount);
+
+    /**
+     * 根据卡组ID获得卡组信息
+     * @param deckId
+     * @return
+     */
+    DeckInfoDTO getDeckById(int deckId);
 }

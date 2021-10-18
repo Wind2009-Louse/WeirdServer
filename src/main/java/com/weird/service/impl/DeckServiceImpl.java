@@ -319,4 +319,23 @@ public class DeckServiceImpl implements DeckService {
             }
         }
     }
+
+    @Override
+    public DeckInfoDTO getDeckById(int deckId) {
+        DeckListModel dbDeckListModel = deckMapper.getDeckListInfoByDeckId(deckId);
+        if (dbDeckListModel == null) {
+            return null;
+        }
+
+        DeckInfoDTO realDeck = BeanConverter.convert(dbDeckListModel, DeckInfoDTO.class);
+
+        List<DeckDetailModel> deckDetailList = deckMapper.getDeckDetailByDeckId(deckId);
+        if (!CollectionUtils.isEmpty(deckDetailList)) {
+            Map<Integer, List<DeckDetailModel>> cardMapByType = deckDetailList.stream().collect(Collectors.groupingBy(DeckDetailModel::getType));
+            realDeck.setMainList(BeanConverter.convertList(cardMapByType.getOrDefault(DeckCardTypeEnum.MAIN.getId(), Collections.emptyList()), DeckCardDTO.class));
+            realDeck.setExList(BeanConverter.convertList(cardMapByType.getOrDefault(DeckCardTypeEnum.EX.getId(), Collections.emptyList()), DeckCardDTO.class));
+            realDeck.setSideList(BeanConverter.convertList(cardMapByType.getOrDefault(DeckCardTypeEnum.SIDE.getId(), Collections.emptyList()), DeckCardDTO.class));
+        }
+        return realDeck;
+    }
 }

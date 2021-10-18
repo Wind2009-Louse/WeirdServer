@@ -164,27 +164,9 @@ public class DeckInfoDTO implements Serializable {
         String mainString = getMobileString(mainList);
         String exString = getMobileString(exList);
         String sideString = getMobileString(sideList);
-        boolean inserted = false;
-        if (!StringUtils.isEmpty(mainString)) {
-            sb2.append("main=").append(mainString);
-            inserted = true;
-        }
-        if (!StringUtils.isEmpty(exString)) {
-            if (!inserted) {
-                inserted = true;
-            } else {
-                sb2.append("&");
-            }
-            sb2.append("extra=").append(exString);
-        }
-        if (!StringUtils.isEmpty(sideString)) {
-            if (!inserted) {
-                inserted = true;
-            } else {
-                sb2.append("&");
-            }
-            sb2.append("side=").append(sideString);
-        }
+        sb2.append("main=").append(mainString);
+        sb2.append("&extra=").append(exString);
+        sb2.append("&side=").append(sideString);
         mobileCode = sb2.toString();
 
         if (!CollectionUtils.isEmpty(mainList)) {

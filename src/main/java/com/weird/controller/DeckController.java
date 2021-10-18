@@ -1,9 +1,14 @@
 package com.weird.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
-import com.weird.model.dto.*;
+import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.DeckCardDTO;
+import com.weird.model.dto.DeckInfoDTO;
+import com.weird.model.dto.DeckListDTO;
+import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.*;
 import com.weird.service.CardPreviewService;
@@ -16,6 +21,8 @@ import com.weird.utils.OperationException;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,6 +55,9 @@ public class DeckController {
 
     @Autowired
     CardPreviewService cardPreviewService;
+
+    @Value("${deckcheck.arg:{}}")
+    private String deckCheckArg;
 
     /**
      * 【ALL】搜索卡组列表
@@ -193,14 +203,14 @@ public class DeckController {
         allCardList.addAll(deckInfo.getMainList());
         allCardList.addAll(deckInfo.getExList());
         allCardList.addAll(deckInfo.getSideList());
-        
+
         // 获取卡片说明
         for (DeckCardDTO deckCard : allCardList) {
             long code = deckCard.getCode();
             CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
             if (preview != null) {
                 deckCard.setCardName(preview.getName());
-                deckCard.setDesc(CardPreviewUtil.getPreview(preview));;
+                deckCard.setDesc(CardPreviewUtil.getPreview(preview));
             }
         }
 
@@ -298,13 +308,14 @@ public class DeckController {
         // 如果有YDK，根据YDK组建卡组列表
         DeckInfoDTO deck = param.getDeck();
         deck.buildDeckList();
-
         BatchUpdateUserCardParam updateParam = new BatchUpdateUserCardParam();
         updateParam.setTarget(deck.getUserName());
         Map<String, Integer> cardCountMap = new HashMap<>();
         List<DeckCardDTO> allCardList = new LinkedList<>(deck.getMainList());
         allCardList.addAll(deck.getExList());
         allCardList.addAll(deck.getSideList());
+
+        checkDeck(allCardList);
         for (DeckCardDTO deckCard : allCardList) {
             CardPreviewModel preview = cardPreviewService.selectPreviewByCode(deckCard.getCode());
             if (preview != null) {
@@ -314,5 +325,69 @@ public class DeckController {
         updateParam.setCounts(cardCountMap);
 
         return cardService.updateCardCountBatch(updateParam);
+    }
+
+    private void checkDeck(List<DeckCardDTO> allCardList) throws OperationException {
+        JSONObject deckCheckMap = JSONObject.parseObject(deckCheckArg);
+        if (CollectionUtils.isEmpty(deckCheckMap)) {
+            log.warn("卡组检查未配置");
+            return;
+        }
+
+        // 导入卡组转换为-kv
+        Map<Long, Integer> importCardCount = allCardList.stream().collect(Collectors.toMap(DeckCardDTO::getCode, DeckCardDTO::getCount, Integer::sum));
+
+        StringBuilder exceptBuilder = new StringBuilder();
+        int allCheckCount = 0;
+        int shouldCount = 0;
+
+        // 遍历所有卡组配置
+        for (Map.Entry<String, Object> entry : deckCheckMap.entrySet()) {
+            DeckInfoDTO dbDeck = deckService.getDeckById(Integer.parseInt(entry.getKey()));
+            JSONObject detailMap = (JSONObject) entry.getValue();
+            for (Map.Entry<String, Object> detailEntry : detailMap.entrySet()) {
+                int type = Integer.parseInt(detailEntry.getKey());
+                int detailCount = Integer.parseInt((String) detailEntry.getValue());
+
+                List<DeckCardDTO> targetList = Collections.emptyList();
+                String targetDesc = null;
+                if (type == DeckCardTypeEnum.MAIN.getId()) {
+                    targetList = dbDeck.getMainList();
+                    targetDesc = DeckCardTypeEnum.MAIN.getName();
+                } else if (type == DeckCardTypeEnum.EX.getId()) {
+                    targetList = dbDeck.getExList();
+                    targetDesc = DeckCardTypeEnum.EX.getName();
+                } else if (type == DeckCardTypeEnum.SIDE.getId()) {
+                    targetList = dbDeck.getSideList();
+                    targetDesc = DeckCardTypeEnum.SIDE.getName();
+                }
+
+                int checkCount = 0;
+                for (DeckCardDTO target : targetList) {
+                    int count = importCardCount.getOrDefault(target.getCode(), 0);
+                    if (count > 1) {
+                        exceptBuilder.append(target.getCode()).append("存在复数卡片：").append(target.getCode()).append("！\n");
+                    } else {
+                        checkCount += count;
+                        allCheckCount += count;
+                    }
+                }
+                if (checkCount > 0 && checkCount != detailCount) {
+                    exceptBuilder.append(dbDeck.getDeckName()).append("的").append(targetDesc)
+                            .append("需要").append(detailCount).append("张卡，当前卡组拥有").append(checkCount).append("张卡！\n");
+                }
+                shouldCount += detailCount;
+            }
+        }
+
+        // 检查卡组数量是否符合
+        if (allCheckCount > 0 && shouldCount != allCheckCount) {
+            exceptBuilder.append("卡组总数需为").append(shouldCount)
+                    .append("，当前卡组拥有").append(allCheckCount).append("张卡！");
+        }
+
+        if (exceptBuilder.length() > 0) {
+            throw new OperationException(exceptBuilder.toString());
+        }
     }
 }
