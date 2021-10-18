@@ -15,7 +15,7 @@ public enum AdventureEnum {
      * 起点
      */
     STARTER(0, "起点", "起点", SCORPION),
-    SECRET_WAY(1, "隐藏通路", "隐藏通路", "拥有多种可能性的通路！"),
+    SECRET_WAY(1, "通向财宝的隐藏通路", "隐藏通路|隐藏通道", "拥有多种可能性的通路！"),
     ZERA(2, "杰拉", "魔杰拉|暗杰拉", NORMAL_DESC + FIELD_CROSS_WAY),
     LIGHT_ZERA(3, "天空的使者 杰拉迪亚斯", "光杰拉|代行", NORMAL_DESC + FIELD_CROSS_WAY),
     LIGHTLORD(4, "光道少女 密涅瓦", "光道少女|涅瓦", NORMAL_DESC + FIELD_CROSS_WAY),
@@ -28,12 +28,12 @@ public enum AdventureEnum {
     SPARTA(10, "斯巴达咒术师", "剑斗", NORMAL_DESC + FIELD_WASTELAND),
     CHAOS(11, "混沌的使者", "混沌使者|混沌战士|混沌战士", NORMAL_DESC + FIELD_WASTELAND),
 
-    HALF_SCORPION(12, "起点", "起点", SCORPION),
+    HALF_SCORPION(12, "黑蝎盗掘团", "黑蝎", SCORPION),
     GRAVE_KEEPER(13, "守墓的异能者", "守墓", NORMAL_DESC + FIELD_GRAVE),
     SKULL(14, "白骨王子", "白骨", NORMAL_DESC + FIELD_GRAVE),
     FANDORA(15, "飞龙艇-幻舵拉", "空牙|飞船|飞艇", "飞龙艇的目的地是——" + FIELD_CELESTIA),
     KOZAKY(16, "平庸鬼", "平庸鬼|自爆", "看，平庸鬼！" + FIELD_GRAVE),
-    SHIP(17, "灵魂护送船", "灵魂", "一艘被恶灵占领的破船……" + FIELD_SEA),
+    SHIP(17, "灵魂护送船", "灵魂船", "一艘被恶灵占领的破船……" + FIELD_SEA),
 
     RED_EYE(18, "正义的同伴 城之内侠", "成之内|真红眼|凡骨", NORMAL_DESC + FIELD_JUSTICE),
     GOBLIN(19, "哥布林王", "哥布林王", "看上去是彬彬有礼那种"),
