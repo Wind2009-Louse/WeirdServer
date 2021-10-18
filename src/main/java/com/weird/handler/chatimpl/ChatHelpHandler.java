@@ -62,6 +62,9 @@ public class ChatHelpHandler implements ChatHandler {
                 case "查闪率":
                     printInfo = "查闪率：\n>查闪率 天数\n查询时间范围内的闪率统计。为减轻数据库负担，闪率统计只能半小时执行一次。";
                     break;
+                case "查冒险":
+                    printInfo = "查冒险：\n>查冒险 当前地点 [前进步数]\n查询前进之后的冒险地点信息，不填前进步数时为当前地点信息。";
+                    break;
 
                 case "syn":
                     printInfo = ">帮助 ack";
@@ -78,7 +81,7 @@ public class ChatHelpHandler implements ChatHandler {
                     break;
                 default:
                     String startTime = runnerHandler.getStartTime();
-                    printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
+                    printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
                     break;
             }
             broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));
