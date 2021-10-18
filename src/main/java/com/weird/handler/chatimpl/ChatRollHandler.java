@@ -151,6 +151,10 @@ public class ChatRollHandler implements ChatHandler {
             requestBO.setRareToStop(true);
             remark = "(闪停)";
         } else if (DOUBLE_RARE.equals(otherArg)) {
+            if (rollCount > 10) {
+                broadcastFacade.sendMsgAsync(buildResponse("一次百八只能进行最多10次抽卡！", o));
+                return;
+            }
             requestBO.setDoubleRare(true);
             remark = "(百八)";
         }
