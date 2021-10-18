@@ -9,6 +9,7 @@ import org.springframework.util.comparator.Comparators;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * 广播工具包
@@ -18,6 +19,9 @@ import java.util.Map;
  */
 @Slf4j
 public class BroadcastUtil {
+    static public String NOT_BIND_WARNING = "你暂未绑定帐号，请私聊Bot使用以下指令进行绑定！\n>认证 用户名 密码";
+
+    static public Pattern AT_PATTERN = Pattern.compile("\\[CQ:at,qq=(\\d+)]");
     /**
      * 根据查询到的抽卡信息，统计抽卡数据
      *

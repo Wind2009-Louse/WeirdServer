@@ -24,6 +24,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.weird.utils.BroadcastUtil.NOT_BIND_WARNING;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -63,7 +64,7 @@ public class ChatRollHandler implements ChatHandler {
         if (message.startsWith(SPLIT_STR)) {
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {
-                broadcastFacade.sendMsgAsync(buildResponse("你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 用户名 密码", o));
+                broadcastFacade.sendMsgAsync(buildResponse(NOT_BIND_WARNING, o));
                 return;
             }
 

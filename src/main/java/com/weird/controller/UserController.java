@@ -396,6 +396,9 @@ public class UserController {
         if (target == null || target.length() == 0) {
             throw new OperationException("用户名为空！");
         }
+        if (target.contains(" ")) {
+            throw new OperationException("用户名不能包含空格！");
+        }
         if (userService.addUser(target, name)) {
             return "添加成功！";
         } else {

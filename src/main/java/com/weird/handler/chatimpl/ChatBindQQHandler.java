@@ -10,13 +10,15 @@ import com.weird.utils.StringExtendUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
 
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 绑定QQ
@@ -33,7 +35,7 @@ public class ChatBindQQHandler implements ChatHandler {
     @Autowired
     UserService userService;
 
-    final static List<String> SPLIT_LIST = Arrays.asList(">认证 ", ">绑定 ");
+    final static List<String> SPLIT_LIST = Arrays.asList(">认证 ", ">绑定 ", "＞认证 ", "＞绑定 ");
 
     final static String SPLIT_STR_INFO = ">信息";
 
@@ -80,23 +82,39 @@ public class ChatBindQQHandler implements ChatHandler {
         }
 
         String response = "";
-        if (SPLIT_STR_INFO.equals(message)) {
-            UserDataDTO userData = userService.getUserByQQ(userQQ);
-            if (userData == null) {
-                response += "你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 用户名 密码";
+        if (message.startsWith(SPLIT_STR_INFO)) {
+            String args = message.substring(SPLIT_STR_INFO.length()).trim();
+            if (StringUtils.isEmpty(args)) {
+                response = printUserInfo(userQQ);
             } else {
-                response += String.format("\n绑定用户：%s\n尘：%d\n硬币：%d\n月见黑：%d\n转盘次数：%d\n抽卡计数：%d/50",
-                        userData.getUserName(),
-                        userData.getDustCount(),
-                        userData.getCoin(),
-                        userData.getNonawardCount(),
-                        userData.getRoulette(),
-                        userData.getRollCount());
+                List<String> argList = StringExtendUtil.split(args, " ");
+                if (CollectionUtils.isEmpty(argList)) {
+                    response += printUserInfo(userQQ);
+                }
+                UserDataDTO userData = userService.getUserByQQ(userQQ);
+                if (userData == null) {
+                    response += NOT_BIND_WARNING;
+                } else if (!userService.adminCheck(userData.getUserName())) {
+                    response += printUserInfo(userQQ);
+                } else {
+                    String firstArg = argList.get(0);
+                    Matcher matcher = AT_PATTERN.matcher(firstArg);
+                    String searchArg = firstArg;
+                    if (matcher.matches()) {
+                        searchArg = matcher.group(1);
+                    }
+                    if (userService.getUserByQQ(searchArg) != null) {
+                        response += printUserInfo(searchArg);
+                    } else {
+                        response += "该用户暂未绑定账户！";
+                    }
+                }
             }
+
         } else if (SPLIT_UNBIND.equals(message)) {
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {
-                response += "你暂未绑定帐号，请私聊使用以下指令进行绑定！\n>认证 用户名 密码";
+                response += NOT_BIND_WARNING;
             } else {
                 if (userService.unbindQQ(userQQ)) {
                     response += String.format("已解除和[%s]的绑定关系！", userData.getUserName());
@@ -107,6 +125,21 @@ public class ChatBindQQHandler implements ChatHandler {
         }
         if (!StringUtils.isEmpty(response)) {
             broadcastFacade.sendMsgAsync(buildResponse(response, o, true));
+        }
+    }
+
+    public String printUserInfo(String userQQ) {
+        UserDataDTO userData = userService.getUserByQQ(userQQ);
+        if (userData == null) {
+            return NOT_BIND_WARNING;
+        } else {
+            return String.format("\n绑定用户：%s\n尘：%d\n硬币：%d\n月见黑：%d\n转盘次数：%d\n抽卡计数：%d/50",
+                    userData.getUserName(),
+                    userData.getDustCount(),
+                    userData.getCoin(),
+                    userData.getNonawardCount(),
+                    userData.getRoulette(),
+                    userData.getRollCount());
         }
     }
 }

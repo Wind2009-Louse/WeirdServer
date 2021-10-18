@@ -29,6 +29,12 @@ public class ChatController {
     public void ping(@RequestBody JSONObject o) {
         log.info(o.toJSONString());
         try {
+            if (o.containsKey("raw_message")) {
+                String rawMessage = o.getString("raw_message");
+                if (rawMessage.startsWith("＞")) {
+                    o.put("raw_message", rawMessage.replaceFirst("＞", ">"));
+                }
+            }
             for (ChatHandler chatHandler : chatHandlerList) {
                 chatHandler.handle(o);
             }
