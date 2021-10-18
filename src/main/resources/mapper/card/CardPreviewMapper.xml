@@ -216,5 +216,6 @@
             </if>
 
         </where>
+        order by d.type &amp; 0x4 asc, d.level &amp; 0xffff desc, d.atk desc, d.def desc, t.name
     </select>
 </mapper>

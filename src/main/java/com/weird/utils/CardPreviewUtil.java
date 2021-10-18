@@ -1,6 +1,7 @@
 package com.weird.utils;
 
 import com.weird.model.CardPreviewModel;
+import com.weird.model.enums.CardTypeEnum;
 import com.weird.model.param.BlurSearchParam;
 import org.springframework.util.StringUtils;
 
@@ -112,6 +113,9 @@ public class CardPreviewUtil {
 
         // 种类
         mapAppend(CARD_TYPES, model.getType(), "/", sb);
+        if (model.getType() == CardTypeEnum.NORMAL_SPELL.getValue() || model.getType() == CardTypeEnum.NORMAL_TRAP.getValue()) {
+            sb.append("/通常");
+        }
 
         // 怪兽资料
         if ((model.getType() & MONSTER_TYPE) != 0) {
