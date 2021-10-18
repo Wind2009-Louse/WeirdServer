@@ -35,6 +35,16 @@ public class RollRequestBO implements Serializable {
     JSONObject request;
 
     /**
+     * 是否闪停
+     */
+    boolean rareToStop;
+
+    /**
+     * 是否百八
+     */
+    boolean doubleRare;
+
+    /**
      * 抽卡数量
      */
     int rollCount;
@@ -44,6 +54,8 @@ public class RollRequestBO implements Serializable {
         userName = "";
         packageInfo = new PackageInfoModel();
         rollCount = -1;
+        rareToStop = false;
+        doubleRare = false;
     }
 
     public RollRequestBO(String userName, PackageInfoModel packageInfo, int rollCount, JSONObject request) {
@@ -52,5 +64,7 @@ public class RollRequestBO implements Serializable {
         this.packageInfo = packageInfo;
         this.rollCount = rollCount;
         this.request = request;
+        this.rareToStop = false;
+        this.doubleRare = false;
     }
 }

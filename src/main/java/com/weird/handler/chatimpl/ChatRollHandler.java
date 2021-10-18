@@ -57,6 +57,10 @@ public class ChatRollHandler implements ChatHandler {
 
     final static long TIME_GAP = 1000 * 60 * 90;
 
+    final static String RARE_TO_STOP = "闪停";
+
+    final static String DOUBLE_RARE = "百八";
+
     @Override
     public void handle(JSONObject o) throws Exception {
         String message = o.getString("raw_message");
@@ -78,17 +82,16 @@ public class ChatRollHandler implements ChatHandler {
                     printRollList(o);
                 } else {
                     // 管理员同意抽卡
-                    responseRoll(userData, argList.get(0), o);
+                    responseRoll(userData, argList, o);
                 }
-            } else if (argList.size() == 2) {
-                String packageArg = argList.get(0).trim();
-                String countArg = argList.get(1).trim();
-                if ("取消".equals(packageArg)) {
+            } else if (argList.size() <= 3) {
+                String firstArg = argList.get(0).trim();
+                if ("取消".equals(firstArg)) {
                     // 取消抽卡请求
-                    rollBackRoll(userData, countArg, o);
+                    rollBackRoll(userData, argList, o);
                 } else {
                     // 发起抽卡请求
-                    requestRoll(userData, packageArg, countArg, o);
+                    requestRoll(userData, argList, o);
                 }
             } else {
                 broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>抽卡 卡包名 数量", o));
@@ -96,8 +99,20 @@ public class ChatRollHandler implements ChatHandler {
         }
     }
 
-    private void requestRoll(UserDataDTO userData, String packageArg, String countArg, JSONObject o) throws Exception {
+    private void requestRoll(UserDataDTO userData, List<String> argList, JSONObject o) throws Exception {
+        String userName = userData.getUserName();
+        if (userService.adminCheck(userName)) {
+            broadcastFacade.sendMsgAsync(buildResponse("管理员不可发起抽卡请求！", o));
+            return;
+        }
+
         int rollCount = 0;
+        String packageArg = argList.get(0).trim();
+        String countArg = argList.get(1).trim();
+        String otherArg = "";
+        if (argList.size() > 2) {
+            otherArg = argList.get(2).trim();
+        }
 
         try {
             rollCount = Integer.parseInt(countArg);
@@ -110,7 +125,7 @@ public class ChatRollHandler implements ChatHandler {
         }
         updateRollRequest();
         for (RollRequestBO data : rollMap.values()) {
-            if (data.getUserName().equals(userData.getUserName())) {
+            if (data.getUserName().equals(userName)) {
                 broadcastFacade.sendMsgAsync(buildResponse("一个用户只能同时申请一次抽卡！", o));
                 return;
             }
@@ -130,19 +145,28 @@ public class ChatRollHandler implements ChatHandler {
         }
         final PackageInfoModel pack = packageList.get(0);
 
-        RollRequestBO requestBO = new RollRequestBO(userData.getUserName(), pack, rollCount, o);
+        RollRequestBO requestBO = new RollRequestBO(userName, pack, rollCount, o);
+        String remark = "";
+        if (RARE_TO_STOP.equals(otherArg)) {
+            requestBO.setRareToStop(true);
+            remark = "(闪停)";
+        } else if (DOUBLE_RARE.equals(otherArg)) {
+            requestBO.setDoubleRare(true);
+            remark = "(百八)";
+        }
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
         rollMap.put(hash, requestBO);
-        broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽取%d包[%s]，管理员可用以下指令进行同意：\n>抽卡 %s",
-                rollCount, pack.getPackageName(), hash), o));
+        broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽取%d包[%s]%s，管理员可用以下指令进行同意：\n>抽卡 %s",
+                rollCount, pack.getPackageName(), remark, hash), o));
     }
 
-    private void responseRoll(UserDataDTO userData, String hash, JSONObject o) {
+    private void responseRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
         if (!userService.adminCheck(userData.getUserName())) {
             broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>抽卡 卡包名 数量", o));
             return;
         }
 
+        String hash = argList.get(0);
         updateRollRequest();
         RollRequestBO request = rollMap.getOrDefault(hash, null);
         Random rd = new Random();
@@ -166,6 +190,12 @@ public class ChatRollHandler implements ChatHandler {
             }
 
             List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
+            int rareRate = 4;
+            if (request.isDoubleRare()) {
+                rareRate *= 2;
+            }
+            boolean rareFlag = false;
+
             while (rollCount-- > 0) {
                 List<CardListDTO> cardResultList = new LinkedList<>();
                 int normalIndex1 = rd.nextInt(normalList.size());
@@ -176,9 +206,14 @@ public class ChatRollHandler implements ChatHandler {
                 cardResultList.add(normalList.get(normalIndex1));
                 cardResultList.add(normalList.get(normalIndex2));
 
-                if (rd.nextInt(100) < 4) {
+                if (rd.nextInt(100) < rareRate) {
                     // 0-3 闪卡
                     cardResultList.add(awardList.get(rd.nextInt(awardList.size())));
+                    rareFlag = true;
+                    if (request.isRareToStop()) {
+                        cardResultAllList.add(cardResultList);
+                        break;
+                    }
                 } else {
                     // 其他 R
                     cardResultList.add(rareList.get(rd.nextInt(rareList.size())));
@@ -205,6 +240,10 @@ public class ChatRollHandler implements ChatHandler {
                 }
             }
 
+            if (!rareFlag && request.isRareToStop()) {
+                resultBuilder.append("\n真是可惜，并没有出闪！");
+            }
+
             if (resultBuilder.length() > 0) {
                 broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
             }
@@ -212,10 +251,13 @@ public class ChatRollHandler implements ChatHandler {
             if (!StringUtils.isEmpty(exceptString)) {
                 broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, o, true), 1000);
             }
+        } else {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("抽卡请求[%s]不存在！", hash), o));
         }
     }
 
-    private void rollBackRoll(UserDataDTO userData, String hash, JSONObject o) {
+    private void rollBackRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
+        String hash = argList.get(1);
         updateRollRequest();
         RollRequestBO request = rollMap.getOrDefault(hash, null);
         if (request == null) {
@@ -226,7 +268,7 @@ public class ChatRollHandler implements ChatHandler {
             rollMap.remove(hash);
             broadcastFacade.sendMsgAsync(buildResponse(String.format("抽卡请求[%s]已取消！", hash), o));
         } else {
-            broadcastFacade.sendMsgAsync(buildResponse(String.format("你无权取消该抽卡请求！", hash), o));
+            broadcastFacade.sendMsgAsync(buildResponse("你无权取消该抽卡请求！", o));
         }
     }
 
@@ -243,6 +285,12 @@ public class ChatRollHandler implements ChatHandler {
                         entry.getValue().getUserName(),
                         entry.getValue().getRollCount(),
                         entry.getValue().getPackageInfo().getPackageName()));
+                if (entry.getValue().isRareToStop()) {
+                    sb.append("，闪停");
+                }
+                if (entry.getValue().isDoubleRare()) {
+                    sb.append("【百八】");
+                }
             }
         }
         broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));

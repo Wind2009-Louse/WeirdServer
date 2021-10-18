@@ -74,7 +74,7 @@ public class ChatHelpHandler implements ChatHandler {
                     break;
 
                 case "抽卡":
-                    printInfo = "抽卡功能：\n>抽卡 卡包 数量\n玩家发起抽卡请求（每个玩家只能同时发起一次）。\n>抽卡/>抽卡 列表\n查看当前已经发起的抽卡请求。\n>抽卡 取消 编号\n发起者或者管理员取消抽卡请求。\n>抽卡 编号\n管理员进行指定的抽卡操作。";
+                    printInfo = "抽卡功能：\n>抽卡 卡包 数量 [闪停/百八]\n玩家发起抽卡请求（每个玩家只能同时发起一次）。\n* 百八：每周前10包卡有8%的闪率，周日重置。\n* 闪停：抽到闪卡时不再继续。\n>抽卡/>抽卡 列表\n查看当前已经发起的抽卡请求。\n>抽卡 取消 编号\n发起者或者管理员取消抽卡请求。\n>抽卡 编号\n管理员进行指定的抽卡操作。";
                     break;
                 default:
                     String startTime = runnerHandler.getStartTime();
