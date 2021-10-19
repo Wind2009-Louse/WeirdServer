@@ -24,7 +24,7 @@ public enum AdventureEnum {
     CRYSTAL(6, "正义的同伴 约翰侠", "宝玉", NORMAL_DESC + FIELD_JUSTICE),
     ARCHFIEND(7, "灭绝国王恶魔", "国王恶魔", "接受灭绝国王恶魔的六面骰子吧！"),
     SCIENTIST(8, "魔导科学家", "魔科", "魔导科学家会带来怎样的科技呢……"),
-    EXODIA(9, "守护神 艾克佐迪亚", "老I|老艾|岩石|魔救", NORMAL_DESC + FIELD_WASTELAND),
+    EXODIA(9, "守护神 艾克佐德", "艾克佐迪亚|老I|老艾|岩石|魔救", NORMAL_DESC + FIELD_WASTELAND),
     SPARTA(10, "斯巴达咒术师", "剑斗", NORMAL_DESC + FIELD_WASTELAND),
     CHAOS(11, "混沌的使者", "混沌使者|混沌战士|混沌战士", NORMAL_DESC + FIELD_WASTELAND),
 

@@ -87,12 +87,18 @@ public class BroadcastUtil {
         response.put("message", msg);
 
         String messageType = request.getString("message_type");
+        if (request.containsKey("group_id")) {
+            response.put("group_id", request.get("group_id"));
+        }
+        if (request.containsKey("user_id")) {
+            response.put("user_id", request.get("user_id"));
+        }
         switch (messageType) {
             case "group":
-                response.put("group_id", request.get("group_id"));
+                response.put("message_type", "group");
                 break;
             case "private":
-                response.put("user_id", request.get("user_id"));
+                response.put("message_type", "private");
                 break;
             default:
                 log.warn("无法对{}回复[{}]。", request.toJSONString(), msg);
