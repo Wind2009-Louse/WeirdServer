@@ -223,4 +223,21 @@ public interface UserService {
      * @return 是否为管理员
      */
     boolean adminCheck(String userName);
+
+    /**
+     * 设置用户禁用状态
+     *
+     * @param target   用户
+     * @param operator 操作者
+     * @param disabled 是否禁用
+     * @return 是否成功
+     */
+    boolean updateDisabled(String target, String operator, int disabled);
+
+    /**
+     * 查看禁用中的用户
+     *
+     * @return
+     */
+    List<String> showDisabledUserName();
 }

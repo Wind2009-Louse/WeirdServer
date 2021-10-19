@@ -111,7 +111,7 @@
         collection.card_pk inCollection
         from package_info
         inner join package_card on package_info.package_id = package_card.package_id
-        left join user_data on user_data.user_name = #{name}
+        left join user_data on user_data.user_name = #{name} and user_data.disabled = 0
         left  join user_card_list on user_card_list.card_pk = package_card.card_pk and user_card_list.user_id = user_data.user_id
         left  join collection on collection.user_id = user_data.user_id and collection.card_pk = package_card.card_pk
         <where>
@@ -164,7 +164,7 @@
         inner join package_card on package_info.package_id = package_card.package_id
         left join
         (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
-        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name}) uc
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name} and user_data.disabled = 0) uc
         on uc.card_pk = package_card.card_pk
         <where>
             package_card.card_pk in
@@ -205,7 +205,7 @@
         user_card_list.count
         from package_info inner join package_card on package_info.package_id = package_card.package_id
         inner join user_card_list on package_card.card_pk = user_card_list.card_pk
-        inner join user_data on user_data.user_id = user_card_list.user_id
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
         where
         user_data.is_admin = 0 and user_card_list.count > 0
         <if test="packageNameList != null and packageNameList.size() > 0">
@@ -243,8 +243,9 @@
     </select>
 
     <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="true">
-        select sum(count)
+        select sum(user_card_list.count)
         from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
         where card_pk = #{cardPk}
     </select>
 
@@ -252,6 +253,7 @@
         select sum(user_card_list.count)
         from user_card_list
         inner join package_card on package_card.card_pk = user_card_list.card_pk
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
         where package_card.card_name = #{cardName}
     </select>
 

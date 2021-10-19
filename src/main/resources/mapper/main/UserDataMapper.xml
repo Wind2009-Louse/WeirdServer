@@ -33,7 +33,7 @@
         select
         <include refid="Base_Column_List"/>
         from user_data
-        where user_id = #{userId,jdbcType=INTEGER}
+        where user_id = #{userId,jdbcType=INTEGER} and disabled = 0
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
         delete from user_data
@@ -228,14 +228,14 @@
         select
         <include refid="Base_Column_List"/>
         from user_data
-        where user_name = #{name} and password = #{password}
+        where user_name = #{name} and password = #{password} and disabled = 0
     </select>
 
     <select id="selectByName" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user_data
-        where user_name like "%"||#{name}||"%" and is_admin = 0
+        where user_name like "%"||#{name}||"%" and is_admin = 0 and disabled = 0
         order by user_id desc
     </select>
 
@@ -243,7 +243,7 @@
         select
         <include refid="Base_Column_List"/>
         from user_data
-        where user_name = #{name} and is_admin = 0
+        where user_name = #{name} and is_admin = 0 and disabled = 0
     </select>
 
     <select id="selectByNameInAllDistinct" resultMap="BaseResultMap">
@@ -296,4 +296,14 @@
             weekly_dust_change_alter = 0,
             roulette = 1
     </update>
+
+    <update id="updateDisabled">
+        update user_data
+        set disabled = #{disabled}
+        where user_name = #{target}
+    </update>
+
+    <select id="showDisabled" resultType="string">
+        select user_name from user_data where disabled != 0
+    </select>
 </mapper>

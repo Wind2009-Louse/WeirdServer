@@ -11,6 +11,7 @@ import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
 import com.weird.service.DeckService;
 import com.weird.service.UserService;
+import com.weird.utils.CacheUtil;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import com.weird.utils.PageResult;
@@ -441,7 +442,7 @@ public class UserController {
         // 管理权限验证
         final LoginTypeEnum loginTypeEnum = userService.checkLogin(name, password);
         if (loginTypeEnum == LoginTypeEnum.ADMIN) {
-            if (StringUtils.isEmpty(name)) {
+            if (StringUtils.isEmpty(target)) {
                 throw new OperationException("用户名为空！");
             }
         } else if (loginTypeEnum == LoginTypeEnum.NORMAL) {
@@ -455,5 +456,52 @@ public class UserController {
         } else {
             throw new OperationException("重置失败！");
         }
+    }
+
+    /**
+     * 【管理端】设置用户禁用状态
+     *
+     * @param target   用户名
+     * @param name     操作用户名称
+     * @param password 操作用户密码
+     * @param disabled 禁用（0=恢复，1=禁用）
+     * @return 是否设置成功
+     */
+    @RequestMapping("/weird_project/user/disabled")
+    public String updateDisables(@RequestParam(value = "target") String target,
+                                 @RequestParam(value = "name") String name,
+                                 @RequestParam(value = "password") String password,
+                                 @RequestParam(value = "disabled") int disabled) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+
+        if (userService.updateDisabled(target, name, disabled)) {
+            CompletableFuture.runAsync(() -> {
+                CacheUtil.clearCardOwnListCache();
+                CacheUtil.clearRollListWithDetailCache();
+            });
+            return "设置禁用状态成功！";
+        } else {
+            throw new OperationException("设置禁用状态失败！");
+        }
+    }
+
+    /**
+     * 【管理端】查看禁用中账户
+     *
+     * @param name     操作用户名称
+     * @param password 操作用户密码
+     * @return 是否设置成功
+     */
+    @RequestMapping("/weird_project/user/disabing")
+    public List<String> showDisable(@RequestParam(value = "name") String name,
+                                 @RequestParam(value = "password") String password) throws Exception {
+        // 管理权限验证
+        if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
+            throw new OperationException("权限不足！");
+        }
+        return userService.showDisabledUserName();
     }
 }

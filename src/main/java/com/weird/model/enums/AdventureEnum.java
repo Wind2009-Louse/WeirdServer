@@ -33,7 +33,7 @@ public enum AdventureEnum {
     SKULL(14, "白骨王子", "白骨", NORMAL_DESC + FIELD_GRAVE),
     FANDORA(15, "飞龙艇-幻舵拉", "空牙|飞船|飞艇", "飞龙艇的目的地是——" + FIELD_CELESTIA),
     KOZAKY(16, "平庸鬼", "平庸鬼|自爆", "看，平庸鬼！" + FIELD_GRAVE),
-    SHIP(17, "灵魂护送船", "灵魂船", "一艘被恶灵占领的破船……" + FIELD_SEA),
+    SHIP(17, "灵魂护送船", "灵魂船|幽灵船", "一艘被恶灵占领的破船……" + FIELD_SEA),
 
     RED_EYE(18, "正义的同伴 城之内侠", "成之内|真红眼|凡骨", NORMAL_DESC + FIELD_JUSTICE),
     GOBLIN(19, "哥布林王", "哥布林王", "看上去是彬彬有礼那种"),

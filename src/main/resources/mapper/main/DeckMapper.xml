@@ -14,7 +14,7 @@
             d_l.last_modify_time lastModifyTime,
             d_l.share share
         from deck_list d_l
-        inner join user_data u on u.user_id = d_l.user_id
+        inner join user_data u on u.user_id = d_l.user_id and u.disabled = 0
         where deck_id > 0
         <if test="param.share &lt;= 0">
             and u.user_name = #{param.name} and u.password = #{param.password}
@@ -42,7 +42,7 @@
             d_l.last_modify_time lastModifyTime,
             d_l.share share
         from deck_list d_l
-        inner join user_data u on u.user_id = d_l.user_id
+        inner join user_data u on u.user_id = d_l.user_id and u.disabled = 0
         where deck_id > 0
         <include refid="selectDeckListParam"/>
         <if test="param.sortType == 1 or param.sortType == 2">

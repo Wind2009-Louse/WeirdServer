@@ -92,7 +92,7 @@
         roll_list.is_disabled,
         roll_list.db_created_time
         from
-        roll_list inner join user_data on roll_list.roll_user_id = user_data.user_id
+        roll_list inner join user_data on roll_list.roll_user_id = user_data.user_id and user_data.disabled = 0
         inner join package_info on roll_list.roll_package_id = package_info.package_id
         <where>
             <if test="packageNameList != null and packageNameList.size() > 0">
@@ -117,7 +117,7 @@
                 and exists (select 1 from roll_detail where roll_detail.roll_id = roll_list.roll_id and roll_detail.card_name like "%"||#{cardName}||"%")
             </if>
         </where>
-        order by roll_list.db_created_time desc
+        order by roll_list.roll_id desc
     </select>
 
     <insert id="insert" parameterType="com.weird.model.RollListModel"

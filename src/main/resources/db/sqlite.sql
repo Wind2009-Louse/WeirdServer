@@ -60,6 +60,8 @@ CREATE TABLE user_data (
   weekly_dust_change_alter int NOT NULL DEFAULT '0' ,
   roulette int NOT NULL DEFAULT '0' ,
   roll_count int NOT NULL DEFAULT '0' ,
+  qq text NOT NULL DEFAULT '' ,
+  disabled int(11) NOT NULL DEFAULT '0' ,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE record (

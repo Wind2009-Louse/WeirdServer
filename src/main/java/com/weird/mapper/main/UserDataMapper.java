@@ -64,4 +64,20 @@ public interface UserDataMapper {
      * @return 更新条目数量
      */
     int updateWeekly();
+
+    /**
+     * 设置用户禁用状态
+     *
+     * @param target   对象
+     * @param disabled 是否禁用
+     * @return
+     */
+    int updateDisabled(@Param("target") String target,
+                       @Param("disabled") int disabled);
+
+    /**
+     * 显示禁用中的用户名列表
+     * @return
+     */
+    List<String> showDisabled();
 }

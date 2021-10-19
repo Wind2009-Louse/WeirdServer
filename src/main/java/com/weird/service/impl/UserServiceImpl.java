@@ -858,4 +858,19 @@ public class UserServiceImpl implements UserService {
         UserDataModel model = userDataMapper.selectByNameInAllDistinct(userName);
         return (model != null && model.getIsAdmin() > 0);
     }
+
+    @Override
+    public boolean updateDisabled(String target, String operator, int disabled) {
+        int count = userDataMapper.updateDisabled(target, disabled);
+        if (count > 0) {
+            recordFacade.setRecord(operator, "[%s]的禁用状态被修改为%d", target, disabled);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public List<String> showDisabledUserName() {
+        return userDataMapper.showDisabled();
+    }
 }
