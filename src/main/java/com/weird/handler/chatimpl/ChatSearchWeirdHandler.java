@@ -12,12 +12,15 @@ import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
 import com.weird.service.UserService;
 import com.weird.utils.CardPreviewUtil;
+import com.weird.utils.PackageUtil;
+import com.weird.utils.StringExtendUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
@@ -49,10 +52,12 @@ public class ChatSearchWeirdHandler implements ChatHandler {
     public void handle(JSONObject o) {
         String message = o.getString("raw_message");
         if (message.startsWith(SPLIT_STR)) {
-            String cardArgs = message.substring(SPLIT_STR.length()).trim();
+            String originArgs = message.substring(SPLIT_STR.length()).trim();
 
+            // 分页信息
+            String cardArgs = originArgs;
             int pageCount = 1;
-            Matcher matcher = PAGE_PATTERN.matcher(cardArgs);
+            Matcher matcher = PAGE_PATTERN.matcher(originArgs);
             if (matcher.matches()) {
                 try {
                     pageCount = Integer.parseInt(matcher.group(2));
@@ -63,24 +68,39 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
             pageCount = Math.max(1, pageCount);
 
-            String finalCardArgs = cardArgs;
-            if (StringUtils.isEmpty(finalCardArgs)) {
-                return;
-            }
-            List<String> cardNameList = cardPreviewService.blurSearch(finalCardArgs);
-            if (CollectionUtils.isEmpty(cardNameList)) {
-                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", finalCardArgs), o));
-                return;
-            }
+            // 稀有度信息
             SearchCardParam param = new SearchCardParam();
-            param.setCardName(finalCardArgs);
             param.setName("");
             param.setPage(1);
             param.setPageSize(10);
+            List<String> argList = StringExtendUtil.split(cardArgs, " ");
+            List<String> searchArgList = new LinkedList<>();
+            for (String arg : argList) {
+                if (PackageUtil.RARE_LIST.contains(arg)) {
+                    if (param.getRareList() == null) {
+                        param.setRareList(new LinkedList<>());
+                    }
+                    param.getRareList().add(arg);
+                } else {
+                    searchArgList.add(arg);
+                }
+            }
+            cardArgs = String.join(" ", searchArgList);
 
+            String finalCardArgs = cardArgs;
+            if (StringUtils.isEmpty(finalCardArgs) && StringUtils.isEmpty(originArgs)) {
+                return;
+            }
+            List<String> cardNameList = cardPreviewService.blurSearch(finalCardArgs);
+            if (cardNameList != null && cardNameList.size() == 0) {
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", originArgs), o));
+                return;
+            }
+
+            param.setCardName(finalCardArgs);
             List<CardListDTO> dbCardList = cardService.selectListUser(param, cardNameList);
             if (CollectionUtils.isEmpty(dbCardList)) {
-                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", finalCardArgs), o));
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", originArgs), o));
                 return;
             }
             int listSize = dbCardList.size();
