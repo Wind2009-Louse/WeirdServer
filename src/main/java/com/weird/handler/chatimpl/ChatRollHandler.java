@@ -165,14 +165,16 @@ public class ChatRollHandler implements ChatHandler {
         if (otherArgList.contains(ARG_RARE_TO_STOP)) {
             requestBO.setRareToStop(true);
             remark = "(闪停)";
-        } else if (otherArgList.contains(ARG_DOUBLE_RARE)) {
+        }
+        if (otherArgList.contains(ARG_DOUBLE_RARE)) {
             if (rollCount > 10) {
                 broadcastFacade.sendMsgAsync(buildResponse("一次百八只能进行最多10次抽卡！", o));
                 return;
             }
             requestBO.setRareRate(PackageUtil.DOUBLE_RARE_RATE);
             remark = "(百八)";
-        } else if (otherArgList.contains(ARG_SHOW_ALL)) {
+        }
+        if (otherArgList.contains(ARG_SHOW_ALL)) {
             requestBO.setShowAll(true);
         }
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
@@ -231,7 +233,7 @@ public class ChatRollHandler implements ChatHandler {
         // 记录抽卡结果
         List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
         int rareRate = request.getRareRate();
-        boolean rareFlag = false;
+        int totalRateCount = 0;
         int resultIndex = 1;
         int printIndex = 0;
         StringBuilder resultBuilder = new StringBuilder();
@@ -251,7 +253,7 @@ public class ChatRollHandler implements ChatHandler {
             if (currentRare) {
                 // 0-3 闪卡
                 cardResultList.add(awardList.get(rd.nextInt(awardList.size())));
-                rareFlag = true;
+                totalRateCount++;
             } else {
                 // 其他 R
                 cardResultList.add(rareList.get(rd.nextInt(rareList.size())));
@@ -285,11 +287,13 @@ public class ChatRollHandler implements ChatHandler {
             }
         }
 
-        if (!rareFlag) {
+        if (totalRateCount == 0) {
             resultBuilder.append("\n真是可惜，并没有出闪！");
+        } else if (totalRateCount > 1) {
+            resultBuilder.append("\n难道是抽卡机出了什么问题？");
         }
-        if (!request.isShowAll()) {
-            resultBuilder.append("\n具体的抽卡结果，请前往云诡异查询。");
+        if (!request.isShowAll() && request.getRollCount() < totalRateCount) {
+            resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 
         if (resultBuilder.length() > 0) {
