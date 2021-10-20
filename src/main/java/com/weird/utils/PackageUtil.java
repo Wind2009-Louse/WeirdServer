@@ -14,6 +14,10 @@ public class PackageUtil {
 
     static public List<String> NR_LIST = Arrays.asList("N", "R");
 
+    static public int NORMAL_RARE_RATE = 4;
+
+    static public int DOUBLE_RARE_RATE = 8;
+
     /**
      * 判断该卡包是否可以由玩家抽取
      *

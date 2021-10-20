@@ -2,6 +2,7 @@ package com.weird.model.bo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.weird.model.PackageInfoModel;
+import com.weird.utils.PackageUtil;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -42,7 +43,12 @@ public class RollRequestBO implements Serializable {
     /**
      * 是否百八
      */
-    boolean doubleRare;
+    int rareRate;
+
+    /**
+     * 是否展示全部结果
+     */
+    boolean showAll;
 
     /**
      * 抽卡数量
@@ -55,7 +61,8 @@ public class RollRequestBO implements Serializable {
         packageInfo = new PackageInfoModel();
         rollCount = -1;
         rareToStop = false;
-        doubleRare = false;
+        rareRate = PackageUtil.NORMAL_RARE_RATE;
+        showAll = false;
     }
 
     public RollRequestBO(String userName, PackageInfoModel packageInfo, int rollCount, JSONObject request) {
@@ -65,6 +72,7 @@ public class RollRequestBO implements Serializable {
         this.rollCount = rollCount;
         this.request = request;
         this.rareToStop = false;
-        this.doubleRare = false;
+        this.rareRate = PackageUtil.NORMAL_RARE_RATE;
+        this.showAll = false;
     }
 }

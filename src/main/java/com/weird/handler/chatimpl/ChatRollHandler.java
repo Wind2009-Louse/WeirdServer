@@ -13,6 +13,7 @@ import com.weird.service.PackageService;
 import com.weird.service.RollService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
+import com.weird.utils.PackageUtil;
 import com.weird.utils.StringExtendUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,9 +58,17 @@ public class ChatRollHandler implements ChatHandler {
 
     final static long TIME_GAP = 1000 * 60 * 90;
 
-    final static String RARE_TO_STOP = "闪停";
+    final static String ARG_LIST = "列表";
 
-    final static String DOUBLE_RARE = "百八";
+    final static String ARG_CANCEL = "取消";
+
+    final static String ARG_RARE_TO_STOP = "闪停";
+
+    final static String ARG_DOUBLE_RARE = "百八";
+
+    final static String ARG_SHOW_ALL = "全";
+
+    final static List<String> METHOD_ROLL_ALL_LIST = Arrays.asList("all", "ALL", "全部", "全");
 
     @Override
     public void handle(JSONObject o) throws Exception {
@@ -76,25 +85,25 @@ public class ChatRollHandler implements ChatHandler {
 
             List<String> argList = StringExtendUtil.split(args, " ");
             if (CollectionUtils.isEmpty(argList)) {
+                // >抽卡
                 printRollList(o);
             } else if (argList.size() == 1) {
-                if ("列表".equals(argList.get(0))) {
+                if (ARG_LIST.equals(argList.get(0))) {
+                    // >抽卡 列表
                     printRollList(o);
                 } else {
                     // 管理员同意抽卡
                     responseRoll(userData, argList, o);
                 }
-            } else if (argList.size() <= 3) {
+            } else {
                 String firstArg = argList.get(0).trim();
-                if ("取消".equals(firstArg)) {
+                if (ARG_CANCEL.equals(firstArg)) {
                     // 取消抽卡请求
                     rollBackRoll(userData, argList, o);
                 } else {
                     // 发起抽卡请求
                     requestRoll(userData, argList, o);
                 }
-            } else {
-                broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>抽卡 卡包名 数量", o));
             }
         }
     }
@@ -106,14 +115,11 @@ public class ChatRollHandler implements ChatHandler {
             return;
         }
 
-        int rollCount = 0;
+        // 解析参数
+        int rollCount;
         String packageArg = argList.get(0).trim();
         String countArg = argList.get(1).trim();
-        String otherArg = "";
-        if (argList.size() > 2) {
-            otherArg = argList.get(2).trim();
-        }
-
+        List<String> otherArgList = argList.subList(2, argList.size());
         try {
             rollCount = Integer.parseInt(countArg);
             if (rollCount <= 0) {
@@ -123,6 +129,8 @@ public class ChatRollHandler implements ChatHandler {
             broadcastFacade.sendMsgAsync(buildResponse("请输入合法的数量！", o));
             return;
         }
+
+        // 判断抽卡合法性
         updateRollRequest();
         for (RollRequestBO data : rollMap.values()) {
             if (data.getUserName().equals(userName)) {
@@ -135,6 +143,7 @@ public class ChatRollHandler implements ChatHandler {
             return;
         }
 
+        // 获取卡包
         List<PackageInfoModel> packageList = packageService.selectByName(packageArg);
         if (packageList.size() == 0) {
             broadcastFacade.sendMsgAsync(buildResponse("找不到该卡包！", o));
@@ -144,19 +153,24 @@ public class ChatRollHandler implements ChatHandler {
             return;
         }
         final PackageInfoModel pack = packageList.get(0);
+        if (PackageUtil.canNotRoll(pack.getPackageName())) {
+            broadcastFacade.sendMsgAsync(buildResponse("该卡包不可抽取！", o));
+        }
 
         RollRequestBO requestBO = new RollRequestBO(userName, pack, rollCount, o);
         String remark = "";
-        if (RARE_TO_STOP.equals(otherArg)) {
+        if (otherArgList.contains(ARG_RARE_TO_STOP)) {
             requestBO.setRareToStop(true);
             remark = "(闪停)";
-        } else if (DOUBLE_RARE.equals(otherArg)) {
+        } else if (otherArgList.contains(ARG_DOUBLE_RARE)) {
             if (rollCount > 10) {
                 broadcastFacade.sendMsgAsync(buildResponse("一次百八只能进行最多10次抽卡！", o));
                 return;
             }
-            requestBO.setDoubleRare(true);
+            requestBO.setRareRate(PackageUtil.DOUBLE_RARE_RATE);
             remark = "(百八)";
+        } else if (otherArgList.contains(ARG_SHOW_ALL)) {
+            requestBO.setShowAll(true);
         }
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
         rollMap.put(hash, requestBO);
@@ -170,93 +184,117 @@ public class ChatRollHandler implements ChatHandler {
             return;
         }
 
-        String hash = argList.get(0);
         updateRollRequest();
+        String arg = argList.get(0);
+        if (METHOD_ROLL_ALL_LIST.contains(arg)) {
+            List<String> hashList = new LinkedList<>(rollMap.keySet());
+            for (String hash : hashList) {
+                handleRollRequest(hash, userData, o);
+            }
+        } else {
+            handleRollRequest(arg, userData, o);
+        }
+    }
+
+    private void handleRollRequest(String hash, UserDataDTO operator, JSONObject response) {
         RollRequestBO request = rollMap.getOrDefault(hash, null);
         Random rd = new Random();
-        if (request != null) {
-            int rollCount = request.getRollCount();
-            rollMap.remove(hash);
-            SearchCardParam param = new SearchCardParam();
-            param.setPackageNameList(Collections.singletonList(request.getPackageInfo().getPackageName()));
-            List<CardListDTO> cardList = cardService.selectListAdmin(param, null);
-            Map<String, List<CardListDTO>> cardMap = cardList.stream().collect(Collectors.groupingBy(CardListDTO::getRare));
+        if (request == null) {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("抽卡请求[%s]不存在！", hash), response));
+            return;
+        }
 
-            List<CardListDTO> normalList = cardMap.getOrDefault("N", Collections.emptyList());
-            List<CardListDTO> rareList = cardMap.getOrDefault("R", Collections.emptyList());
-            List<CardListDTO> awardList = new LinkedList<>();
-            awardList.addAll(cardMap.getOrDefault("SR", Collections.emptyList()));
-            awardList.addAll(cardMap.getOrDefault("UR", Collections.emptyList()));
-            awardList.addAll(cardMap.getOrDefault("HR", Collections.emptyList()));
-            if (normalList.size() < 2 || rareList.size() <= 0 || awardList.size() <= 0) {
-                broadcastFacade.sendMsgAsync(buildResponse(String.format("[%s]的卡包配置有误，请联系管理员", request.getPackageInfo().getPackageName()), o));
-                return;
+        // 获取抽卡信息
+        int rollCount = request.getRollCount();
+        rollMap.remove(hash);
+
+        // 查询卡包卡片内容
+        SearchCardParam param = new SearchCardParam();
+        param.setPackageNameList(Collections.singletonList(request.getPackageInfo().getPackageName()));
+        List<CardListDTO> cardList = cardService.selectListAdmin(param, null);
+        Map<String, List<CardListDTO>> cardMap = cardList.stream().collect(Collectors.groupingBy(CardListDTO::getRare));
+
+        List<CardListDTO> normalList = cardMap.getOrDefault("N", Collections.emptyList());
+        List<CardListDTO> rareList = cardMap.getOrDefault("R", Collections.emptyList());
+        List<CardListDTO> awardList = new LinkedList<>();
+        awardList.addAll(cardMap.getOrDefault("SR", Collections.emptyList()));
+        awardList.addAll(cardMap.getOrDefault("UR", Collections.emptyList()));
+        awardList.addAll(cardMap.getOrDefault("HR", Collections.emptyList()));
+        if (normalList.size() < 2 || rareList.size() <= 0 || awardList.size() <= 0) {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("[%s]的卡包配置有误，请联系管理员", request.getPackageInfo().getPackageName()), response));
+            return;
+        }
+
+        // 记录抽卡结果
+        List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
+        int rareRate = request.getRareRate();
+        boolean rareFlag = false;
+        int resultIndex = 1;
+        int printIndex = 0;
+        StringBuilder resultBuilder = new StringBuilder();
+        resultBuilder.append(request.getUserName()).append("的抽卡结果：");
+
+        while (rollCount-- > 0) {
+            // 生成抽卡内容
+            List<CardListDTO> cardResultList = new LinkedList<>();
+            int normalIndex1 = rd.nextInt(normalList.size());
+            int normalIndex2 = rd.nextInt(normalList.size());
+            while (normalIndex1 == normalIndex2) {
+                normalIndex2 = rd.nextInt(normalList.size());
             }
-
-            List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
-            int rareRate = 4;
-            if (request.isDoubleRare()) {
-                rareRate *= 2;
+            cardResultList.add(normalList.get(normalIndex1));
+            cardResultList.add(normalList.get(normalIndex2));
+            boolean currentRare = rd.nextInt(100) < rareRate;
+            if (currentRare) {
+                // 0-3 闪卡
+                cardResultList.add(awardList.get(rd.nextInt(awardList.size())));
+                rareFlag = true;
+            } else {
+                // 其他 R
+                cardResultList.add(rareList.get(rd.nextInt(rareList.size())));
             }
-            boolean rareFlag = false;
+            cardResultAllList.add(cardResultList);
 
-            while (rollCount-- > 0) {
-                List<CardListDTO> cardResultList = new LinkedList<>();
-                int normalIndex1 = rd.nextInt(normalList.size());
-                int normalIndex2 = rd.nextInt(normalList.size());
-                while (normalIndex1 == normalIndex2) {
-                    normalIndex2 = rd.nextInt(normalList.size());
-                }
-                cardResultList.add(normalList.get(normalIndex1));
-                cardResultList.add(normalList.get(normalIndex2));
-
-                if (rd.nextInt(100) < rareRate) {
-                    // 0-3 闪卡
-                    cardResultList.add(awardList.get(rd.nextInt(awardList.size())));
-                    rareFlag = true;
-                    if (request.isRareToStop()) {
-                        cardResultAllList.add(cardResultList);
-                        break;
-                    }
-                } else {
-                    // 其他 R
-                    cardResultList.add(rareList.get(rd.nextInt(rareList.size())));
-                }
-                cardResultAllList.add(cardResultList);
-            }
-
-            StringBuilder resultBuilder = new StringBuilder();
-            resultBuilder.append(request.getUserName()).append("的抽卡结果：");
-            StringBuilder exceptBuilder = new StringBuilder();
-            int resultIndex = 1;
-            for (List<CardListDTO> resultList : cardResultAllList) {
-                resultBuilder.append("\n").append(resultIndex++).append("：");
-                resultBuilder.append(resultList.stream().map(res -> String.format("[%s]%s",
+            // 生成消息
+            if (currentRare || request.isShowAll()) {
+                resultBuilder.append("\n").append(resultIndex).append("：");
+                resultBuilder.append(cardResultList.stream().map(res -> String.format("[%s]%s",
                         res.getRare(), res.getCardName())).collect(Collectors.joining("、")));
-                try {
-                    rollService.roll(resultList.stream().map(CardListDTO::getCardName).collect(Collectors.toList()), request.getUserName(), userData.getUserName());
-                } catch (Exception e) {
-                    exceptBuilder.append("\n").append(e.getMessage());
-                }
-                if (resultIndex % 10 == 1) {
+                printIndex++;
+                if (printIndex % 10 == 0) {
                     broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
                     resultBuilder.setLength(0);
                 }
             }
+            resultIndex++;
+            if (currentRare && request.isRareToStop()) {
+                break;
+            }
+        }
 
-            if (!rareFlag && request.isRareToStop()) {
-                resultBuilder.append("\n真是可惜，并没有出闪！");
+        // 发送抽卡结果
+        StringBuilder exceptBuilder = new StringBuilder();
+        for (List<CardListDTO> resultList : cardResultAllList) {
+            try {
+                rollService.roll(resultList.stream().map(CardListDTO::getCardName).collect(Collectors.toList()), request.getUserName(), operator.getUserName());
+            } catch (Exception e) {
+                exceptBuilder.append("\n").append(e.getMessage());
             }
+        }
 
-            if (resultBuilder.length() > 0) {
-                broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
-            }
-            String exceptString = exceptBuilder.toString();
-            if (!StringUtils.isEmpty(exceptString)) {
-                broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, o, true), 1000);
-            }
-        } else {
-            broadcastFacade.sendMsgAsync(buildResponse(String.format("抽卡请求[%s]不存在！", hash), o));
+        if (!rareFlag) {
+            resultBuilder.append("\n真是可惜，并没有出闪！");
+        }
+        if (!request.isShowAll()) {
+            resultBuilder.append("\n具体的抽卡结果，请前往云诡异查询。");
+        }
+
+        if (resultBuilder.length() > 0) {
+            broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+        }
+        String exceptString = exceptBuilder.toString();
+        if (!StringUtils.isEmpty(exceptString)) {
+            broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, response, true), 1000);
         }
     }
 
@@ -292,10 +330,11 @@ public class ChatRollHandler implements ChatHandler {
                 if (entry.getValue().isRareToStop()) {
                     sb.append("，闪停");
                 }
-                if (entry.getValue().isDoubleRare()) {
+                if (entry.getValue().getRareRate() == PackageUtil.DOUBLE_RARE_RATE) {
                     sb.append("【百八】");
                 }
             }
+            sb.append("\n管理员可用以下指令处理所有抽卡：\n>抽卡 all");
         }
         broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
     }
