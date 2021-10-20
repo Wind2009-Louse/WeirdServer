@@ -292,7 +292,7 @@ public class ChatRollHandler implements ChatHandler {
         } else if (totalRateCount > 1) {
             resultBuilder.append("\n难道是抽卡机出了什么问题？");
         }
-        if (!request.isShowAll() && request.getRollCount() < totalRateCount) {
+        if (!request.isShowAll() && request.getRollCount() > totalRateCount) {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 

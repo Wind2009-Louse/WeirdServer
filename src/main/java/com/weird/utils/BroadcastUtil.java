@@ -19,7 +19,7 @@ import java.util.regex.Pattern;
  */
 @Slf4j
 public class BroadcastUtil {
-    static public String NOT_BIND_WARNING = "你暂未绑定帐号，请私聊Bot使用以下指令进行绑定！\n>认证 用户名 密码";
+    static public String NOT_BIND_WARNING = "你暂未绑定帐号，请私聊Bot（群内回复有泄漏密码风险）使用以下指令进行绑定！\n>认证 用户名 密码";
 
     static public Pattern AT_PATTERN = Pattern.compile("\\[CQ:at,qq=(\\d+)]");
     /**
