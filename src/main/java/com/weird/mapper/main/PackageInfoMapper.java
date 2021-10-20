@@ -35,6 +35,14 @@ public interface PackageInfoMapper {
     List<PackageInfoModel> selectByName(String packageName);
 
     /**
+     * 根据卡包详情搜索卡包列表
+     *
+     * @param detail 卡包详情
+     * @return 卡包列表
+     */
+    List<PackageInfoModel> selectByDetail(String detail);
+
+    /**
      * 根据卡包名列表搜索卡包列表ID
      *
      * @param packageNameList 卡包名列表

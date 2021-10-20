@@ -145,7 +145,10 @@ public class ChatRollHandler implements ChatHandler {
 
         // 获取卡包
         List<PackageInfoModel> packageList = packageService.selectByName(packageArg);
-        if (packageList.size() == 0) {
+        if (CollectionUtils.isEmpty(packageList)) {
+            packageList = packageService.selectByDetail(packageArg);
+        }
+        if (CollectionUtils.isEmpty(packageList)) {
             broadcastFacade.sendMsgAsync(buildResponse("找不到该卡包！", o));
             return;
         } else if (packageList.size() > 1) {

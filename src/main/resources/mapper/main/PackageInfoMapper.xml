@@ -90,6 +90,14 @@
         order by order_num
     </select>
 
+    <select id="selectByDetail" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from package_info
+        where detail like "%"||#{detail}||"%"
+        order by order_num
+    </select>
+
     <select id="selectByNameList" resultType="java.lang.Integer">
         select package_id
         from package_info

@@ -57,6 +57,17 @@ public class PackageServiceImpl implements PackageService {
     }
 
     /**
+     * 根据详情查找卡包列表
+     *
+     * @param detail 详情
+     * @return 卡包列表
+     */
+    @Override
+    public List<PackageInfoModel> selectByDetail(String detail) throws Exception {
+        return packageInfoMapper.selectByDetail(detail);
+    }
+
+    /**
      * 添加卡包
      *
      * @param name 卡包名称
