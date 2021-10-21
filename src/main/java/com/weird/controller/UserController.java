@@ -67,7 +67,7 @@ public class UserController {
      * @param password 用户密码
      * @return UNLOGIN(未登录)、ADMIN(管理员)、(NORMAL)普通用户
      */
-    @GetMapping("/weird_project/user/check")
+    @RequestMapping("/weird_project/user/check")
     public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
                                       @RequestParam(value = "password") String password) {
         return userService.checkLogin(name, password);
