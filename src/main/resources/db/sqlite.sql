@@ -105,8 +105,16 @@ CREATE TABLE roulette_config (
   color text NOT NULL DEFAULT '',
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
+CREATE TABLE forbidden (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  code int not null default 0,
+  name text not null default '',
+  count int not null default 3,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
 CREATE INDEX idx_deck_id on deck_detail (deck_id);
 CREATE INDEX roll_id_idx ON roll_detail (roll_id);
+CREATE INDEX idx_user_id ON user_card_list (user_id);
 INSERT INTO user_data (user_name,password,is_admin,nonaward_count,dust_count,duel_point) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('user_data',1);

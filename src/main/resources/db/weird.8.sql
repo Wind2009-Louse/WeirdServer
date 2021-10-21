@@ -371,6 +371,32 @@ LOCK TABLES `roulette_history` WRITE;
 /*!40000 ALTER TABLE `roulette_history` DISABLE KEYS */;
 /*!40000 ALTER TABLE `roulette_history` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `forbidden`
+--
+
+DROP TABLE IF EXISTS `forbidden`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `forbidden` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `code` int NOT NULL DEFAULT '0' COMMENT '卡片密码',
+  `name` text NOT NULL DEFAULT '' COMMENT '卡片名称',
+  `count` int NOT NULL DEFAULT '0' COMMENT '限制数量',
+  `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='禁限卡表配置';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `forbidden`
+--
+
+LOCK TABLES `forbidden` WRITE;
+/*!40000 ALTER TABLE `forbidden` DISABLE KEYS */;
+/*!40000 ALTER TABLE `forbidden` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
