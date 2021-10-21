@@ -218,9 +218,7 @@ public class DeckController {
 
         // 获取用户持有数量
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
-        SearchCardParam countParam = new SearchCardParam();
-        countParam.setName(checkOwnUser);
-        List<CardListDTO> cardCountList = cardService.selectListUser(countParam, nameList);
+        List<CardListDTO> cardCountList = getCardCountList(param.getName(), nameList, isAdmin);
         Map<String, CardListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, Function.identity()));
         Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, CardListDTO::getCount));
 
@@ -405,6 +403,102 @@ public class DeckController {
 
         if (exceptBuilder.length() > 0) {
             throw new OperationException(exceptBuilder.toString());
+        }
+    }
+
+    /**
+     * 判断卡组是否可用
+     *
+     * @param param 卡组参数
+     * @return 结果
+     */
+    @RequestMapping("/weird_project/deck/usable")
+    public boolean checkUsable(@RequestBody DeckUsableParam param) throws OperationException {
+        LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
+        if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
+            throw new OperationException("未登录！");
+        }
+        boolean isAdmin = loginTypeEnum == LoginTypeEnum.ADMIN;
+
+        // 读取卡组信息
+        DeckInfoDTO deck = new DeckInfoDTO();
+        deck.setYdk(param.getYdk());
+        deck.buildDeckList();
+        if (!deck.checkDeckWithoutName()) {
+            throw new OperationException("卡组数量不符合规定！");
+        }
+
+        List<DeckCardDTO> allCardList = new LinkedList<>();
+        allCardList.addAll(deck.getMainList());
+        allCardList.addAll(deck.getExList());
+        allCardList.addAll(deck.getSideList());
+
+        // 根据code查询卡片名
+        for (DeckCardDTO deckCard : allCardList) {
+            long code = deckCard.getCode();
+            CardPreviewModel preview = cardPreviewService.selectPreviewByCode(code);
+            if (preview != null) {
+                deckCard.setCardName(preview.getName());
+            }
+        }
+
+        // 获取用户持有数量
+        List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
+        List<CardListDTO> cardCountList = getCardCountList(param.getName(), nameList, isAdmin);
+        Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, CardListDTO::getCount));
+
+        // 根据禁限卡表调整可以投入的数量
+        List<ForbiddenModel> forbiddenList = forbiddenService.selectAll();
+        for (ForbiddenModel model : forbiddenList) {
+            Integer count = cardCountMap.getOrDefault(model.getName(), null);
+            if (count != null) {
+                cardCountMap.put(model.getName(), Math.min(model.getCount(), count));
+            }
+        }
+        Map<String, Integer> originCardCountMap = new HashMap<>(cardCountMap);
+
+        // 遍历卡组进行判断
+        List<String> exceptList = new LinkedList<>();
+        Set<Long> unrecognizedCodeSet = new HashSet<>();
+        Set<String> exceedCardSet = new HashSet<>();
+        for (DeckCardDTO card : allCardList) {
+            if (StringUtils.isEmpty(card.getCardName())) {
+                unrecognizedCodeSet.add(card.getCode());
+                continue;
+            }
+            Integer remainCount = cardCountMap.getOrDefault(card.getCardName(), null);
+            if (remainCount == null) {
+                exceptList.add(String.format("[%s]在卡池中不存在！", card.getCardName()));
+                continue;
+            }
+
+            remainCount -= card.getCount();
+            cardCountMap.put(card.getCardName(), remainCount);
+            if (remainCount < 0) {
+                exceedCardSet.add(card.getCardName());
+            }
+        }
+        for (long code : unrecognizedCodeSet) {
+            exceptList.add(String.format("无法识别卡片[%d]！", code));
+        }
+        for (String cardName : exceedCardSet) {
+            int limitCount = originCardCountMap.getOrDefault(cardName, 0);
+            int currentCount = limitCount - cardCountMap.getOrDefault(cardName, 0);
+            exceptList.add(String.format("[%s]只可投入%d张，当前卡组投入了%d张！", cardName, limitCount, currentCount));
+        }
+        if (!CollectionUtils.isEmpty(exceptList)) {
+            throw new OperationException(String.join("\n", exceptList));
+        }
+        return true;
+    }
+
+    private List<CardListDTO> getCardCountList(String userName, List<String> cardNameList, boolean isAdmin) {
+        SearchCardParam countParam = new SearchCardParam();
+        countParam.setName(userName);
+        if (isAdmin) {
+            return cardService.selectListAdmin(countParam, cardNameList);
+        } else {
+            return cardService.selectListUser(countParam, cardNameList);
         }
     }
 }

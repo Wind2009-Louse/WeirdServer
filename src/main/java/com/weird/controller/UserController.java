@@ -7,6 +7,7 @@ import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
+import com.weird.model.param.UserCheckParam;
 import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
 import com.weird.service.DeckService;
@@ -66,12 +67,15 @@ public class UserController {
      * @param password 用户密码
      * @return UNLOGIN(未登录)、ADMIN(管理员)、(NORMAL)普通用户
      */
-    @RequestMapping("/weird_project/user/check")
+    @GetMapping("/weird_project/user/check")
     public LoginTypeEnum getLoginType(@RequestParam(value = "name") String name,
                                       @RequestParam(value = "password") String password) {
         return userService.checkLogin(name, password);
     }
-
+    @PostMapping("/weird_project/user/check")
+    public LoginTypeEnum getLoginTypePost(@RequestBody UserCheckParam param) {
+        return userService.checkLogin(param.getName(), param.getPassword());
+    }
 
     /**
      * 【管理端】修改用户持有的卡片数量
@@ -497,7 +501,7 @@ public class UserController {
      */
     @RequestMapping("/weird_project/user/disabing")
     public List<String> showDisable(@RequestParam(value = "name") String name,
-                                 @RequestParam(value = "password") String password) throws Exception {
+                                    @RequestParam(value = "password") String password) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(name, password) != LoginTypeEnum.ADMIN) {
             throw new OperationException("权限不足！");

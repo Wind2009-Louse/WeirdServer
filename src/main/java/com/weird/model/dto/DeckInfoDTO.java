@@ -77,18 +77,23 @@ public class DeckInfoDTO implements Serializable {
      */
     String mobileCode;
 
-    public boolean checkDeck() {
-        return checkList(mainList, 60) || checkList(exList, 15) || checkList(sideList, 15) || StringUtils.isEmpty(deckName);
+    public boolean checkDeckWithoutName() {
+        return checkList(mainList, 40, 60) && checkList(exList, 0, 15) && checkList(sideList, 0, 15);
     }
 
-    private boolean checkList(List<DeckCardDTO> list, int maxCount) {
+    public boolean checkDeck() {
+        return checkDeckWithoutName() && StringUtils.isEmpty(deckName);
+    }
+
+    private boolean checkList(List<DeckCardDTO> list, int minCount, int maxCount) {
+        int sum = 0;
         for (DeckCardDTO card : list) {
             if (card.count <= 0) {
                 return false;
             }
-            maxCount -= card.count;
+            sum += card.count;
         }
-        return maxCount >= 0;
+        return minCount <= sum && sum <= maxCount;
     }
 
     public void buildDeckList() {
@@ -136,6 +141,16 @@ public class DeckInfoDTO implements Serializable {
             mainList = transDeckCardList(mainCount);
             exList = transDeckCardList(exCount);
             sideList = transDeckCardList(sideCount);
+            this.mainCount = mainCount.values().stream().mapToInt(Integer::intValue).sum();
+            this.exCount = exCount.values().stream().mapToInt(Integer::intValue).sum();
+            this.sideCount = sideCount.values().stream().mapToInt(Integer::intValue).sum();
+        } else {
+            mainList = new LinkedList<>();
+            exList = new LinkedList<>();
+            sideList = new LinkedList<>();
+            this.mainCount = 0;
+            this.exCount = 0;
+            this.sideCount = 0;
         }
     }
 
