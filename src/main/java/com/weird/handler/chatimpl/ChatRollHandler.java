@@ -299,7 +299,7 @@ public class ChatRollHandler implements ChatHandler {
             }
         } else if (totalRateCount == 1) {
             if (!request.isShowAll()) {
-                resultBuilder.append(request.getRollCount()).append("包卡里出了1张闪，不错，很有精神！");
+                resultBuilder.append("\n").append(request.getRollCount()).append("包卡里出了1张闪，不错，很有精神！");
             }
         } else if (totalRateCount > 1) {
             resultBuilder.append("\n难道是抽卡机出了什么问题？");
