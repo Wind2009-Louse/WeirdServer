@@ -29,7 +29,7 @@ public enum AdventureEnum {
     CHAOS(11, "混沌的使者", "混沌使者|混沌战士|混沌战士", NORMAL_DESC + FIELD_WASTELAND),
 
     HALF_SCORPION(12, "黑蝎盗掘团", "黑蝎", SCORPION),
-    GRAVE_KEEPER(13, "守墓的异能者", "守墓", NORMAL_DESC + FIELD_GRAVE),
+    GRAVE_KEEPER(13, "守墓的异端者", "守墓的异能者", NORMAL_DESC + FIELD_GRAVE),
     SKULL(14, "白骨王子", "白骨", NORMAL_DESC + FIELD_GRAVE),
     FANDORA(15, "飞龙艇-幻舵拉", "空牙|飞船|飞艇", "飞龙艇的目的地是——" + FIELD_CELESTIA),
     KOZAKY(16, "平庸鬼", "平庸鬼|自爆", "看，平庸鬼！" + FIELD_GRAVE),

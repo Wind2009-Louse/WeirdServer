@@ -193,20 +193,24 @@ public class ChatRollHandler implements ChatHandler {
         String arg = argList.get(0);
         if (METHOD_ROLL_ALL_LIST.contains(arg)) {
             List<String> hashList = new LinkedList<>(rollMap.keySet());
+            int successCount = 0;
             for (String hash : hashList) {
-                handleRollRequest(hash, userData, o);
+                if (handleRollRequest(hash, userData, o)) {
+                    successCount++;
+                }
             }
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("成功处理%d条抽卡请求！", successCount), o));
         } else {
             handleRollRequest(arg, userData, o);
         }
     }
 
-    private void handleRollRequest(String hash, UserDataDTO operator, JSONObject response) {
+    private boolean handleRollRequest(String hash, UserDataDTO operator, JSONObject response) {
         RollRequestBO request = rollMap.getOrDefault(hash, null);
         Random rd = new Random();
         if (request == null) {
             broadcastFacade.sendMsgAsync(buildResponse(String.format("抽卡请求[%s]不存在！", hash), response));
-            return;
+            return false;
         }
 
         // 获取抽卡信息
@@ -227,7 +231,7 @@ public class ChatRollHandler implements ChatHandler {
         awardList.addAll(cardMap.getOrDefault("HR", Collections.emptyList()));
         if (normalList.size() < 2 || rareList.size() <= 0 || awardList.size() <= 0) {
             broadcastFacade.sendMsgAsync(buildResponse(String.format("[%s]的卡包配置有误，请联系管理员", request.getPackageInfo().getPackageName()), response));
-            return;
+            return false;
         }
 
         // 记录抽卡结果
@@ -288,9 +292,20 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         if (totalRateCount == 0) {
-            resultBuilder.append("\n真是可惜，并没有出闪！");
+            if (request.isShowAll()) {
+                resultBuilder.append("\n真是可惜，并没有出闪！");
+            } else {
+                resultBuilder.append("\n真是可惜，").append(request.getRollCount()).append("包卡都没有出闪！");
+            }
+        } else if (totalRateCount == 1) {
+            if (!request.isShowAll()) {
+                resultBuilder.append(request.getRollCount()).append("包卡里出了1张闪，不错，很有精神！");
+            }
         } else if (totalRateCount > 1) {
             resultBuilder.append("\n难道是抽卡机出了什么问题？");
+            if (!request.isShowAll()) {
+                resultBuilder.append(request.getRollCount()).append("包里可以出").append(totalRateCount).append("张闪的吗？");
+            }
         }
         if (!request.isShowAll() && request.getRollCount() > totalRateCount) {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
@@ -303,6 +318,8 @@ public class ChatRollHandler implements ChatHandler {
         if (!StringUtils.isEmpty(exceptString)) {
             broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, response, true), 1000);
         }
+
+        return cardResultAllList.size() > 0;
     }
 
     private void rollBackRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
