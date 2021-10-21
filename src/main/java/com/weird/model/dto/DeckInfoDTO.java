@@ -77,12 +77,12 @@ public class DeckInfoDTO implements Serializable {
      */
     String mobileCode;
 
-    public boolean checkDeckWithoutName() {
-        return checkList(mainList, 40, 60) && checkList(exList, 0, 15) && checkList(sideList, 0, 15);
+    public boolean checkDeckWithoutName(int mainMinCount) {
+        return checkList(mainList, mainMinCount, 60) && checkList(exList, 0, 15) && checkList(sideList, 0, 15);
     }
 
     public boolean checkDeck() {
-        return checkDeckWithoutName() && StringUtils.isEmpty(deckName);
+        return checkDeckWithoutName(0) && !StringUtils.isEmpty(deckName);
     }
 
     private boolean checkList(List<DeckCardDTO> list, int minCount, int maxCount) {

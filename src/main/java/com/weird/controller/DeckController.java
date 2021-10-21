@@ -424,7 +424,7 @@ public class DeckController {
         DeckInfoDTO deck = new DeckInfoDTO();
         deck.setYdk(param.getYdk());
         deck.buildDeckList();
-        if (!deck.checkDeckWithoutName()) {
+        if (!deck.checkDeckWithoutName(40)) {
             throw new OperationException("卡组数量不符合规定！");
         }
 
