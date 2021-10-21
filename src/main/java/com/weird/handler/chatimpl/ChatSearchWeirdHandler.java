@@ -4,12 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
+import com.weird.model.ForbiddenModel;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.param.SearchCardParam;
 import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
+import com.weird.service.ForbiddenService;
 import com.weird.service.UserService;
 import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.PackageUtil;
@@ -45,6 +47,9 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ForbiddenService forbiddenService;
 
     final static String SPLIT_STR = ">查诡异 ";
 
@@ -154,12 +159,18 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
         }
 
+        List<ForbiddenModel> forbiddenList = forbiddenService.selectAll();
+        ForbiddenModel forbid = forbiddenList.stream().filter(c -> card.getCardName().equals(c.getName())).findFirst().orElse(null);
+
         cardDesc += String.format("\n所属：[%s]%s\n持有数量：%d", card.getRare(), card.getPackageName(), ownCount);
         if (card.getNeedCoin() > 0) {
             cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
         }
         if (ownCount > 0 && userData != null) {
             cardDesc += String.format("\n你持有：%d", selfOwnCount);
+        }
+        if (forbid != null) {
+            cardDesc += String.format("\n限制数量：%d", forbid.getCount());
         }
 
         broadcastFacade.sendMsgAsync(buildResponse(cardDesc, request));

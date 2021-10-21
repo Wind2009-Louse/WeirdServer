@@ -72,7 +72,7 @@ public class UserController {
                                       @RequestParam(value = "password") String password) {
         return userService.checkLogin(name, password);
     }
-    @PostMapping("/weird_project/user/check")
+    @PostMapping("/weird_project/user/checkPost")
     public LoginTypeEnum getLoginTypePost(@RequestBody UserCheckParam param) {
         return userService.checkLogin(param.getName(), param.getPassword());
     }
