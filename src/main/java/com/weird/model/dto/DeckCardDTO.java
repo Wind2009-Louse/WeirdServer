@@ -1,6 +1,5 @@
 package com.weird.model.dto;
 
-import com.weird.model.enums.DeckCardTypeEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -47,6 +46,11 @@ public class DeckCardDTO implements Serializable {
      * 稀有度
      */
     String rare;
+
+    /**
+     * 是否合法
+     */
+    boolean legal;
 
     public DeckCardDTO() {
     }

@@ -4,13 +4,13 @@
 
 给诡异空间提供个平台，把一些离散到每个人上的功能（卡片记录、卡池查询等）整在一起。
 
-本项目为后端，接口见[API文档](API.md)，前端项目见https://github.com/DarkNin/WeirdProject。
+本项目为后端，接口见[API文档](https://docs.apipost.cn/preview/07698bd051eb987b/a834289503664994)，前端项目见[这里](https://github.com/DarkNin/WeirdProject)。
 
 ## 运行要求
 
 * JAVA 1.8+
 * Maven
-* ~~MySQL 5.1+~~
+* ~~MySQL 5.1+~~（服务器压力原因放弃）
 * 开放访问的主机
 
 ### 备注

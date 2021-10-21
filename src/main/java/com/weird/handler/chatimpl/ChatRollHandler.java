@@ -93,6 +93,7 @@ public class ChatRollHandler implements ChatHandler {
                     printRollList(o);
                 } else {
                     // 管理员同意抽卡
+                    updateRollRequest();
                     responseRoll(userData, argList, o);
                 }
             } else {
@@ -183,13 +184,12 @@ public class ChatRollHandler implements ChatHandler {
                 rollCount, pack.getPackageName(), remark, hash), o));
     }
 
-    private void responseRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
+    private synchronized void responseRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
         if (!userService.adminCheck(userData.getUserName())) {
             broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>抽卡 卡包名 数量", o));
             return;
         }
 
-        updateRollRequest();
         String arg = argList.get(0);
         if (METHOD_ROLL_ALL_LIST.contains(arg)) {
             List<String> hashList = new LinkedList<>(rollMap.keySet());
@@ -199,7 +199,7 @@ public class ChatRollHandler implements ChatHandler {
                     successCount++;
                 }
             }
-            broadcastFacade.sendMsgAsync(buildResponse(String.format("成功处理%d条抽卡请求！", successCount), o));
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("成功处理%d条抽卡请求！", successCount), o, true));
         } else {
             handleRollRequest(arg, userData, o);
         }

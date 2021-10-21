@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
+import com.weird.model.ForbiddenModel;
 import com.weird.model.dto.CardListDTO;
 import com.weird.model.dto.DeckCardDTO;
 import com.weird.model.dto.DeckInfoDTO;
@@ -11,10 +12,7 @@ import com.weird.model.dto.DeckListDTO;
 import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.*;
-import com.weird.service.CardPreviewService;
-import com.weird.service.CardService;
-import com.weird.service.DeckService;
-import com.weird.service.UserService;
+import com.weird.service.*;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.CardPreviewUtil;
 import com.weird.utils.OperationException;
@@ -55,6 +53,9 @@ public class DeckController {
 
     @Autowired
     CardPreviewService cardPreviewService;
+
+    @Autowired
+    ForbiddenService forbiddenService;
 
     @Value("${deckcheck.arg:{}}")
     private String deckCheckArg;
@@ -110,7 +111,7 @@ public class DeckController {
     }
 
     /**
-     * 【ALL】添加卡组
+     * 【ALL】批量添加卡组
      *
      * @param param
      * @return
@@ -191,13 +192,14 @@ public class DeckController {
         DeckInfoDTO deckInfo = deckService.getDeckInfo(param, true);
         String checkOwnUser = deckInfo.getUserName();
         // 不是卡组持有者、不是分享中的卡组、不是管理员，不能查看卡组
-        if (!Objects.equals(checkOwnUser, param.getName()) && !isAdmin) {
+        boolean checkSelf = Objects.equals(checkOwnUser, param.getName());
+        if (!checkSelf && !isAdmin) {
             if (deckInfo.getShare() <= 0) {
                 throw new OperationException("无权查看此卡组！");
             }
             checkOwnUser = param.getName();
         }
-        boolean adminCheckSelf = Objects.equals(checkOwnUser, param.getName()) && isAdmin;
+        boolean adminCheckSelf = checkSelf && isAdmin;
 
         List<DeckCardDTO> allCardList = new LinkedList<>();
         allCardList.addAll(deckInfo.getMainList());
@@ -220,6 +222,17 @@ public class DeckController {
         countParam.setName(checkOwnUser);
         List<CardListDTO> cardCountList = cardService.selectListUser(countParam, nameList);
         Map<String, CardListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, Function.identity()));
+        Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, CardListDTO::getCount));
+
+        // 根据禁限卡表调整可以投入的数量
+        List<ForbiddenModel> forbiddenList = forbiddenService.selectAll();
+        for (ForbiddenModel model : forbiddenList) {
+            Integer count = cardCountMap.getOrDefault(model.getName(), null);
+            if (count != null) {
+                cardCountMap.put(model.getName(), Math.min(model.getCount(), count));
+            }
+        }
+
         for (DeckCardDTO card : allCardList) {
             CardListDTO cardData = cardMap.getOrDefault(card.getCardName(), null);
             if (cardData != null) {
@@ -227,8 +240,12 @@ public class DeckController {
                 card.setRare(cardData.getRare());
                 if (adminCheckSelf) {
                     card.setOwn(3);
+                    card.setLegal(true);
                 } else {
                     card.setOwn(cardData.getCount());
+                    int remainCount = cardCountMap.getOrDefault(card.getCardName(), 0) - card.getCount();
+                    card.setLegal(remainCount >= 0);
+                    cardCountMap.put(card.getCardName(), remainCount);
                 }
             }
         }

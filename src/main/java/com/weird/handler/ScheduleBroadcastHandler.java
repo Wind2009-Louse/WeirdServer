@@ -76,13 +76,13 @@ public class ScheduleBroadcastHandler {
     @Scheduled(cron = "0 0 12 * * ?")
     public void dailyBroadcast() throws Exception {
         SearchRollParam searchParam = new SearchRollParam();
-        searchParam.setPageSize(65536);
         searchParam.setPage(1);
         long searchEndTime = System.currentTimeMillis() / 1000;
         long searchStartTime = searchEndTime - 86400 * 14;
         searchParam.setStartTime(searchStartTime);
         searchParam.setEndTime(searchEndTime);
         searchParam.fix();
+        searchParam.setPageSize(0);
         PageResult<RollListDTO> result = rollService.selectRollList(searchParam);
 
         if (result == null) {
@@ -120,7 +120,6 @@ public class ScheduleBroadcastHandler {
     @Scheduled(cron = "0 0 18 1 * ?")
     public void monthlyBroadcast() throws Exception {
         SearchRollParam searchParam = new SearchRollParam();
-        searchParam.setPageSize(65536);
         searchParam.setPage(1);
 
         DateFormat timeFormat = new SimpleDateFormat("yyyy-MM-01 00:00:00");
@@ -134,6 +133,7 @@ public class ScheduleBroadcastHandler {
         searchParam.setStartTime(searchStartTime);
         searchParam.setEndTime(searchEndTime);
         searchParam.fix();
+        searchParam.setPageSize(0);
         PageResult<RollListDTO> result = rollService.selectRollList(searchParam);
 
         if (result == null) {
@@ -225,6 +225,7 @@ public class ScheduleBroadcastHandler {
      * @return 格式化后的广播信息
      */
     private String putZeroDataToFormat(String formatString, List<RollBroadcastBO> targetList) {
+        targetList.sort(Comparator.comparing(RollBroadcastBO::getTotalCount));
         if (CollectionUtils.isEmpty(targetList)) {
             return "";
         }

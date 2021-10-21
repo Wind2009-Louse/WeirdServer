@@ -62,26 +62,24 @@ public class PageResult<T> implements Serializable {
      * @param pageSize  页面大小
      */
     public void addPageInfo(List<T> list, int pageIndex, int pageSize) throws Exception {
-        if (pageIndex <= 0 || pageSize <= 0) {
+        if (pageIndex <= 0) {
             throw new OperationException("分页设置错误！");
         }
         totalCount = list.size();
         currPage = pageIndex;
-        dataList = new LinkedList<>();
-        this.pageSize = pageSize;
-        // 复制
-        for (int index = pageSize * (currPage - 1); index < totalCount && index < pageSize * currPage; ++index) {
-            T item = list.get(index);
-            if (item != null) {
-                dataList.add(item);
-            }
+        if (pageSize > 0) {
+            dataList = list.subList(pageSize * (currPage - 1), Math.min(totalCount, pageSize * currPage));
+            this.pageSize = pageSize;
+        } else {
+            dataList = list;
+            this.pageSize = Math.max(1, dataList.size());
         }
 
         // 设置总页数
-        if (totalCount % pageSize == 0) {
-            totalPage = totalCount / pageSize;
+        if (totalCount % this.pageSize == 0) {
+            totalPage = totalCount / this.pageSize;
         } else {
-            totalPage = totalCount / pageSize + 1;
+            totalPage = totalCount / this.pageSize + 1;
         }
     }
 }
