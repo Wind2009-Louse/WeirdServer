@@ -300,7 +300,7 @@
     <update id="updateDisabled">
         update user_data
         set disabled = #{disabled}
-        where user_name = #{target}
+        where user_name = #{target} and is_admin = 0
     </update>
 
     <select id="showDisabled" resultType="string">

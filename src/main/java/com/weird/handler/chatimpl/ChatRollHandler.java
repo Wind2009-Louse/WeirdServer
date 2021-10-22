@@ -213,7 +213,7 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         // 获取抽卡信息
-        int rollCount = request.getRollCount();
+        int remainRollCount = request.getRollCount();
         rollMap.remove(hash);
 
         // 查询卡包卡片内容
@@ -242,7 +242,7 @@ public class ChatRollHandler implements ChatHandler {
         StringBuilder resultBuilder = new StringBuilder();
         resultBuilder.append(request.getUserName()).append("的抽卡结果：");
 
-        while (rollCount-- > 0) {
+        while (remainRollCount-- > 0) {
             // 生成抽卡内容
             List<CardListDTO> cardResultList = new LinkedList<>();
             int normalIndex1 = rd.nextInt(normalList.size());
@@ -290,23 +290,24 @@ public class ChatRollHandler implements ChatHandler {
             }
         }
 
+        long totalRollCount = cardResultAllList.size();
         if (totalRateCount == 0) {
             if (request.isShowAll()) {
                 resultBuilder.append("\n真是可惜，并没有出闪！");
             } else {
-                resultBuilder.append("\n真是可惜，").append(resultIndex).append("包卡都没有出闪！");
+                resultBuilder.append("\n真是可惜，").append(totalRollCount).append("包卡都没有出闪！");
             }
-        } else if (totalRateCount == 1 && resultIndex > totalRateCount) {
+        } else if (totalRateCount == 1 && totalRollCount > totalRateCount) {
             if (!request.isShowAll()) {
-                resultBuilder.append("\n").append(resultIndex).append("包卡里出了1张闪，不错，很有精神！");
+                resultBuilder.append("\n").append(totalRollCount).append("包卡里出了1张闪，不错，很有精神！");
             }
-        } else if (totalRateCount > 1 || resultIndex == totalRateCount) {
+        } else if (totalRateCount > 1 || totalRollCount == totalRateCount) {
             resultBuilder.append("\n难道是抽卡机出了什么问题？");
             if (!request.isShowAll()) {
-                resultBuilder.append(resultIndex).append("包里可以出").append(totalRateCount).append("张闪的吗？");
+                resultBuilder.append(totalRollCount).append("包里可以出").append(totalRateCount).append("张闪的吗？");
             }
         }
-        if (!request.isShowAll() && resultIndex > totalRateCount) {
+        if (!request.isShowAll() && totalRollCount > totalRateCount) {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 
@@ -318,7 +319,7 @@ public class ChatRollHandler implements ChatHandler {
             broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, response, true), 1000);
         }
 
-        return cardResultAllList.size() > 0;
+        return totalRollCount > 0;
     }
 
     private void rollBackRoll(UserDataDTO userData, List<String> argList, JSONObject o) {
