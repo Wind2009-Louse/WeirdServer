@@ -25,8 +25,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.weird.utils.BroadcastUtil.NOT_BIND_WARNING;
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 自助抽卡
@@ -275,10 +274,10 @@ public class ChatRollHandler implements ChatHandler {
                     resultBuilder.setLength(0);
                 }
             }
-            resultIndex++;
             if (currentRare && request.isRareToStop()) {
                 break;
             }
+            resultIndex++;
         }
 
         // 发送抽卡结果
@@ -295,19 +294,19 @@ public class ChatRollHandler implements ChatHandler {
             if (request.isShowAll()) {
                 resultBuilder.append("\n真是可惜，并没有出闪！");
             } else {
-                resultBuilder.append("\n真是可惜，").append(request.getRollCount()).append("包卡都没有出闪！");
+                resultBuilder.append("\n真是可惜，").append(resultIndex).append("包卡都没有出闪！");
             }
-        } else if (totalRateCount == 1) {
+        } else if (totalRateCount == 1 && resultIndex > totalRateCount) {
             if (!request.isShowAll()) {
-                resultBuilder.append("\n").append(request.getRollCount()).append("包卡里出了1张闪，不错，很有精神！");
+                resultBuilder.append("\n").append(resultIndex).append("包卡里出了1张闪，不错，很有精神！");
             }
-        } else if (totalRateCount > 1) {
+        } else if (totalRateCount > 1 || resultIndex == totalRateCount) {
             resultBuilder.append("\n难道是抽卡机出了什么问题？");
             if (!request.isShowAll()) {
-                resultBuilder.append(request.getRollCount()).append("包里可以出").append(totalRateCount).append("张闪的吗？");
+                resultBuilder.append(resultIndex).append("包里可以出").append(totalRateCount).append("张闪的吗？");
             }
         }
-        if (!request.isShowAll() && request.getRollCount() > totalRateCount) {
+        if (!request.isShowAll() && resultIndex > totalRateCount) {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 
@@ -346,8 +345,9 @@ public class ChatRollHandler implements ChatHandler {
             sb.append("\n无");
         } else {
             for (Map.Entry<String, RollRequestBO> entry : rollMap.entrySet()) {
-                sb.append(String.format("\n(%s)%s抽%d包[%s]",
+                sb.append(String.format("\n(%s)%s:%s抽%d包[%s]",
                         entry.getKey(),
+                        TIME_FORMAT.format(new Date(entry.getValue().getRequestTime())),
                         entry.getValue().getUserName(),
                         entry.getValue().getRollCount(),
                         entry.getValue().getPackageInfo().getPackageName()));

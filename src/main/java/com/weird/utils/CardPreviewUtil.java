@@ -113,7 +113,7 @@ public class CardPreviewUtil {
 
         // 种类
         mapAppend(CARD_TYPES, model.getType(), "/", sb);
-        if (model.getType() == CardTypeEnum.NORMAL_SPELL.getValue() || model.getType() == CardTypeEnum.NORMAL_TRAP.getValue()) {
+        if (model.getType() == CardTypeEnum.SPELL.getValue() || model.getType() == CardTypeEnum.TRAP.getValue()) {
             sb.append("/通常");
         }
 
@@ -137,7 +137,7 @@ public class CardPreviewUtil {
 
             // ATK/DEF
             if (model.getAtk() < 0) {
-                sb.append(" ");
+                sb.append("?");
             } else {
                 sb.append(model.getAtk());
             }

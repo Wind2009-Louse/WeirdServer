@@ -6,6 +6,7 @@ import com.weird.model.dto.RollListDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.comparator.Comparators;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,9 @@ public class BroadcastUtil {
     static public String NOT_BIND_WARNING = "你暂未绑定帐号，请私聊Bot（群内回复有泄漏密码风险）使用以下指令进行绑定！\n>认证 用户名 密码";
 
     static public Pattern AT_PATTERN = Pattern.compile("\\[CQ:at,qq=(\\d+)]");
+
+    static public SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
+
     /**
      * 根据查询到的抽卡信息，统计抽卡数据
      *

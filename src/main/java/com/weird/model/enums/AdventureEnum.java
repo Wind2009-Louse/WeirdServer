@@ -16,16 +16,16 @@ public enum AdventureEnum {
      */
     STARTER(0, "起点", "起点", SCORPION),
     SECRET_WAY(1, "通向财宝的隐藏通路", "隐藏通路|隐藏通道", "拥有多种可能性的通路！"),
-    ZERA(2, "杰拉", "魔杰拉|暗杰拉", NORMAL_DESC + FIELD_CROSS_WAY),
+    ZERA(2, "杰拉", "魔杰拉|暗杰拉|黑杰拉", NORMAL_DESC + FIELD_CROSS_WAY),
     LIGHT_ZERA(3, "天空的使者 杰拉迪亚斯", "光杰拉|代行", NORMAL_DESC + FIELD_CROSS_WAY),
-    LIGHTLORD(4, "光道少女 密涅瓦", "光道少女|涅瓦", NORMAL_DESC + FIELD_CROSS_WAY),
+    LIGHTLORD(4, "光道少女 密涅瓦", "光道少女|米涅瓦", NORMAL_DESC + FIELD_CROSS_WAY),
     DARKWORLD(5, "暗黑界的导师 塞鲁利", "暗黑界", NORMAL_DESC + FIELD_CROSS_WAY),
 
-    CRYSTAL(6, "正义的同伴 约翰侠", "宝玉", NORMAL_DESC + FIELD_JUSTICE),
+    CRYSTAL(6, "正义的同伴 约翰侠", "宝玉兽", NORMAL_DESC + FIELD_JUSTICE),
     ARCHFIEND(7, "灭绝国王恶魔", "国王恶魔", "接受灭绝国王恶魔的六面骰子吧！"),
     SCIENTIST(8, "魔导科学家", "魔科", "魔导科学家会带来怎样的科技呢……"),
     EXODIA(9, "守护神 艾克佐德", "艾克佐迪亚|老I|老艾|岩石|魔救", NORMAL_DESC + FIELD_WASTELAND),
-    SPARTA(10, "斯巴达咒术师", "剑斗", NORMAL_DESC + FIELD_WASTELAND),
+    SPARTA(10, "斯巴达咒术师", "剑斗兽", NORMAL_DESC + FIELD_WASTELAND),
     CHAOS(11, "混沌的使者", "混沌使者|混沌战士|混沌战士", NORMAL_DESC + FIELD_WASTELAND),
 
     HALF_SCORPION(12, "黑蝎盗掘团", "黑蝎", SCORPION),
@@ -35,14 +35,13 @@ public enum AdventureEnum {
     KOZAKY(16, "平庸鬼", "平庸鬼|自爆", "看，平庸鬼！" + FIELD_GRAVE),
     SHIP(17, "灵魂护送船", "灵魂船|幽灵船", "一艘被恶灵占领的破船……" + FIELD_SEA),
 
-    RED_EYE(18, "正义的同伴 城之内侠", "成之内|真红眼|凡骨", NORMAL_DESC + FIELD_JUSTICE),
-    GOBLIN(19, "哥布林王", "哥布林王", "看上去是彬彬有礼那种"),
+    RED_EYE(18, "正义的同伴 城之内侠", "正义的同伴 成之内侠|真红眼|凡骨", NORMAL_DESC + FIELD_JUSTICE),
+    GOBLIN(19, "哥布林王", "哥布林王", "看上去是彬彬有礼那种？"),
     MOJA(20, "毛兽攻击者", "毛扎王", NORMAL_DESC + FIELD_FOREST),
-    SYLVAN(21, "森罗的姬芽君 幼芽", "公主", NORMAL_DESC + FIELD_FOREST),
+    SYLVAN(21, "森罗的姬芽君 幼芽", "森罗的公主|森罗公主", NORMAL_DESC + FIELD_FOREST),
     EARTHBOUND(22, "地缚大神官", "地缚神官|昆虫", NORMAL_DESC + FIELD_FOREST),
     SHOOTER(23, "潜行狙击手", "千星|骰子|枪手", "吃我这枪！"),
     ;
-
 
     private final int index;
     private final String name;

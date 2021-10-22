@@ -28,7 +28,7 @@ public class ChatAdventureHandler implements ChatHandler {
     @Autowired
     BroadcastFacade broadcastFacade;
 
-    final static List<String> SPLIT_STR_LIST = Arrays.asList(">查冒险 ", ">查毛线 ", ">冒险 ");
+    final static List<String> SPLIT_STR_LIST = Arrays.asList(">查冒险 ", ">查毛线 ", ">冒险 ", ">毛线 ");
 
     @Override
     public void handle(JSONObject o) {

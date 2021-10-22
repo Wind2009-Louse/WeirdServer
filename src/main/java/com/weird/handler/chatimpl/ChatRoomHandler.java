@@ -8,10 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 房间记录
@@ -31,8 +30,6 @@ public class ChatRoomHandler implements ChatHandler {
     final static String RECORD_STR = "M#";
 
     final static long TIME_GAP = 1000 * 60 * 90;
-
-    final SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
     @Override
     public void handle(JSONObject o) {
