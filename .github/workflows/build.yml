@@ -18,8 +18,7 @@ jobs:
     - name: Build project
       run: mvn clean package spring-boot:repackage
 
-    - name: Deploy Release
+    - name: Release
       uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
       with:
           files: weird-1.0-RELEASE.jar
