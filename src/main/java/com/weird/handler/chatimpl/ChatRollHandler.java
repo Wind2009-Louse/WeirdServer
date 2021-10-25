@@ -86,6 +86,8 @@ public class ChatRollHandler implements ChatHandler {
             if (CollectionUtils.isEmpty(argList)) {
                 // >抽卡
                 printRollList(o);
+            } else if (argList.get(0).equals("帮助")) {
+                broadcastFacade.sendMsgAsync(buildResponse("查看帮助请使用以下指令：\n>帮助 抽卡", o));
             } else if (argList.size() == 1) {
                 if (ARG_LIST.equals(argList.get(0))) {
                     // >抽卡 列表

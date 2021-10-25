@@ -247,9 +247,10 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("找不到卡片：[%s]！", cardName);
         }
         PackageInfoModel packageModel = packageInfoMapper.selectByPrimaryKey(cardModel.getPackageId());
-        if (packageModel == null || PackageUtil.canNotRoll(packageModel.getPackageName())) {
+        if (packageModel == null) {
             throw new OperationException("无法合成[%s]！", cardName);
         }
+        boolean onlyCoin = PackageUtil.canNotRoll(packageModel.getPackageName());
 
         List<Integer> visibleCardPkList = userCardListMapper.getVisibleCardPkList();
         if (!visibleCardPkList.contains(cardModel.getCardPk())) {
@@ -257,9 +258,12 @@ public class UserServiceImpl implements UserService {
         }
 
         // 根据稀有度判断更换次数是否用完
-        int needDust;
+        int needDust = 0;
+        int needCoin = 0;
         boolean isRare = false;
-        if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
+        if (cardModel.getNeedCoin() > 0) {
+            needCoin = cardModel.getNeedCoin();
+        } else if (PackageUtil.NR_LIST.contains(cardModel.getRare())) {
             needDust = DustEnum.TO_NR.getCount();
         } else {
             isRare = true;
@@ -269,12 +273,19 @@ public class UserServiceImpl implements UserService {
             needDust = DustEnum.TO_ALTER.getCount();
         }
 
-        // 判断尘是否用完
-        if (userModel.getDustCount() < needDust) {
-            throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, userModel.getDustCount());
+        if (onlyCoin && needCoin == 0) {
+            throw new OperationException("无法合成[%s]！", cardName);
         }
 
-        // 判断卡片是否已经拥有3张
+        // 判断尘/硬币是否用完
+        if (needDust > 0 && userModel.getDustCount() < needDust) {
+            throw new OperationException("合成[%s]需要[%d]尘，当前[%s]拥有[%d]尘！", cardName, needDust, userName, userModel.getDustCount());
+        }
+        if (needCoin > 0 && userModel.getCoin() < needCoin) {
+            throw new OperationException("合成[%s]需要[%d]硬币，当前[%s]拥有[%d]枚硬币！", cardName, needCoin, userName, userModel.getCoin());
+        }
+
+        // 判断卡片是否超额
         UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), cardModel.getCardPk());
         boolean newRecord = false;
         if (cardListModel == null) {
@@ -284,17 +295,24 @@ public class UserServiceImpl implements UserService {
             cardListModel.setCardPk(cardModel.getCardPk());
             cardListModel.setCount(0);
         }
-        if (cardListModel.getCount() >= 3 && PackageUtil.NR_LIST.contains(cardModel.getRare())) {
-            throw new OperationException("[%s]当前已拥有3张[%s]，无法再合成！", userName, cardName);
+        int cardMaxCount = 3;
+        if (onlyCoin) {
+            cardMaxCount = 1;
+        }
+        if (cardListModel.getCount() >= cardMaxCount) {
+            throw new OperationException("[%s]当前已拥有%d张[%s]，无法再合成！", userName, cardMaxCount, cardName);
         }
 
         // 进行转换操作
-        if (isRare) {
-            userModel.setWeeklyDustChangeAlter(userModel.getWeeklyDustChangeAlter() + 1);
-        } else {
-            userModel.setWeeklyDustChangeN(userModel.getWeeklyDustChangeN() + 1);
+        if (!onlyCoin) {
+            if (isRare) {
+                userModel.setWeeklyDustChangeAlter(userModel.getWeeklyDustChangeAlter() + 1);
+            } else {
+                userModel.setWeeklyDustChangeN(userModel.getWeeklyDustChangeN() + 1);
+            }
         }
         userModel.setDustCount(userModel.getDustCount() - needDust);
+        userModel.setCoin(userModel.getCoin() - needCoin);
         cardListModel.setCount(cardListModel.getCount() + 1);
         if (newRecord) {
             userCardListMapper.insert(cardListModel);
@@ -323,7 +341,11 @@ public class UserServiceImpl implements UserService {
         // 清除缓存
         clearRollListWithDetailCache();
         clearCardOwnListCache();
-        recordFacade.setRecord(userName, "[%s]合成了一张[%s]，剩余尘：%d。", userName, cardName, userModel.getDustCount());
+        if (onlyCoin) {
+            recordFacade.setRecord(userName, "[%s]合成了一张[%s]，剩余硬币：%d。", userName, cardName, userModel.getCoin());
+        } else {
+            recordFacade.setRecord(userName, "[%s]合成了一张[%s]，剩余尘：%d。", userName, cardName, userModel.getDustCount());
+        }
 
         if (isRare) {
             int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
@@ -331,6 +353,13 @@ public class UserServiceImpl implements UserService {
                     String.format(
                             "【指定合成】%s 使用300尘合成了全服第%d张[%s]%s，实力进一步提升！",
                             userName, rareCardCount, cardModel.getRare(), cardName)
+            );
+        } else if (onlyCoin) {
+            int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+            broadcastFacade.sendMsgAsync(
+                    String.format(
+                            "【指定合成】%s 使用%d硬币兑换了全服第%d张[%s]%s，实力进一步提升！",
+                            userName, needCoin, rareCardCount, cardModel.getRare(), cardName)
             );
         }
 
@@ -504,7 +533,35 @@ public class UserServiceImpl implements UserService {
                 result = userCardListMapper.update(cardListModel);
             }
             if (result > 0) {
+                RollListModel rollModel = new RollListModel();
+                rollModel.setRollPackageId(cardModel.getPackageId());
+                rollModel.setRollUserId(userModel.getUserId());
+                rollModel.setIsDisabled((byte) 0);
+                if (rollListMapper.insert(rollModel) <= 0) {
+                    throw new OperationException("添加抽卡记录失败！");
+                }
+                RollDetailModel rollDetailModel = new RollDetailModel();
+                rollDetailModel.setRollId(rollModel.getRollId());
+                rollDetailModel.setCardPk(cardModel.getCardPk());
+                rollDetailModel.setIsDust((byte) 0);
+                rollDetailModel.setCardName(cardModel.getCardName());
+                rollDetailModel.setRare(cardModel.getRare());
+                if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
+                    throw new OperationException("插入转换记录时出错！");
+                }
+                // 清除缓存
+                clearRollListWithDetailCache();
+                clearCardOwnListCache();
+
                 recordFacade.setRecord(userName, recordResult);
+
+                int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+                broadcastFacade.sendMsgAsync(
+                        String.format(
+                                "【指定合成】%s 使用%d硬币兑换了全服第%d张[%s]%s，实力进一步提升！",
+                                userName, needCoin, rareCardCount, cardModel.getRare(), cardName)
+                );
+
                 return "兑换成功！";
             }
         }

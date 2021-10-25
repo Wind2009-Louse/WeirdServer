@@ -41,7 +41,8 @@ public class ChatHelpHandler implements ChatHandler {
                         printInfo = "认证/绑定：\n>认证 用户名 密码\n绑定云诡异的对应帐号。";
                         break;
                     case "信息":
-                        printInfo = "信息：\n>信息\n查询当前认证的帐号信息。";
+                    case "查询":
+                        printInfo = "信息：\n>信息/查询\n查询当前认证的帐号信息。";
                         break;
                     case "解绑":
                         printInfo = "解绑：\n>解绑\n解除当前认证的帐号信息。";
@@ -89,7 +90,7 @@ public class ChatHelpHandler implements ChatHandler {
                         break;
                     default:
                         String startTime = runnerHandler.getStartTime();
-                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
+                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息/查询、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
                         break;
                 }
                 broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));

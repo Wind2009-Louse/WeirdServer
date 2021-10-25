@@ -37,7 +37,7 @@ public class ChatBindQQHandler implements ChatHandler {
 
     final static List<String> SPLIT_LIST = Arrays.asList(">认证 ", ">绑定 ", "＞认证 ", "＞绑定 ");
 
-    final static String SPLIT_STR_INFO = ">信息";
+    final static List<String> SPLIT_STR_INFO_LIST = Arrays.asList(">信息", ">查询", ">查信息");
 
     final static String SPLIT_UNBIND = ">解绑";
 
@@ -45,7 +45,6 @@ public class ChatBindQQHandler implements ChatHandler {
     public void handle(JSONObject o) {
         String message = o.getString("raw_message");
         String userQQ = o.getString("user_id");
-        boolean inGroup = "group".equals(o.getString("message_type"));
         for (String splitString : SPLIT_LIST) {
             if (message.startsWith(splitString)) {
                 String args = message.substring(splitString.length()).trim();
@@ -81,37 +80,28 @@ public class ChatBindQQHandler implements ChatHandler {
             }
         }
 
-        String response = "";
-        if (message.startsWith(SPLIT_STR_INFO)) {
-            String args = message.substring(SPLIT_STR_INFO.length()).trim();
-            if (StringUtils.isEmpty(args)) {
-                response = printUserInfo(userQQ);
-            } else {
+        for (String splitStrInfo : SPLIT_STR_INFO_LIST) {
+            if (message.startsWith(splitStrInfo)) {
+                String args = message.substring(splitStrInfo.length()).trim();
                 List<String> argList = StringExtendUtil.split(args, " ");
-                if (CollectionUtils.isEmpty(argList)) {
-                    response += printUserInfo(userQQ);
-                }
-                UserDataDTO userData = userService.getUserByQQ(userQQ);
-                if (userData == null) {
-                    response += NOT_BIND_WARNING;
-                } else if (!userService.adminCheck(userData.getUserName())) {
-                    response += printUserInfo(userQQ);
-                } else {
-                    String firstArg = argList.get(0);
-                    Matcher matcher = AT_PATTERN.matcher(firstArg);
-                    String searchArg = firstArg;
+                UserDataDTO targetData = userService.getUserByQQ(userQQ);
+                String nullWarning = NOT_BIND_WARNING;
+                if (targetData != null && userService.adminCheck(targetData.getUserName()) && !CollectionUtils.isEmpty(argList)) {
+                    userQQ = argList.get(0);
+                    Matcher matcher = AT_PATTERN.matcher(userQQ);
                     if (matcher.matches()) {
-                        searchArg = matcher.group(1);
+                        userQQ = matcher.group(1);
                     }
-                    if (userService.getUserByQQ(searchArg) != null) {
-                        response += printUserInfo(searchArg);
-                    } else {
-                        response += "该用户暂未绑定账户！";
-                    }
+                    targetData = userService.getUserByQQ(userQQ);
+                    nullWarning = "该用户暂未绑定账户！";
                 }
+                broadcastFacade.sendMsgAsync(buildResponse(printUserInfo(targetData, nullWarning), o, true));
+                return;
             }
+        }
 
-        } else if (SPLIT_UNBIND.equals(message)) {
+        String response = "";
+        if (SPLIT_UNBIND.equals(message)) {
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {
                 response += NOT_BIND_WARNING;
@@ -128,10 +118,9 @@ public class ChatBindQQHandler implements ChatHandler {
         }
     }
 
-    public String printUserInfo(String userQQ) {
-        UserDataDTO userData = userService.getUserByQQ(userQQ);
+    public String printUserInfo(UserDataDTO userData, String nullWarning) {
         if (userData == null) {
-            return NOT_BIND_WARNING;
+            return nullWarning;
         } else {
             return String.format("\n绑定用户：%s\n尘：%d\n硬币：%d\n月见黑：%d\n转盘次数：%d\n抽卡计数：%d/50",
                     userData.getUserName(),
@@ -141,5 +130,6 @@ public class ChatBindQQHandler implements ChatHandler {
                     userData.getRoulette(),
                     userData.getRollCount());
         }
+
     }
 }

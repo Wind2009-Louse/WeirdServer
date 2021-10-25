@@ -218,7 +218,12 @@ public class DeckController {
 
         // 获取用户持有数量
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
-        List<CardListDTO> cardCountList = getCardCountList(param.getName(), nameList, isAdmin);
+        List<CardListDTO> cardCountList;
+        if (adminCheckSelf) {
+            cardCountList = getCardCountList(param.getName(), nameList, true);
+        } else {
+            cardCountList = getCardCountList(checkOwnUser, nameList, false);
+        }
         Map<String, CardListDTO> cardMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, Function.identity()));
         Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, CardListDTO::getCount));
 
