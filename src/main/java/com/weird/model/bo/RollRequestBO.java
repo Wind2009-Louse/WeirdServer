@@ -41,11 +41,6 @@ public class RollRequestBO implements Serializable {
     boolean rareToStop;
 
     /**
-     * 是否百八
-     */
-    int rareRate;
-
-    /**
      * 是否展示全部结果
      */
     boolean showAll;
@@ -61,7 +56,6 @@ public class RollRequestBO implements Serializable {
         packageInfo = new PackageInfoModel();
         rollCount = -1;
         rareToStop = false;
-        rareRate = PackageUtil.NORMAL_RARE_RATE;
         showAll = false;
     }
 
@@ -72,7 +66,6 @@ public class RollRequestBO implements Serializable {
         this.rollCount = rollCount;
         this.request = request;
         this.rareToStop = false;
-        this.rareRate = PackageUtil.NORMAL_RARE_RATE;
         this.showAll = false;
     }
 }

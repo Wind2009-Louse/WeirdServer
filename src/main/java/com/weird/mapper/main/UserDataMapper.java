@@ -80,4 +80,28 @@ public interface UserDataMapper {
      * @return
      */
     List<String> showDisabled();
+
+    /**
+     * 查询用户剩余百八次数
+     *
+     * @param name
+     * @return
+     */
+    int selectDoubleRareCount(@Param("name") String name);
+
+    /**
+     * 更新用户剩余百八次数
+     *
+     * @param name
+     * @param count
+     * @return
+     */
+    int updateDoubleRareCount(@Param("name") String name,
+                              @Param("count") int count);
+
+    /**
+     * 每周重置百八次数
+     * @return
+     */
+    int resetDoubleRareCount(@Param("count") int count);
 }

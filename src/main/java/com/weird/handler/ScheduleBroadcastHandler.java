@@ -5,6 +5,7 @@ import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.RollService;
+import com.weird.service.UserService;
 import com.weird.utils.PageResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,9 @@ public class ScheduleBroadcastHandler {
     RollService rollService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     BroadcastFacade broadcastFacade;
 
     static final String BROADCAST_DAILY_BEGIN = "【午间广播】午间广播开始啦！";
@@ -66,7 +70,9 @@ public class ScheduleBroadcastHandler {
     @Async
     @Scheduled(cron = "0 0 0 * * 7")
     public void weeklyMoreRareBroadcast() {
-        broadcastFacade.sendMsgAsync(BROADCAST_WEEKLY);
+        if (userService.resetDoubleRareCount(10)) {
+            broadcastFacade.sendMsgAsync(BROADCAST_WEEKLY);
+        }
     }
 
     /**

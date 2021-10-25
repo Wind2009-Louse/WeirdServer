@@ -240,4 +240,30 @@ public interface UserService {
      * @return
      */
     List<String> showDisabledUserName();
+
+    /**
+     * 获取用户的百八数量
+     *
+     * @param userName 用户
+     * @return
+     */
+    int getDoubleRareCount(String userName);
+
+    /**
+     * 更新用户的百八数量
+     *
+     * @param userName
+     * @param count
+     * @param operator
+     * @return
+     */
+    boolean updateDoubleRareCount(String userName, int count, String operator);
+
+    /**
+     * 重置所有用户的百八数量
+     *
+     * @param count
+     * @return
+     */
+    boolean resetDoubleRareCount(int count);
 }

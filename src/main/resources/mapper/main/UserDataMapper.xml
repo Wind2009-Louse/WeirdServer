@@ -306,4 +306,19 @@
     <select id="showDisabled" resultType="string">
         select user_name from user_data where disabled != 0
     </select>
+
+    <select id="selectDoubleRareCount" resultType="int">
+        select double_rare_count from user_data where disabled = 0 and user_name = #{name}
+    </select>
+
+    <update id="updateDoubleRareCount">
+        update user_data
+        set double_rare_count = #{count}
+        where disabled = 0 and user_name = #{name}
+    </update>
+
+    <update id="resetDoubleRareCount">
+        update user_data
+        set double_rare_count = #{count}
+    </update>
 </mapper>

@@ -930,4 +930,27 @@ public class UserServiceImpl implements UserService {
     public List<String> showDisabledUserName() {
         return userDataMapper.showDisabled();
     }
+
+    @Override
+    public int getDoubleRareCount(String userName) {
+        return userDataMapper.selectDoubleRareCount(userName);
+    }
+
+    @Override
+    public boolean updateDoubleRareCount(String userName, int count, String operator) {
+        int originCount = userDataMapper.selectDoubleRareCount(userName);
+        if (originCount != count) {
+            int result = userDataMapper.updateDoubleRareCount(userName, count);
+            if (result <= 0) {
+                return false;
+            }
+            recordFacade.setRecord(operator, "[%s]的百八数量更新：%d->%d", userName, originCount, count);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean resetDoubleRareCount(int count) {
+        return userDataMapper.resetDoubleRareCount(count) > 0;
+    }
 }

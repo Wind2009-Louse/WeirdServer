@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 用户信息
+ * 用户信息，见{@link com.weird.model.UserDataModel}
  *
  * @author Nidhogg
  * @date 2020/09/04
