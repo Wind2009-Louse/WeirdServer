@@ -251,6 +251,7 @@ CREATE TABLE `user_data` (
   `roll_count` int NOT NULL DEFAULT '0' COMMENT '抽卡计数',
   `qq` text NOT NULL DEFAULT '' COMMENT '绑定QQ',
   `disabled` int NOT NULL DEFAULT '0' COMMENT '禁用标记',
+  `double_rare_count` int NOT NULL DEFAULT '0' COMMENT '双倍闪率次数',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`user_id`)

@@ -62,6 +62,7 @@ CREATE TABLE user_data (
   roll_count int NOT NULL DEFAULT '0' ,
   qq text NOT NULL DEFAULT '' ,
   disabled int(11) NOT NULL DEFAULT '0' ,
+  double_rare_count int not null default '0',
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE record (
