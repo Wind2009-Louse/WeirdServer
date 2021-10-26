@@ -2,7 +2,7 @@ package com.weird.model.bo;
 
 import com.alibaba.fastjson.JSONObject;
 import com.weird.model.PackageInfoModel;
-import com.weird.utils.PackageUtil;
+import com.weird.model.enums.RollRequestTypeEnum;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -50,6 +50,16 @@ public class RollRequestBO implements Serializable {
      */
     int rollCount;
 
+    /**
+     * 抽卡类型
+     */
+    RollRequestTypeEnum type;
+
+    /**
+     * 请求重抽的卡名
+     */
+    String reRollCardName;
+
     public RollRequestBO() {
         requestTime = System.currentTimeMillis();
         userName = "";
@@ -67,5 +77,17 @@ public class RollRequestBO implements Serializable {
         this.request = request;
         this.rareToStop = false;
         this.showAll = false;
+        this.type = RollRequestTypeEnum.NORMAL;
+    }
+
+    public RollRequestBO(String userName, PackageInfoModel packageInfo, int rollCount, JSONObject request, RollRequestTypeEnum type) {
+        this.requestTime = System.currentTimeMillis();
+        this.userName = userName;
+        this.packageInfo = packageInfo;
+        this.rollCount = rollCount;
+        this.request = request;
+        this.rareToStop = false;
+        this.showAll = false;
+        this.type = type;
     }
 }
