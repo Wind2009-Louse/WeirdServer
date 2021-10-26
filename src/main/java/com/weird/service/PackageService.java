@@ -18,7 +18,7 @@ public interface PackageService {
      * @param packageName 卡包名
      * @return 卡包列表
      */
-    List<PackageInfoModel> selectByName(String packageName) throws Exception;
+    List<PackageInfoModel> selectByName(String packageName);
 
     /**
      * 根据详情查找卡包列表

@@ -52,7 +52,7 @@ public class PackageServiceImpl implements PackageService {
      * @return 卡包列表
      */
     @Override
-    public List<PackageInfoModel> selectByName(String packageName) throws Exception {
+    public List<PackageInfoModel> selectByName(String packageName) {
         return packageInfoMapper.selectByName(packageName);
     }
 

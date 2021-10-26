@@ -31,7 +31,7 @@ public class PackageUtil {
     }
 
     /**
-     * 判断该卡包是否传说卡
+     * 判断该卡包是否传说卡包
      *
      * @param packageName 卡包名
      * @return 结果

@@ -73,6 +73,10 @@ public class ChatRollHandler implements ChatHandler {
 
     final static List<String> ARG_REROLL_LIST = Arrays.asList("重抽", "reroll", "REROLL", "Reroll", "ReRoll", "万宝槌", "万宝锤", "锤");
 
+    final static List<String> ARG_LEGEND_LIST = Arrays.asList("抽传说", "传说");
+
+    final static List<String> ARG_PREFIX_LIST = Arrays.asList("重抽", "reroll", "REROLL", "Reroll", "ReRoll", "万宝槌", "万宝锤", "锤", "抽传说", "传说");
+
     @Override
     public void handle(JSONObject o) throws Exception {
         String message = o.getString("raw_message");
@@ -85,13 +89,10 @@ public class ChatRollHandler implements ChatHandler {
                 broadcastFacade.sendMsgAsync(buildResponse(NOT_BIND_WARNING, o));
                 return;
             }
-
             String args = message.substring(SPLIT_STR.length()).trim();
-
             argList = StringExtendUtil.split(args, " ");
-
         } else {
-            for (String prefix : ARG_REROLL_LIST) {
+            for (String prefix : ARG_PREFIX_LIST) {
                 String splitStr = ">" + prefix;
                 if (message.startsWith(splitStr)) {
                     userData = userService.getUserByQQ(userQQ);
@@ -131,7 +132,7 @@ public class ChatRollHandler implements ChatHandler {
             if (ARG_CANCEL.equals(firstArg)) {
                 // 取消抽卡请求
                 rollBackRoll(userData, argList, o);
-            } else if (ARG_REROLL_LIST.contains(argList.get(0))) {
+            } else if (ARG_REROLL_LIST.contains(firstArg)) {
                 // 重抽
                 requestReRoll(userData, argList, o);
             } else {
@@ -208,12 +209,12 @@ public class ChatRollHandler implements ChatHandler {
     private void requestReRoll(UserDataDTO userData, List<String> argList, JSONObject o) throws Exception {
         String userName = userData.getUserName();
         if (userService.adminCheck(userName)) {
-            throw new ResponseException("管理员不可发起抽卡请求！");
+            throw new ResponseException("管理员不可发起重抽请求！");
         }
 
         String cardName = argList.get(1);
         // 查找目标卡片
-        CardListDTO targetCard = fetchReRollTarget(userData.getUserName(), cardName);
+        CardListDTO targetCard = fetchReRollTarget(userData.getUserName(), cardName, "", true);
         String packageName = targetCard.getPackageName();
         if (StringUtils.isEmpty(packageName)) {
             throw new ResponseException("[%s]的卡包信息有误，请联系管理员！", targetCard.getCardName());
@@ -239,6 +240,40 @@ public class ChatRollHandler implements ChatHandler {
                 pack.getPackageName(), targetCard.getCardName(), hash), o));
     }
 
+    private void requestLegend(UserDataDTO userData, JSONObject o) throws ResponseException {
+        String userName = userData.getUserName();
+        if (userService.adminCheck(userName)) {
+            throw new ResponseException("管理员不可发起抽传说请求！");
+        }
+
+        PackageInfoModel legendPackage = fetchLegendPackageInfo();
+        CardListDTO targetCard = fetchReRollTarget(userData.getUserName(), "", legendPackage.getPackageName(), false);
+        String currentLegendName = "";
+        if (targetCard != null) {
+            currentLegendName = targetCard.getCardName();
+        }
+
+        // 判断抽卡合法性
+        refreshRollRequest();
+        for (RollRequestBO data : rollMap.values()) {
+            if (data.getUserName().equals(userName) && data.getType() == RollRequestTypeEnum.LEGEND) {
+                throw new ResponseException("一个用户只能同时申请一次抽传说！");
+            }
+        }
+
+        // 发起抽传说
+        RollRequestBO requestBO = new RollRequestBO(userName, null, 0, o, RollRequestTypeEnum.LEGEND);
+        requestBO.setReRollCardName(currentLegendName);
+        String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
+        rollMap.put(hash, requestBO);
+        if (StringUtils.isEmpty(currentLegendName)) {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽传说卡，管理员可用以下指令进行同意：\n>抽卡 %s", hash), o));
+        } else {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请重抽传说卡(当前为[%s])，管理员可用以下指令进行同意：\n>抽卡 %s",
+                    currentLegendName, hash), o));
+        }
+    }
+
     /**
      * 管理员处理信息
      *
@@ -247,12 +282,18 @@ public class ChatRollHandler implements ChatHandler {
      * @param o        请求消息
      */
     private synchronized void responseRoll(UserDataDTO userData, List<String> argList, JSONObject o) throws ResponseException {
+        String arg = argList.get(0);
+        if (ARG_LEGEND_LIST.contains(arg)) {
+            // 抽传说卡
+            requestLegend(userData, o);
+            return;
+        }
+
         if (!userService.adminCheck(userData.getUserName())) {
             broadcastFacade.sendMsgAsync(buildResponse("请输入正确的格式：\n>抽卡 卡包名 数量", o));
             return;
         }
 
-        String arg = argList.get(0);
         if (METHOD_ROLL_ALL_LIST.contains(arg)) {
             List<String> hashList = new LinkedList<>(rollMap.keySet());
             int successCount = 0;
@@ -281,6 +322,9 @@ public class ChatRollHandler implements ChatHandler {
                     break;
                 case REROLL:
                     handleReRollRequest(arg, userData, o);
+                    break;
+                case LEGEND:
+                    handleLegendRequest(arg, userData, o);
                     break;
                 default:
                     break;
@@ -329,14 +373,7 @@ public class ChatRollHandler implements ChatHandler {
 
         while (remainRollCount-- > 0) {
             // 生成抽卡内容
-            List<CardListDTO> cardResultList = new LinkedList<>();
-            int normalIndex1 = rd.nextInt(packageInfo.getNormalList().size());
-            int normalIndex2 = rd.nextInt(packageInfo.getNormalList().size());
-            while (normalIndex1 == normalIndex2) {
-                normalIndex2 = rd.nextInt(packageInfo.getNormalList().size());
-            }
-            cardResultList.add(packageInfo.getNormalList().get(normalIndex1));
-            cardResultList.add(packageInfo.getNormalList().get(normalIndex2));
+            List<CardListDTO> cardResultList = new LinkedList<>(packageInfo.getRandomResultFromNormal());
             int rareRate = PackageUtil.NORMAL_RARE_RATE;
             if (remainDoubleRareCount > 0) {
                 rareRate = PackageUtil.DOUBLE_RARE_RATE;
@@ -441,7 +478,7 @@ public class ChatRollHandler implements ChatHandler {
 
         // 获取抽卡信息
         rollMap.remove(hash);
-        fetchReRollTarget(requestUserName, request.getReRollCardName());
+        fetchReRollTarget(requestUserName, request.getReRollCardName(), "", true);
 
         // 查询卡包卡片内容
         RollPackageBO packageInfo = fetchPackageCardList(packageName);
@@ -469,6 +506,68 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         String resultBuilder = requestUserName + "对" + request.getReRollCardName() + "的重抽结果：\n" +
+                PackageUtil.printCard(destCard);
+        broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));
+        return true;
+    }
+
+    /**
+     * 处理抽传说
+     *
+     * @param hash     散列key
+     * @param operator 操作人
+     * @param response 处理抽卡的消息
+     * @return
+     */
+    private boolean handleLegendRequest(String hash, UserDataDTO operator, JSONObject response) throws ResponseException {
+        RollRequestBO request = rollMap.getOrDefault(hash, null);
+        Random rd = new Random();
+        if (request == null) {
+            throw new ResponseException("抽传说请求[%s]不存在！", hash);
+        }
+        if (request.getType() != RollRequestTypeEnum.LEGEND) {
+            throw new ResponseException("无法处理非重抽请求[%s]！", hash);
+        }
+        final String requestUserName = request.getUserName();
+
+        // 获取抽卡信息
+        rollMap.remove(hash);
+
+        // 获取传说卡包
+        PackageInfoModel packageInfo = fetchLegendPackageInfo();
+        final String packageName = packageInfo.getPackageName();
+
+        // 获取用户当前传说
+        CardListDTO currentLegend = fetchReRollTarget(requestUserName, "", packageName, false);
+        String currentLegendName = "";
+        if (currentLegend != null) {
+            currentLegendName = currentLegend.getCardName();
+        }
+        if (!currentLegendName.equals(request.getReRollCardName())) {
+            throw new ResponseException("用户持有的传说卡已发生改变，请重新申请！");
+        }
+
+        RollPackageBO packageCardInfo = fetchPackageCardList(packageName);
+        List<CardListDTO> destCardList = packageCardInfo.getSpList().stream()
+                .filter(c -> !c.getCardName().equals(request.getReRollCardName()))
+                .collect(Collectors.toList());
+
+        if (CollectionUtils.isEmpty(destCardList)) {
+            throw new ResponseException("[%s]无法重抽，请联系管理员！", packageName);
+        }
+
+        CardListDTO destCard = destCardList.get(rd.nextInt(destCardList.size()));
+        if (StringUtils.isEmpty(request.getReRollCardName())) {
+            try {
+                rollService.roll(Collections.singletonList(destCard.getCardName()), requestUserName, operator.getUserName());
+            } catch (OperationException oe) {
+                throw new ResponseException(oe.getMessage());
+            } catch (Exception e) {
+                throw new ResponseException("出现未知错误，请联系管理员");
+            }
+        }
+
+        String resultBuilder = requestUserName + "抽到的传说卡是：\n" +
                 PackageUtil.printCard(destCard);
         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));
         return true;
@@ -510,6 +609,7 @@ public class ChatRollHandler implements ChatHandler {
         } else {
             for (Map.Entry<String, RollRequestBO> entry : rollMap.entrySet()) {
                 final RollRequestBO requestBO = entry.getValue();
+                final String reRollCardName = requestBO.getReRollCardName();
                 switch (requestBO.getType()) {
                     case NORMAL:
                         sb.append(String.format("\n(%s)%s:%s抽%d包[%s]",
@@ -531,13 +631,16 @@ public class ChatRollHandler implements ChatHandler {
                                 TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
                                 requestBO.getUserName(),
                                 requestBO.getPackageInfo().getPackageName(),
-                                requestBO.getReRollCardName()));
+                                reRollCardName));
                         break;
                     case LEGEND:
                         sb.append(String.format("\n(%s)%s:%s抽传说卡",
                                 entry.getKey(),
                                 TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
                                 requestBO.getUserName()));
+                        if (!StringUtils.isEmpty(reRollCardName)) {
+                            sb.append("(当前为[").append(reRollCardName).append("])");
+                        }
                         break;
                     default:
                         break;
@@ -569,33 +672,34 @@ public class ChatRollHandler implements ChatHandler {
      * @param cardName 重抽卡片名
      * @return 重抽卡片对象
      */
-    private CardListDTO fetchReRollTarget(String userName, String cardName) throws ResponseException {
+    private CardListDTO fetchReRollTarget(String userName, String cardName, String packageName, boolean checkNull) throws ResponseException {
         SearchCardParam param = new SearchCardParam();
         param.setCardName(cardName);
         param.setName(userName);
-        param.setRareList(Arrays.asList("SR", "UR", "HR"));
+        param.setRareList(Arrays.asList("SR", "UR", "HR", "GR", "SER"));
+        param.setPackageNameList(Collections.singletonList(packageName));
         List<String> alterList = cardPreviewService.blurSearch(param.getCardName());
         List<CardListDTO> dtoList = cardService.selectListUser(param, alterList);
+        dtoList = dtoList.stream().filter(c -> c.getCount() > 0).collect(Collectors.toList());
 
         // 查找目标卡片
         CardListDTO targetCard = dtoList.stream().filter(c -> c.getCardName().equals(cardName)).findFirst().orElse(null);
         if (targetCard == null) {
-            if (dtoList.isEmpty()) {
+            if (dtoList.isEmpty() && checkNull) {
                 throw new ResponseException("找不到需要重抽的卡片！");
             } else if (dtoList.size() > 1) {
                 throw new ResponseException("找到多于一张符合条件的卡片，请修改条件重试！");
-            } else {
+            } else if (!dtoList.isEmpty()) {
                 targetCard = dtoList.get(0);
             }
         }
-        if (PackageUtil.NR_LIST.contains(targetCard.getRare())) {
-            throw new ResponseException("非闪卡不可重抽！");
-        }
-        if (PackageUtil.canNotRoll(targetCard.getPackageName())) {
-            throw new ResponseException("SP卡包的卡片不可重抽！");
-        }
-        if (targetCard.getCount() <= 0) {
-            throw new ResponseException("你当前持有0张[%s]，无法重抽！", targetCard.getCardName());
+        if (checkNull) {
+            if (PackageUtil.NR_LIST.contains(targetCard.getRare())) {
+                throw new ResponseException("非闪卡不可重抽！");
+            }
+            if (PackageUtil.canNotRoll(targetCard.getPackageName())) {
+                throw new ResponseException("SP卡包的卡片不可重抽！");
+            }
         }
 
         return targetCard;
@@ -628,6 +732,27 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         return pack;
+    }
+
+    /**
+     * 获取传说卡包
+     *
+     * @return 卡包信息
+     */
+    private PackageInfoModel fetchLegendPackageInfo() throws ResponseException {
+        // 获取卡包
+        List<PackageInfoModel> packageList = packageService.selectByName("");
+        if (CollectionUtils.isEmpty(packageList)) {
+            throw new ResponseException("卡包列表为空，请联系管理员！");
+        }
+        List<PackageInfoModel> legendList = packageList.stream().filter(p -> PackageUtil.isLegendPackage(p.getPackageName())).collect(Collectors.toList());
+        if (CollectionUtils.isEmpty(legendList)) {
+            throw new ResponseException("找不到该卡包！");
+        } else if (legendList.size() > 1) {
+            throw new ResponseException("找到多于一个卡包，请输入能准确匹配的卡包名！");
+        }
+
+        return legendList.get(0);
     }
 
     /**

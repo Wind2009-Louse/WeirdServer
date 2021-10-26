@@ -93,7 +93,7 @@ public class ChatHelpHandler implements ChatHandler {
                         printInfo = "抽卡功能(2/3)：\n>抽卡 重抽 卡名\n>重抽 卡名\n重抽自己的指定闪卡。";
                         break;
                     case "抽卡 3":
-                        printInfo = "抽卡功能(3/3)：\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则从剩余的传说卡中随机抽取一张。\n抽传说不会实际修改持有数据，需要管理员手动修改。";
+                        printInfo = "抽卡功能(3/3)：\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。\n* 重抽传说不会实际修改持有数据，需要管理员手动修改。";
                         break;
                     default:
                         String startTime = runnerHandler.getStartTime();
