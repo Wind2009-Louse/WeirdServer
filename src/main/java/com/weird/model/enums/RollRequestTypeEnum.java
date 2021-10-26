@@ -18,7 +18,11 @@ public enum RollRequestTypeEnum {
     /**
      * 抽传说
      */
-    LEGEND(3, "传说卡");
+    LEGEND(3, "传说卡"),
+    /**
+     * 更换传说
+     */
+    LEGEND_CONFIRM(4, "传说卡更换确认");
 
     private final int id;
     private final String name;

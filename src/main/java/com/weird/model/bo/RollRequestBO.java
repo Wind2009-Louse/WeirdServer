@@ -60,6 +60,11 @@ public class RollRequestBO implements Serializable {
      */
     String reRollCardName;
 
+    /**
+     * 请求重抽的目标卡名
+     */
+    String reRollDescName;
+
     public RollRequestBO() {
         requestTime = System.currentTimeMillis();
         userName = "";
