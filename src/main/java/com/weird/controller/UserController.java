@@ -17,9 +17,12 @@ import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
 import com.weird.utils.PageResult;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -73,8 +76,18 @@ public class UserController {
         return userService.checkLogin(name, password);
     }
     @PostMapping("/weird_project/user/checkPost")
-    public LoginTypeEnum getLoginTypePost(@RequestBody UserCheckParam param) {
-        return userService.checkLogin(param.getName(), param.getPassword());
+    public LoginTypeEnum getLoginTypePost(HttpServletRequest request) {
+        String name = request.getParameter("name");
+        String password = request.getParameter("password");
+        if (name == null) {
+            name = "";
+        }
+        if (password == null) {
+            password = "";
+        } else if (!password.isEmpty()) {
+            password = DigestUtils.md5DigestAsHex(password.getBytes());
+        }
+        return userService.checkLogin(name, password);
     }
 
     /**
