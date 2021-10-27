@@ -745,7 +745,9 @@ public class ChatRollHandler implements ChatHandler {
         param.setCardName(cardName);
         param.setName(userName);
         param.setRareList(Arrays.asList("SR", "UR", "HR", "GR", "SER"));
-        param.setPackageNameList(Collections.singletonList(packageName));
+        if (!StringUtils.isEmpty(packageName)) {
+            param.setPackageNameList(Collections.singletonList(packageName));
+        }
         List<String> alterList = cardPreviewService.blurSearch(param.getCardName());
         List<CardListDTO> dtoList = cardService.selectListUser(param, alterList);
         dtoList = dtoList.stream().filter(c -> c.getCount() > 0).collect(Collectors.toList());
