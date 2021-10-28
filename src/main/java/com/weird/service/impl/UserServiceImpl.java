@@ -723,7 +723,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String swapCard(CardSwapDTO dto, String operator) throws Exception {
+    public String swapCard(CardSwapDTO dto, String operator) throws OperationException {
         // 判断用户是否存在
         UserDataModel userA = userDataMapper.selectByNameDistinct(dto.getUserA());
         if (userA == null) {

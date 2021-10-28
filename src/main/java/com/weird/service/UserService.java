@@ -181,7 +181,7 @@ public interface UserService {
      * @param dto 参数
      * @return 是否交换成功
      */
-    String swapCard(CardSwapDTO dto, String operator) throws Exception;
+    String swapCard(CardSwapDTO dto, String operator) throws OperationException;
 
     /**
      * 替换玩家持有的卡片

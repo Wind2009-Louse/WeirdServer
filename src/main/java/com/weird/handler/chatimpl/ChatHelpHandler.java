@@ -93,9 +93,13 @@ public class ChatHelpHandler implements ChatHandler {
                         printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽 卡名\n重抽自己的指定闪卡。" +
                                 "\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。";
                         break;
+                    case "交换":
+                    case "交易":
+                        printInfo = "交换/交易：\n>交换 自身卡片名 @对方 对方卡片名\n发起交换请求。\n>交换 同意/拒绝/取消 编号\n同意或者取消交换。\n* 交换需要经过对方以及管理员各一次同意方可生效。\n>交换 [列表]\n查看未处理的交换信息。";
+                        break;
                     default:
                         String startTime = runnerHandler.getStartTime();
-                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息/查询、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
+                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息/查询、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘、交换\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
                         break;
                 }
                 broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));
