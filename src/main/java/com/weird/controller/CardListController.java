@@ -365,6 +365,11 @@ public class CardListController {
         }
     }
 
+    /**
+     * 【管理端】替换用户的持有卡片
+     *
+     * @param param 参数
+     */
     @RequestMapping("/weird_project/card/exchangeOwn")
     public String exchangeUserCard(@RequestBody ReplaceCardParam param) throws Exception {
         if (param.getCount() == 0) {

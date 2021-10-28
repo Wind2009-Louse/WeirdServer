@@ -257,7 +257,7 @@ public class DeckController {
     }
 
     /**
-     * 重命名卡组
+     * 【ALL】重命名卡组
      *
      * @param param 参数
      * @return
@@ -281,7 +281,7 @@ public class DeckController {
     }
 
     /**
-     * 删除卡组
+     * 【ALL】删除卡组
      *
      * @param param
      * @return
@@ -302,7 +302,7 @@ public class DeckController {
     }
 
     /**
-     * 分享卡组
+     * 【ALL】分享卡组
      *
      * @param param 参数
      * @return
@@ -318,6 +318,13 @@ public class DeckController {
         return deckService.shareDeck(param, loginTypeEnum == LoginTypeEnum.ADMIN);
     }
 
+    /**
+     * 【管理端】根据卡组文件添加用户卡片
+     *
+     * @param param
+     * @return
+     * @throws Exception
+     */
     @RequestMapping("/weird_project/deck/importCard")
     public String importCard(@RequestBody DeckSubmitParam param) throws Exception {
         LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
@@ -329,6 +336,7 @@ public class DeckController {
         DeckInfoDTO deck = param.getDeck();
         deck.buildDeckList();
         BatchUpdateUserCardParam updateParam = new BatchUpdateUserCardParam();
+        updateParam.setName(param.getName());
         updateParam.setTarget(deck.getUserName());
         Map<String, Integer> cardCountMap = new HashMap<>();
         List<DeckCardDTO> allCardList = new LinkedList<>(deck.getMainList());

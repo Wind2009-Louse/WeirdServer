@@ -178,8 +178,8 @@ public class PackageServiceImpl implements PackageService {
      * @param param 批量添加参数
      * @return 返回结果
      */
-    @Transactional(rollbackFor = {Exception.class, Error.class})
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public String addCardList(BatchAddCardParam param, List<String> allCardList) {
         PackageInfoModel packageInfoModel = packageInfoMapper.selectByNameDistinct(param.getPackageName());
         if (packageInfoModel == null) {

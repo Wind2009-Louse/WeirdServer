@@ -170,6 +170,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean renameDeck(DeckSubmitParam param) throws Exception {
         UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
@@ -218,6 +219,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean removeDeck(DeckSubmitParam param) throws Exception {
         UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
@@ -251,6 +253,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public String shareDeck(DeckShareParam param, boolean isAdmin) throws Exception {
         UserDataModel user = userDataMapper.selectByNameInAllDistinct(param.getName());
         if (user == null) {
@@ -294,12 +297,14 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public void updateDeckCardWhenRenamed(long oldCode, long newCode, int newType) {
         deckMapper.updateDeckCodeStepA(oldCode, newCode, newType);
         deckMapper.updateDeckCodeStepB(oldCode, newCode);
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public void updateDeckCardCountWhenUpdateCount(String userName, long cardCode, int newCount) {
         UserDataModel user = userDataMapper.selectByNameInAllDistinct(userName);
         if (user != null) {
@@ -308,6 +313,7 @@ public class DeckServiceImpl implements DeckService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public void updateDeckCardCountWhenUpdateCount(long userId, long cardCode, int newCount) {
         List<DeckDetailModel> dbList = deckMapper.getDetailWhenChangeCount(userId, cardCode, newCount);
         if (!CollectionUtils.isEmpty(dbList)) {

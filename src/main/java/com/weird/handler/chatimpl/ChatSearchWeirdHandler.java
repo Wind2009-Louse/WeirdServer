@@ -164,7 +164,11 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
         cardDesc += String.format("\n所属：[%s]%s\n持有数量：%d", card.getRare(), card.getPackageName(), ownCount);
         if (card.getNeedCoin() > 0) {
-            cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
+            if (userData == null || selfOwnCount > 0) {
+                cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
+            } else {
+                cardDesc += String.format("\n需要硬币：%d/%d", userData.getCoin(), card.getNeedCoin());
+            }
         }
         if (ownCount > 0 && userData != null) {
             cardDesc += String.format("\n你持有：%d", selfOwnCount);

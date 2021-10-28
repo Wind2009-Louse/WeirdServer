@@ -69,6 +69,9 @@ public class ChatRareCheckHandler implements ChatHandler {
                 }
             } else {
                 String firstArg = argList.get(0);
+                if (argList.size() > 1) {
+                    targetUser = argList.get(1);
+                }
                 try {
                     queryGap = Long.parseLong(firstArg);
                 } catch (Exception e) {

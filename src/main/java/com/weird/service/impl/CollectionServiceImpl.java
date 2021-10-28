@@ -15,6 +15,7 @@ import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Collections;
@@ -61,6 +62,7 @@ public class CollectionServiceImpl implements CollectionService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean operation(CollectionParam param, LoginTypeEnum loginTypeEnum) throws OperationException {
         String userName = param.getName();
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);

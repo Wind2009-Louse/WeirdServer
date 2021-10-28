@@ -906,6 +906,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean unbindQQ(String qq) {
         return userDataMapper.clearQQ(qq) > 0;
     }
@@ -917,6 +918,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDisabled(String target, String operator, int disabled) {
         int count = userDataMapper.updateDisabled(target, disabled);
         if (count > 0) {
@@ -937,6 +939,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean updateDoubleRareCount(String userName, int count, String operator) {
         int originCount = userDataMapper.selectDoubleRareCount(userName);
         if (originCount != count) {
@@ -950,6 +953,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean resetDoubleRareCount(int count) {
         return userDataMapper.resetDoubleRareCount(count) > 0;
     }
