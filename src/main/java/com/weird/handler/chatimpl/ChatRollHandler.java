@@ -26,7 +26,8 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.weird.utils.BroadcastUtil.*;
+import static com.weird.utils.BroadcastUtil.NOT_BIND_WARNING;
+import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
  * 自助抽卡
@@ -668,51 +669,7 @@ public class ChatRollHandler implements ChatHandler {
             sb.append("\n无");
         } else {
             for (Map.Entry<String, RollRequestBO> entry : rollMap.entrySet()) {
-                final RollRequestBO requestBO = entry.getValue();
-                final String reRollCardName = requestBO.getReRollCardName();
-                switch (requestBO.getType()) {
-                    case NORMAL:
-                        sb.append(String.format("\n(%s)%s:%s抽%d包[%s]",
-                                entry.getKey(),
-                                TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
-                                requestBO.getUserName(),
-                                requestBO.getRollCount(),
-                                requestBO.getPackageInfo().getPackageName()));
-                        if (requestBO.isRareToStop()) {
-                            sb.append("，闪停");
-                        }
-                        if (requestBO.isShowAll()) {
-                            sb.append("(全)");
-                        }
-                        break;
-                    case REROLL:
-                        sb.append(String.format("\n(%s)%s:%s重抽[%s]的[%s]",
-                                entry.getKey(),
-                                TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
-                                requestBO.getUserName(),
-                                requestBO.getPackageInfo().getPackageName(),
-                                reRollCardName));
-                        break;
-                    case LEGEND:
-                        sb.append(String.format("\n(%s)%s:%s抽传说卡",
-                                entry.getKey(),
-                                TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
-                                requestBO.getUserName()));
-                        if (!StringUtils.isEmpty(reRollCardName)) {
-                            sb.append("(当前为[").append(reRollCardName).append("])");
-                        }
-                        break;
-                    case LEGEND_CONFIRM:
-                        sb.append(String.format("\n(%s)%s:%s将[%s]替换为[%s]",
-                                entry.getKey(),
-                                TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
-                                requestBO.getUserName(),
-                                requestBO.getReRollCardName(),
-                                requestBO.getReRollDescName()));
-                        break;
-                    default:
-                        break;
-                }
+                sb.append("\n(").append(entry.getKey()).append(")").append(entry.getValue().print());
             }
             sb.append("\n管理员可用以下指令处理所有普通抽卡：\n>抽卡 all");
         }
@@ -724,11 +681,21 @@ public class ChatRollHandler implements ChatHandler {
      */
     private synchronized void refreshRollRequest() {
         Iterator<Map.Entry<String, RollRequestBO>> iterator = rollMap.entrySet().iterator();
+        List<RollRequestBO> removedRequestList = new LinkedList<>();
         while (iterator.hasNext()) {
             Map.Entry<String, RollRequestBO> data = iterator.next();
             long requestTime = data.getValue().getRequestTime();
             if (System.currentTimeMillis() - requestTime > TIME_GAP) {
+                removedRequestList.add(data.getValue());
                 iterator.remove();
+            }
+        }
+        if (!CollectionUtils.isEmpty(removedRequestList)) {
+            StringBuilder sb = new StringBuilder();
+            for (RollRequestBO requestBO : removedRequestList) {
+                sb.append("你的以下抽卡请求已超时：\n").append(requestBO.print());
+                broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), requestBO.getRequest(), true));
+                sb.setLength(0);
             }
         }
     }

@@ -15,8 +15,10 @@
             <if test="operator != null and operator != ''">
                 operator like "%"||#{operator}||"%"
             </if>
-            <if test="detail != null and detail != ''">
-                detail like "%"||#{detail}||"%"
+            <if test="detailList != null and detailList.size() > 0">
+                <foreach collection="detailList" index="index" item="word" separator="and">
+                    detail like "%"||#{word}||"%"
+                </foreach>
             </if>
             <if test="startTimeStr != null and startTimeStr != ''">
                 and db_created_time &gt;= #{startTimeStr}

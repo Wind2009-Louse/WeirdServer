@@ -294,6 +294,7 @@
         set weekly_dust_change_n = 0,
             weekly_dust_change_r = 0,
             weekly_dust_change_alter = 0,
+            double_rare_count = 0,
             roulette = 1
     </update>
 

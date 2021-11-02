@@ -96,11 +96,21 @@ public class ChatExchangeHandler implements ChatHandler {
      */
     private synchronized void refreshExchangeList() {
         Iterator<Map.Entry<String, ExchangeRequestBO>> iterator = exchangeMap.entrySet().iterator();
+        List<ExchangeRequestBO> removedRequestList = new LinkedList<>();
         while (iterator.hasNext()) {
             Map.Entry<String, ExchangeRequestBO> data = iterator.next();
             long requestTime = data.getValue().getRequestTime();
             if (System.currentTimeMillis() - requestTime > TIME_GAP) {
+                removedRequestList.add(data.getValue());
                 iterator.remove();
+            }
+        }
+        if (!CollectionUtils.isEmpty(removedRequestList)) {
+            StringBuilder sb = new StringBuilder();
+            for (ExchangeRequestBO requestBO : removedRequestList) {
+                sb.append("你的以下交换请求已超时：\n").append(requestBO.print());
+                broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), requestBO.getRequest(), true));
+                sb.setLength(0);
             }
         }
     }
@@ -144,13 +154,7 @@ public class ChatExchangeHandler implements ChatHandler {
             sb.append("\n无");
         } else {
             for (ExchangeRequestBO requestBO : requestList) {
-                sb.append(String.format("\n(%s)%s:%s的[%s]和%s的[%s]交换",
-                        requestBO.getHash(),
-                        TIME_FORMAT.format(new Date(requestBO.getRequestTime())),
-                        requestBO.getUserName(),
-                        requestBO.getSelfCardName(),
-                        requestBO.getTargetName(),
-                        requestBO.getTargetCardName()));
+                sb.append("\n").append(requestBO.print());
             }
         }
     }
@@ -198,7 +202,7 @@ public class ChatExchangeHandler implements ChatHandler {
             throw new ResponseException("双方交换的卡片相同！");
         }
 
-        ExchangeRequestBO requestBO = new ExchangeRequestBO(currentUserName, targetUserName, selfCardName, targetCardName);
+        ExchangeRequestBO requestBO = new ExchangeRequestBO(currentUserName, targetUserName, selfCardName, targetCardName, o);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
         requestBO.setHash(hash);
         exchangeMap.put(hash, requestBO);

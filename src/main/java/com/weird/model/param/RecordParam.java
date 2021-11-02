@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * 搜索记录参数
@@ -26,6 +27,7 @@ public class RecordParam extends UserCheckParam implements Serializable, Fixable
      * 操作内容
      */
     String detail;
+    List<String> detailList;
 
     /**
      * 开始时间

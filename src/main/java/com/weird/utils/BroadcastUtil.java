@@ -4,10 +4,10 @@ import com.alibaba.fastjson.JSONObject;
 import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.comparator.Comparators;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -69,7 +69,7 @@ public class BroadcastUtil {
     static public String buildRollTable(Collection<RollBroadcastBO> targetList, String tableName) {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("%s\t闪数\t总数\t闪率", tableName));
-        targetList.stream().sorted((o1, o2) -> Comparators.comparable().compare(o2.getRareRate(), o1.getRareRate())).forEach(o -> {
+        targetList.stream().sorted(Comparator.comparingDouble(RollBroadcastBO::getRareRate).thenComparingLong(RollBroadcastBO::getTotalCount).reversed()).forEach(o -> {
             sb.append(String.format("\n%s\t%d\t%d\t%.2f%%", o.getName(), o.getRareCount(), o.getTotalCount(), o.getRareRate()));
         });
 
