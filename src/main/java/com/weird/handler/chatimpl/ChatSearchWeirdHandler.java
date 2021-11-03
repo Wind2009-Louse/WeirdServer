@@ -56,6 +56,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
     @Override
     public void handle(JSONObject o) {
         String message = o.getString("raw_message");
+        String userQQ =  o.getString("user_id");
         if (message.startsWith(SPLIT_STR)) {
             String originArgs = message.substring(SPLIT_STR.length()).trim();
 
@@ -72,10 +73,15 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 }
             }
             pageCount = Math.max(1, pageCount);
+            UserDataDTO userData = userService.getUserByQQ(userQQ);
 
             // 稀有度信息
             SearchCardParam param = new SearchCardParam();
-            param.setName("");
+            if (userData != null) {
+                param.setName(userData.getUserName());
+            } else {
+                param.setName("");
+            }
             param.setPage(1);
             param.setPageSize(10);
             List<String> argList = StringExtendUtil.split(cardArgs, " ");
@@ -110,12 +116,12 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
             int listSize = dbCardList.size();
             if (listSize == 1) {
-                printCardDetail(dbCardList.get(0), o);
+                printCardDetail(dbCardList.get(0), o, userData);
                 return;
             }
             CardListDTO firstTarget = dbCardList.stream().filter(c -> c.getCardName().equals(finalCardArgs)).findFirst().orElse(null);
             if (firstTarget != null) {
-                printCardDetail(firstTarget, o);
+                printCardDetail(firstTarget, o, userData);
                 return;
             }
 
@@ -125,16 +131,13 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             pageCount = (Math.min(totalPage, pageCount) - 1) * 10;
             for (int i = 0; i < 10 && i + pageCount < listSize; ++i) {
                 final CardListDTO data = dbCardList.get(i + pageCount);
-                sb.append(String.format("\n%d: [%s]%s", i + pageCount + 1, data.getRare(), data.getCardName()));
+                sb.append(String.format("\n%d: [%s]%s(%d)", i + pageCount + 1, data.getRare(), data.getCardName(), data.getCount()));
             }
             broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
         }
     }
 
-    private void printCardDetail(CardListDTO card, JSONObject request) {
-        String userQQ = request.getString("user_id");
-        UserDataDTO userData = userService.getUserByQQ(userQQ);
-
+    private void printCardDetail(CardListDTO card, JSONObject request, UserDataDTO userData) {
         String cardName = card.getCardName();
         CardPreviewModel cardData = cardPreviewService.selectPreviewByName(cardName);
         if (cardData == null) {

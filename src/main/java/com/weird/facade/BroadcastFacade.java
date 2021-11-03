@@ -137,7 +137,7 @@ public class BroadcastFacade {
             log.error("未配置广播信息！");
             return;
         }
-        String msg = sendObject.getString("msg");
+        String msg = sendObject.getString("message");
 
         // 延迟
         int retryTimes = this.retryTimes;
