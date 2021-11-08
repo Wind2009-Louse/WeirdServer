@@ -26,8 +26,7 @@ import org.springframework.util.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.weird.utils.BroadcastUtil.NOT_BIND_WARNING;
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 自助抽卡
@@ -80,8 +79,8 @@ public class ChatRollHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) throws Exception {
-        String message = o.getString("raw_message");
-        String userQQ = o.getString("user_id");
+        String message = o.getString(MESSAGE);
+        String userQQ = o.getString(QQ);
         List<String> argList = null;
         UserDataDTO userData = null;
         if (message.startsWith(SPLIT_STR)) {

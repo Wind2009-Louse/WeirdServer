@@ -63,8 +63,8 @@ public class ChatExchangeHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) throws Exception {
-        String message = o.getString("raw_message");
-        String userQQ = o.getString("user_id");
+        String message = o.getString(MESSAGE);
+        String userQQ = o.getString(QQ);
         for (String splitStr : SPLIT_STR_LIST) {
             if (message.startsWith(splitStr)) {
                 UserDataDTO userData = userService.getUserByQQ(userQQ);

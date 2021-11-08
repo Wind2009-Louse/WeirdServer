@@ -9,6 +9,7 @@ import com.weird.model.param.SearchRollParam;
 import com.weird.service.RollService;
 import com.weird.utils.PageResult;
 import com.weird.utils.StringExtendUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +26,7 @@ import static com.weird.utils.BroadcastUtil.*;
  * @date 2021.9.30
  */
 @Component
+@Slf4j
 public class ChatRareCheckHandler implements ChatHandler {
     @Autowired
     BroadcastFacade broadcastFacade;
@@ -48,8 +50,8 @@ public class ChatRareCheckHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
-        String groupId = o.getString("group_id");
+        String message = o.getString(MESSAGE);
+        String groupId = o.getString(GROUP_ID);
         if (!lastPrintAllTimeMap.containsKey(groupId)) {
             lastPrintAllTimeMap.put(groupId, 0L);
         }
@@ -151,7 +153,7 @@ public class ChatRareCheckHandler implements ChatHandler {
             LAST_SEARCH_TIME = currentTime;
             LAST_SEARCH_DAY_GAP = day;
         } catch (Exception e) {
-
+            log.error("刷新闪率缓存时失败：", e);
         }
     }
 }

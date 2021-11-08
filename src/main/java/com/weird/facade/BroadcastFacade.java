@@ -18,6 +18,8 @@ import org.springframework.util.StringUtils;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.CompletableFuture;
 
+import static com.weird.utils.BroadcastUtil.GROUP_ID;
+
 /**
  * 通过http接口发送QQ信息
  *
@@ -49,6 +51,8 @@ public class BroadcastFacade {
     private int retrySecond;
 
     private final static String HEADER_JSON = "application/json";
+
+    final static JSONObject EMPTY_JSON = new JSONObject();
 
     public void sendMsgAsync(String msg, int sleepMill) {
         Runnable runnable = () -> sendMsg(msg, sleepMill);
@@ -98,7 +102,7 @@ public class BroadcastFacade {
                 continue;
             }
             JSONObject sendObject = new JSONObject();
-            sendObject.put("group_id", id);
+            sendObject.put(GROUP_ID, id);
             sendObject.put("message", msg);
             while (retryTimes >= 0) {
                 if (retryTimes < this.retryTimes) {
@@ -153,7 +157,7 @@ public class BroadcastFacade {
                 sendObject.put("message", "(R)" + msg);
             }
             JSONObject responseObject = sendMsg(sendObject);
-            if (!"ok".equals(responseObject.get("status"))) {
+            if (!"ok".equals(responseObject.getOrDefault("status", ""))) {
                 log.warn("发送消息失败：{}。提示信息：{}", msg, responseObject.toJSONString());
                 retryTimes--;
             } else {
@@ -200,6 +204,6 @@ public class BroadcastFacade {
                 }
             }
         }
-        return null;
+        return EMPTY_JSON;
     }
 }

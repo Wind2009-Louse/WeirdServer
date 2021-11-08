@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+import static com.weird.utils.BroadcastUtil.MESSAGE;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -36,10 +37,12 @@ public class ChatController {
     public void ping(@RequestBody JSONObject o) {
         log.info(o.toJSONString());
         try {
-            if (o.containsKey("raw_message")) {
-                String rawMessage = o.getString("raw_message");
+            if (o.containsKey(MESSAGE)) {
+                String rawMessage = o.getString(MESSAGE);
                 if (rawMessage.startsWith("＞")) {
-                    o.put("raw_message", rawMessage.replaceFirst("＞", ">"));
+                    o.put(MESSAGE, rawMessage.replaceFirst("＞", ">"));
+                } else if (rawMessage.startsWith("》")) {
+                    o.put(MESSAGE, rawMessage.replaceFirst("》", ">"));
                 }
             }
             for (ChatHandler chatHandler : chatHandlerList) {

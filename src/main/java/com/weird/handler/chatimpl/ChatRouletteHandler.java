@@ -4,19 +4,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.dto.UserDataDTO;
-import com.weird.model.enums.LoginTypeEnum;
 import com.weird.service.RouletteService;
 import com.weird.service.UserService;
 import com.weird.utils.OperationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.DigestUtils;
-import org.springframework.util.StringUtils;
 
-import java.util.concurrent.ExecutionException;
-
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 转盘
@@ -40,8 +35,8 @@ public class ChatRouletteHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
-        String userQQ = o.getString("user_id");
+        String message = o.getString(MESSAGE);
+        String userQQ = o.getString(QQ);
         if (message.equals(SPLIT_STR)) {
             UserDataDTO userData = userService.getUserByQQ(userQQ);
             if (userData == null) {

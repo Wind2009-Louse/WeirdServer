@@ -83,6 +83,7 @@ public class PackageServiceImpl implements PackageService {
         }
         PackageInfoModel newPackage = new PackageInfoModel();
         newPackage.setPackageName(name);
+        newPackage.setDetail("");
         recordFacade.setRecord(operator, "添加卡包：[%s]", name);
         return packageInfoMapper.insert(newPackage) > 0;
     }

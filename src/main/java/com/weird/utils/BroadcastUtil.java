@@ -26,6 +26,10 @@ public class BroadcastUtil {
 
     static public SimpleDateFormat TIME_FORMAT = new SimpleDateFormat("HH:mm:ss");
 
+    final static public String MESSAGE = "raw_message";
+    final static public String QQ = "user_id";
+    final static public String GROUP_ID = "group_id";
+
     /**
      * 根据查询到的抽卡信息，统计抽卡数据
      *
@@ -84,18 +88,18 @@ public class BroadcastUtil {
         if (at) {
             boolean inGroup = "group".equals(request.getString("message_type"));
             if (inGroup) {
-                msg = String.format("[CQ:at,qq=%s] ", request.getString("user_id")) + msg;
+                msg = String.format("[CQ:at,qq=%s] ", request.getString(QQ)) + msg;
             }
         }
         JSONObject response = new JSONObject();
         response.put("message", msg);
 
         String messageType = request.getString("message_type");
-        if (request.containsKey("group_id")) {
-            response.put("group_id", request.get("group_id"));
+        if (request.containsKey(GROUP_ID)) {
+            response.put(GROUP_ID, request.get(GROUP_ID));
         }
-        if (request.containsKey("user_id")) {
-            response.put("user_id", request.get("user_id"));
+        if (request.containsKey(QQ)) {
+            response.put(QQ, request.get(QQ));
         }
         switch (messageType) {
             case "group":

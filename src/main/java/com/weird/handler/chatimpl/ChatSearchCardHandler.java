@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import java.util.List;
 import java.util.regex.Matcher;
 
+import static com.weird.utils.BroadcastUtil.MESSAGE;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -34,7 +35,7 @@ public class ChatSearchCardHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
+        String message = o.getString(MESSAGE);
         if (message.startsWith(SPLIT_STR)) {
             String cardArgs = message.substring(SPLIT_STR.length()).trim();
             int pageCount = 1;

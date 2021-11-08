@@ -43,8 +43,8 @@ public class ChatBindQQHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
-        String userQQ = o.getString("user_id");
+        String message = o.getString(MESSAGE);
+        String userQQ = o.getString(QQ);
         for (String splitString : SPLIT_LIST) {
             if (message.startsWith(splitString)) {
                 String args = message.substring(splitString.length()).trim();

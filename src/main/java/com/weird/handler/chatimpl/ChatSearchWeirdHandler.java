@@ -26,7 +26,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 诡异查卡
@@ -55,8 +55,8 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
-        String userQQ =  o.getString("user_id");
+        String message = o.getString(MESSAGE);
+        String userQQ =  o.getString(QQ);
         if (message.startsWith(SPLIT_STR)) {
             String originArgs = message.substring(SPLIT_STR.length()).trim();
 
@@ -165,16 +165,17 @@ public class ChatSearchWeirdHandler implements ChatHandler {
         List<ForbiddenModel> forbiddenList = forbiddenService.selectAll();
         ForbiddenModel forbid = forbiddenList.stream().filter(c -> card.getCardName().equals(c.getName())).findFirst().orElse(null);
 
-        cardDesc += String.format("\n所属：[%s]%s\n持有数量：%d", card.getRare(), card.getPackageName(), ownCount);
+        if (ownCount > 0 && userData != null) {
+            cardDesc += String.format("\n持有：%d/%d", selfOwnCount, ownCount);
+        } else {
+            cardDesc += String.format("\n持有：%d", ownCount);
+        }
         if (card.getNeedCoin() > 0) {
             if (userData == null || selfOwnCount > 0) {
                 cardDesc += String.format("\n需要硬币：%d", card.getNeedCoin());
             } else {
                 cardDesc += String.format("\n需要硬币：%d/%d", userData.getCoin(), card.getNeedCoin());
             }
-        }
-        if (ownCount > 0 && userData != null) {
-            cardDesc += String.format("\n你持有：%d", selfOwnCount);
         }
         if (forbid != null) {
             cardDesc += String.format("\n限制数量：%d", forbid.getCount());

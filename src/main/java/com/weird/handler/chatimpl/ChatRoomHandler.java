@@ -27,39 +27,45 @@ public class ChatRoomHandler implements ChatHandler {
 
     final static String CALL_STR = ">查房";
 
-    final static String RECORD_STR = "M#";
+    final static List<String> RECORD_STR_LIST = Arrays.asList("M#", "S#", "T#", "M,OT#");
 
     final static long TIME_GAP = 1000 * 60 * 90;
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
+        String message = o.getString(MESSAGE);
         if (!"group".equals(o.getString("message_type"))) {
             return;
         }
-        String groupId = o.getString("group_id");
+        String groupId = o.getString(GROUP_ID);
         if (!roomMap.containsKey(groupId)) {
             roomMap.put(groupId, new LinkedList<>());
         }
         List<ChatRoomBO> roomList = roomMap.getOrDefault(groupId, Collections.emptyList());
-        if (message.contains(RECORD_STR)) {
-            String userId = o.getString("user_id");
-            String userName = o.getJSONObject("sender").getString("card");
-            for (ChatRoomBO data : roomList) {
-                if (data.getUserId().equals(userId)) {
-                    data.setChatTime(System.currentTimeMillis());
-                    data.setUserName(userName);
-                    data.setDetail(message);
-                    return;
+
+        for (String recordStr : RECORD_STR_LIST) {
+            if (message.contains(recordStr)) {
+                String userId = o.getString(QQ);
+                String userName = o.getJSONObject("sender").getString("card");
+                for (ChatRoomBO data : roomList) {
+                    if (data.getUserId().equals(userId)) {
+                        data.setChatTime(System.currentTimeMillis());
+                        data.setUserName(userName);
+                        data.setDetail(message);
+                        return;
+                    }
                 }
+                ChatRoomBO chatRoomBO = new ChatRoomBO();
+                chatRoomBO.setChatTime(System.currentTimeMillis());
+                chatRoomBO.setUserName(userName);
+                chatRoomBO.setUserId(userId);
+                chatRoomBO.setDetail(message);
+                roomList.add(chatRoomBO);
+                return;
             }
-            ChatRoomBO chatRoomBO = new ChatRoomBO();
-            chatRoomBO.setChatTime(System.currentTimeMillis());
-            chatRoomBO.setUserName(userName);
-            chatRoomBO.setUserId(userId);
-            chatRoomBO.setDetail(message);
-            roomList.add(chatRoomBO);
-        } else if (CALL_STR.equals(message)) {
+        }
+
+        if (CALL_STR.equals(message)) {
             StringBuilder sb = new StringBuilder();
             sb.append("最近90分钟内的房间记录：");
             List<String> historyList = getRoomList(roomList);

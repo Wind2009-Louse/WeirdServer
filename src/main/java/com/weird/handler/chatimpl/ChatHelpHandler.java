@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.Arrays;
 import java.util.List;
 
+import static com.weird.utils.BroadcastUtil.MESSAGE;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -30,7 +31,7 @@ public class ChatHelpHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
+        String message = o.getString(MESSAGE);
         for (String splitStr : SPLIT_STR_LIST) {
             if (message.startsWith(splitStr)) {
                 String args = message.substring(splitStr.length()).trim();
@@ -99,7 +100,7 @@ public class ChatHelpHandler implements ChatHandler {
                         break;
                     default:
                         String startTime = runnerHandler.getStartTime();
-                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息/查询、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡、转盘、交换\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
+                        printInfo = String.format("服务启动于%s\n目前功能：\n帐号相关：认证/绑定、信息/查询、解绑\n查询：查卡、查诡异、查房、查闪率、查冒险\n简易功能：抽卡/锤/抽传说、转盘、交换\n请使用以下方法查看相关功能的帮助：\n>帮助 功能名", startTime);
                         break;
                 }
                 broadcastFacade.sendMsgAsync(buildResponse(printInfo, o));

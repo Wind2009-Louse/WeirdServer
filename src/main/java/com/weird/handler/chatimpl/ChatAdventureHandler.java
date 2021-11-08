@@ -15,6 +15,7 @@ import java.util.List;
 
 import static com.weird.model.enums.AdventureEnumConst.ADVENTURE_ROUND;
 import static com.weird.model.enums.AdventureEnumConst.PER_ROUND;
+import static com.weird.utils.BroadcastUtil.MESSAGE;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -32,7 +33,7 @@ public class ChatAdventureHandler implements ChatHandler {
 
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
+        String message = o.getString(MESSAGE);
         for (String splitStr : SPLIT_STR_LIST) {
             if (message.startsWith(splitStr)) {
                 String args = message.substring(splitStr.length()).trim();

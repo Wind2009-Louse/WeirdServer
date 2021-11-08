@@ -6,6 +6,7 @@ import com.weird.handler.ChatHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import static com.weird.utils.BroadcastUtil.MESSAGE;
 import static com.weird.utils.BroadcastUtil.buildResponse;
 
 /**
@@ -19,11 +20,14 @@ public class ChatAckHandler implements ChatHandler {
     @Autowired
     BroadcastFacade broadcastFacade;
 
+    final static String SYN = "syn";
+    final static String ACK = "syn";
+
     @Override
     public void handle(JSONObject o) {
-        String message = o.getString("raw_message");
-        if ("syn".equals(message)) {
-            broadcastFacade.sendMsgAsync(buildResponse("ack", o));
+        String message = o.getString(MESSAGE);
+        if (SYN.equals(message)) {
+            broadcastFacade.sendMsgAsync(buildResponse(ACK, o));
         }
     }
 }
