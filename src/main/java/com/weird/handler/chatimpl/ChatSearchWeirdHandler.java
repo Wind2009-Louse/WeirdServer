@@ -165,6 +165,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
         List<ForbiddenModel> forbiddenList = forbiddenService.selectAll();
         ForbiddenModel forbid = forbiddenList.stream().filter(c -> card.getCardName().equals(c.getName())).findFirst().orElse(null);
 
+        cardDesc += String.format("\n所属：[%s]%s", card.getRare(), card.getPackageName());
         if (ownCount > 0 && userData != null) {
             cardDesc += String.format("\n持有：%d/%d", selfOwnCount, ownCount);
         } else {
