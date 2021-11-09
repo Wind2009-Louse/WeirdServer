@@ -3,6 +3,7 @@ package com.weird.handler.chatimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
+import com.weird.model.CardPreviewModel;
 import com.weird.model.PackageInfoModel;
 import com.weird.model.bo.RollPackageBO;
 import com.weird.model.bo.RollRequestBO;
@@ -12,10 +13,7 @@ import com.weird.model.enums.RollRequestTypeEnum;
 import com.weird.model.param.ReplaceCardParam;
 import com.weird.model.param.SearchCardParam;
 import com.weird.service.*;
-import com.weird.utils.OperationException;
-import com.weird.utils.PackageUtil;
-import com.weird.utils.ResponseException;
-import com.weird.utils.StringExtendUtil;
+import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -519,7 +517,7 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         String resultBuilder = requestUserName + "对" + request.getReRollCardName() + "的重抽结果：\n" +
-                PackageUtil.printCard(destCard);
+                PackageUtil.printCard(destCard) + "\n" + getPreviewByName(destCard.getCardName());
         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));
         return true;
     }
@@ -571,7 +569,7 @@ public class ChatRollHandler implements ChatHandler {
 
         CardListDTO destCard = destCardList.get(rd.nextInt(destCardList.size()));
         String resultBuilder = requestUserName + "抽到的传说卡是：\n" +
-                PackageUtil.printCard(destCard);
+                PackageUtil.printCard(destCard) + "\n" + getPreviewByName(destCard.getCardName());;
 
         if (StringUtils.isEmpty(currentLegendName)) {
             try {
@@ -816,5 +814,17 @@ public class ChatRollHandler implements ChatHandler {
         result.getSpList().addAll(cardMap.getOrDefault("SER", Collections.emptyList()));
 
         return result;
+    }
+
+    private String getPreviewByName(String cardName) {
+        try {
+            CardPreviewModel preview = cardPreviewService.selectPreviewByName(cardName);
+            if (preview != null) {
+                return CardPreviewUtil.getPreview(preview);
+            }
+        } catch (Exception e) {
+            log.error("查询卡片出错：", e);
+        }
+        return "";
     }
 }
