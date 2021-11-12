@@ -91,6 +91,10 @@ public class ChatHelpHandler implements ChatHandler {
                                 "\n>抽卡/>抽卡 列表\n查看当前已经发起的抽卡请求。\n>抽卡 取消 编号\n发起者或者管理员取消抽卡请求。\n>抽卡 编号/ALL\n管理员进行指定的普通抽卡操作。";
                         break;
                     case "抽卡 2":
+                    case "锤":
+                    case "重抽":
+                    case "抽传说":
+                    case "传说":
                         printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽 卡名\n重抽自己的指定闪卡。" +
                                 "\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。";
                         break;

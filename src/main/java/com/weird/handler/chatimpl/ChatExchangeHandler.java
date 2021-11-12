@@ -73,7 +73,7 @@ public class ChatExchangeHandler implements ChatHandler {
                     return;
                 }
 
-                List<String> argList = StringExtendUtil.split(message.substring(splitStr.length()).trim(), " ");
+                List<String> argList = appendNameWithAt(StringExtendUtil.split(message.substring(splitStr.length()).trim(), " "));
                 if (CollectionUtils.isEmpty(argList) || (argList.size() == 1 && "列表".equals(argList.get(0)))) {
                     // 查阅
                     printList(o);
@@ -309,5 +309,38 @@ public class ChatExchangeHandler implements ChatHandler {
         }
 
         return targetCard;
+    }
+
+    /**
+     * 将有at的内容以at为分隔符进行前后合并，以兼容空格卡名
+     *
+     * @param targetList
+     * @return
+     */
+    private List<String> appendNameWithAt(List<String> targetList) {
+        if (CollectionUtils.isEmpty(targetList)) {
+            return Collections.emptyList();
+        }
+        List<String> stack = new LinkedList<>();
+        List<String> resultList = new LinkedList<>();
+        boolean at = false;
+        for (String str : targetList) {
+            Matcher matcher = AT_PATTERN.matcher(str);
+            if (matcher.matches()) {
+                at = true;
+                resultList.add(String.join(" ", stack));
+                resultList.add(str);
+                stack.clear();
+            } else {
+                stack.add(str);
+            }
+        }
+        if (at) {
+            resultList.add(String.join(" ", stack));
+        } else {
+            resultList.addAll(stack);
+        }
+
+        return resultList;
     }
 }

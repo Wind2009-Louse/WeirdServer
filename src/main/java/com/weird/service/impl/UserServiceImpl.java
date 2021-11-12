@@ -347,20 +347,27 @@ public class UserServiceImpl implements UserService {
             recordFacade.setRecord(userName, "[%s]合成了一张[%s]，剩余尘：%d。", userName, cardName, userModel.getDustCount());
         }
 
-        if (isRare) {
-            int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
-            broadcastFacade.sendMsgAsync(
-                    String.format(
-                            "【指定合成】%s 使用300尘合成了全服第%d张[%s]%s，实力进一步提升！",
-                            userName, rareCardCount, cardModel.getRare(), cardName)
-            );
-        } else if (onlyCoin) {
-            int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
-            broadcastFacade.sendMsgAsync(
-                    String.format(
-                            "【指定合成】%s 使用%d硬币兑换了全服第%d张[%s]%s，实力进一步提升！",
-                            userName, needCoin, rareCardCount, cardModel.getRare(), cardName)
-            );
+        if (isRare || onlyCoin) {
+            try {
+                int ownCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+                int selfOwnCount = userCardListMapper.selectCardOwnCountByUser(cardModel.getCardPk(), userModel.getUserId());
+
+                if (isRare) {
+                    broadcastFacade.sendMsgAsync(
+                            String.format(
+                                    "【指定合成】%s 使用300尘合成了第%d/%d张[%s]%s，实力进一步提升！",
+                                    userName, selfOwnCount, ownCount, cardModel.getRare(), cardName)
+                    );
+                } else {
+                    broadcastFacade.sendMsgAsync(
+                            String.format(
+                                    "【指定合成】%s 使用%d硬币兑换了第%d/%d张[%s]%s，实力进一步提升！",
+                                    userName, needCoin, selfOwnCount, ownCount, cardModel.getRare(), cardName)
+                    );
+                }
+            } catch (Exception e) {
+                log.error("广播失败：", e);
+            }
         }
 
         return true;
@@ -405,6 +412,7 @@ public class UserServiceImpl implements UserService {
         }
         Random rd = new Random();
         PackageCardModel rareCard = rareList.get(rd.nextInt(rareList.size()));
+        String cardName = rareCard.getCardName();
 
         // 记录查询
         UserCardListModel cardListModel = userCardListMapper.selectByUserCard(userModel.getUserId(), rareCard.getCardPk());
@@ -418,7 +426,7 @@ public class UserServiceImpl implements UserService {
         }
 
         cardListModel.setCount(cardListModel.getCount() + 1);
-        String result = String.format("抽到了[%s](%s)", rareCard.getCardName(), rareCard.getRare());
+        String result = String.format("抽到了[%s](%s)", cardName, rareCard.getRare());
         String resultToPlayer = String.format("你%s！", result);
 
         // 更新
@@ -466,7 +474,7 @@ public class UserServiceImpl implements UserService {
         rollDetailModel.setRollId(rollModel.getRollId());
         rollDetailModel.setCardPk(rareCard.getCardPk());
         rollDetailModel.setIsDust((byte) 0);
-        rollDetailModel.setCardName(rareCard.getCardName());
+        rollDetailModel.setCardName(cardName);
         rollDetailModel.setRare(rareCard.getRare());
         if (rollModel.getRollId() > 0 && rollDetailMapper.insert(rollDetailModel) <= 0) {
             throw new OperationException("插入转换记录时出错！");
@@ -478,15 +486,20 @@ public class UserServiceImpl implements UserService {
         recordFacade.setRecord(userName, "[%s]在[%s]随机抽到了一张[%s](%s)",
                 userName,
                 packageName,
-                rareCard.getCardName(),
+                cardName,
                 rareCard.getRare());
 
-        int rareCardCount = userCardListMapper.selectCardOwnCount(rareCard.getCardPk());
-        broadcastFacade.sendMsgAsync(
-                String.format(
-                        "【随机抽取】加美希尔表示震惊！%s 随机抽到了全服第%d张[%s]%s！",
-                        userName, rareCardCount, rareCard.getRare(), rareCard.getCardName())
-        );
+        try {
+            int ownCount = userCardListMapper.selectCardOwnCount(rareCard.getCardPk());
+            int selfOwnCount = userCardListMapper.selectCardOwnCountByUser(rareCard.getCardPk(), userModel.getUserId());
+            broadcastFacade.sendMsgAsync(
+                    String.format(
+                            "【随机抽取】加美希尔表示震惊！%s 随机抽到了第%d/%d张[%s]%s！",
+                            userName, selfOwnCount, ownCount, rareCard.getRare(), cardName)
+            );
+        } catch (Exception e) {
+            log.error("广播失败：", e);
+        }
 
         return resultToPlayer;
     }
@@ -555,12 +568,18 @@ public class UserServiceImpl implements UserService {
 
                 recordFacade.setRecord(userName, recordResult);
 
-                int rareCardCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
-                broadcastFacade.sendMsgAsync(
-                        String.format(
-                                "【指定合成】%s 使用%d硬币兑换了全服第%d张[%s]%s，实力进一步提升！",
-                                userName, needCoin, rareCardCount, cardModel.getRare(), cardName)
-                );
+                try {
+                    int ownCount = userCardListMapper.selectCardOwnCount(cardModel.getCardPk());
+                    int selfOwnCount = userCardListMapper.selectCardOwnCountByUser(cardModel.getCardPk(), userModel.getUserId());
+                    broadcastFacade.sendMsgAsync(
+                            String.format(
+                                    "【指定合成】%s 使用%d硬币兑换了第%d/%d张[%s]%s，实力进一步提升！",
+                                    userName, needCoin, selfOwnCount, ownCount, cardModel.getRare(), cardName)
+                    );
+                } catch (Exception e) {
+                    log.error("广播失败：", e);
+                }
+
 
                 return "兑换成功！";
             }
@@ -605,6 +624,11 @@ public class UserServiceImpl implements UserService {
         userCardListMapper.update(cardListModel);
         clearCardOwnListCache();
         recordFacade.setRecord(userName, "[%s]分解了%d张[%s]，当前尘：%d。", userName, count, cardName, userModel.getDustCount());
+        broadcastFacade.sendMsgAsync(
+                String.format(
+                        "【分解】壕无人性！%s分解了自己的%d张[%s]%s，换取了%d尘！！",
+                        userName, count, cardModel.getRare(), cardName, newDustCount)
+        );
         return newDustCount;
     }
 

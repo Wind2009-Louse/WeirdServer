@@ -21,7 +21,7 @@ public class ChatAckHandler implements ChatHandler {
     BroadcastFacade broadcastFacade;
 
     final static String SYN = "syn";
-    final static String ACK = "syn";
+    final static String ACK = "ack";
 
     @Override
     public void handle(JSONObject o) {

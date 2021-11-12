@@ -11,6 +11,7 @@ import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.RollStatusEnum;
 import com.weird.model.param.SearchRollParam;
 import com.weird.service.CardPreviewService;
+import com.weird.service.CardService;
 import com.weird.service.RollService;
 import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
@@ -21,11 +22,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
+import java.util.*;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
@@ -39,6 +36,9 @@ import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
 @Service
 @Slf4j
 public class RollServiceImpl implements RollService {
+    @Autowired
+    CardService cardService;
+
     @Autowired
     RollListMapper rollListMapper;
 
@@ -136,16 +136,21 @@ public class RollServiceImpl implements RollService {
         // 非正常抽卡不算月见黑
         boolean isNormalRoll = cardModels.size() == 3;
         int lastNonawardCount = userModel.getNonawardCount();
-        String firstAwardHint = "";
-        if (isNormalRoll) {
+        String firstAwardHint;
+        if (!isNormalRoll) {
+            firstAwardHint = "";
+        } else {
             if (!CollectionUtils.isEmpty(rareCardList)) {
                 int nonawardCount = userModel.getNonawardCount();
                 userModel.setNonawardCount(nonawardCount - nonawardCount % 100);
                 if (userModel.getDailyAward() <= 0) {
                     userModel.setDailyAward(1);
                     firstAwardHint = String.format("，这也是%s今天的第一张闪卡", userModel.getUserName());
+                } else {
+                    firstAwardHint = "";
                 }
             } else {
+                firstAwardHint = "";
                 userModel.setNonawardCount(userModel.getNonawardCount() + 1);
             }
 
@@ -168,58 +173,54 @@ public class RollServiceImpl implements RollService {
             throw new OperationException("更新用户数据失败！");
         }
 
-        int rareCardCount = 0;
-        if (rareCardList.size() == 1) {
-            PackageCardModel card = rareCardList.get(0);
-            rareCardCount = userCardListMapper.selectCardOwnCount(card.getCardPk());
+        // 广播
+        String info = "";
+
+        // 月见黑提示
+        int currentNonawardCount = userModel.getNonawardCount();
+        if (currentNonawardCount > 0) {
+            switch (currentNonawardCount % 100) {
+                case 90:
+                    info = String.format("【广播】%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
+                    break;
+                case 0:
+                    info = String.format("【广播】功夫不负有心人，%s 的月见黑达到了 %d！", userModel.getUserName(), currentNonawardCount);
+                    break;
+                default:
+                    break;
+            }
         }
 
-        // 广播
-        int finalRareCardCount = rareCardCount;
-        String finalFirstAwardHint = firstAwardHint;
-        CompletableFuture.runAsync(() -> {
-            String info = "";
+        // 闪卡提示
+        if (rareCardList.size() == 1) {
+            PackageCardModel card = rareCardList.get(0);
+            final String rareCardName = card.getCardName();
+            int ownCount = userCardListMapper.selectCardOwnCount(card.getCardPk());
+            int selfOwnCount = userCardListMapper.selectCardOwnCountByUser(card.getCardPk(), userModel.getUserId());
 
-            // 月见黑提示
-            int currentNonawardCount = userModel.getNonawardCount();
-            if (currentNonawardCount > 0) {
-                switch (currentNonawardCount % 100) {
-                    case 90:
-                        info = String.format("【广播】%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
-                        break;
-                    case 0:
-                        info = String.format("【广播】功夫不负有心人，%s 的月见黑达到了 %d！", userModel.getUserName(), currentNonawardCount);
-                        break;
-                    default:
-                        break;
-                }
+            if (isNormalRoll) {
+                info = String.format("【广播】可喜可贺，%s 在 %d 月见黑时，抽到了第%d/%d张[%s]%s%s！",
+                        userModel.getUserName(),
+                        lastNonawardCount,
+                        selfOwnCount,
+                        ownCount,
+                        card.getRare(),
+                        rareCardName,
+                        firstAwardHint);
+            } else {
+                info = String.format("【广播】恭喜 %s 抽到了全服第%d/%d张[%s]%s%s！",
+                        userModel.getUserName(),
+                        selfOwnCount,
+                        ownCount,
+                        card.getRare(),
+                        rareCardName,
+                        firstAwardHint);
             }
+        }
 
-            // 闪卡提示
-            if (rareCardList.size() == 1) {
-                PackageCardModel card = rareCardList.get(0);
-                if (isNormalRoll) {
-                    info = String.format("【广播】可喜可贺，%s 在 %d 月见黑时，抽到了全服第%d张[%s]%s%s！",
-                            userModel.getUserName(),
-                            lastNonawardCount,
-                            finalRareCardCount,
-                            card.getRare(),
-                            card.getCardName(),
-                            finalFirstAwardHint);
-                } else {
-                    info = String.format("【广播】恭喜 %s 抽到了全服第%d张[%s]%s%s！",
-                            userModel.getUserName(),
-                            finalRareCardCount,
-                            card.getRare(),
-                            card.getCardName(),
-                            finalFirstAwardHint);
-                }
-            }
-
-            if (!StringUtils.isEmpty(info)) {
-                broadcastFacade.sendMsgAsync(info);
-            }
-        });
+        if (!StringUtils.isEmpty(info)) {
+            broadcastFacade.sendMsgAsync(info);
+        }
 
         return true;
     }

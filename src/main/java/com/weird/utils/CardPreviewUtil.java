@@ -96,68 +96,82 @@ public class CardPreviewUtil {
     }};
 
     public static String getPreview(CardPreviewModel model) {
+        return getPreview(model, true);
+    }
+
+    public static String getPreview(CardPreviewModel model, boolean useName) {
         if (model == null) {
             return "";
         }
         String result = CacheUtil.PreviewCache.get(model.getName());
-        if (result != null) {
-            return result;
-        }
+        if (result == null) {
+            StringBuilder sb = new StringBuilder();
 
-        StringBuilder sb = new StringBuilder();
-
-        // 卡名
-        sb.append("[");
-        sb.append(model.getName());
-        sb.append("]\n");
-
-        // 种类
-        mapAppend(CARD_TYPES, model.getType(), "/", sb);
-        if (model.getType() == CardTypeEnum.SPELL.getValue() || model.getType() == CardTypeEnum.TRAP.getValue()) {
-            sb.append("/通常");
-        }
-
-        // 怪兽资料
-        if ((model.getType() & MONSTER_TYPE) != 0) {
-            // 等阶link
-            if ((model.getType() & LINK_TYPE) != 0) {
-                sb.append(" Link-");
-                sb.append(model.getLevel());
-            } else {
-                sb.append(" ★");
-                sb.append(model.getLevel() & 0xffff);
+            // 种类
+            mapAppend(CARD_TYPES, model.getType(), "/", sb);
+            if (model.getType() == CardTypeEnum.SPELL.getValue() || model.getType() == CardTypeEnum.TRAP.getValue()) {
+                sb.append("/通常");
             }
 
-            // 属性/种族
-            sb.append(" ");
-            mapAppend(CARD_ATTRIBUTES, model.getAttribute(), "&", sb);
-            sb.append("/");
-            mapAppend(CARD_RACES, model.getRace(), "&", sb);
-            sb.append(" ");
+            // 怪兽资料
+            if ((model.getType() & MONSTER_TYPE) != 0) {
+                // 等阶link
+                if ((model.getType() & LINK_TYPE) != 0) {
+                    sb.append(" Link-");
+                    sb.append(model.getLevel());
+                } else {
+                    sb.append(" ★");
+                    sb.append(model.getLevel() & 0xffff);
+                }
 
-            // ATK/DEF
-            if (model.getAtk() < 0) {
-                sb.append("?");
-            } else {
-                sb.append(model.getAtk());
-            }
-            sb.append("/");
-            if ((model.getType() & LINK_TYPE) != 0) {
-                mapAppend(LINK_MARKERS, model.getDef(), "", sb);
-            } else {
-                if (model.getDef() < 0) {
+                // 属性/种族
+                sb.append(" ");
+                mapAppend(CARD_ATTRIBUTES, model.getAttribute(), "&", sb);
+                sb.append("/");
+                mapAppend(CARD_RACES, model.getRace(), "&", sb);
+                sb.append(" ");
+
+                // ATK/DEF
+                if (model.getAtk() < 0) {
                     sb.append("?");
                 } else {
-                    sb.append(model.getDef());
+                    sb.append(model.getAtk());
+                }
+                sb.append("/");
+                if ((model.getType() & LINK_TYPE) != 0) {
+                    mapAppend(LINK_MARKERS, model.getDef(), "", sb);
+                } else {
+                    if (model.getDef() < 0) {
+                        sb.append("?");
+                    } else {
+                        sb.append(model.getDef());
+                    }
                 }
             }
-        }
-        sb.append("\n");
-        sb.append(model.getDesc());
+            sb.append("\n");
 
-        result = sb.toString();
-        CacheUtil.PreviewCache.put(model.getName(), result);
-        return result;
+            // 效果描述
+            sb.append(model.getDesc());
+
+            result = sb.toString();
+            CacheUtil.PreviewCache.put(model.getName(), result);
+        }
+
+        String prefix;
+        if (useName) {
+            prefix = buildName(model);
+        } else {
+            prefix = "";
+        }
+
+        return prefix + result;
+    }
+
+    private static String buildName(CardPreviewModel model) {
+        if (model == null) {
+            return "\n";
+        }
+        return "[" + model.getName() + "]\n";
     }
 
     private static void mapAppend(Map<Integer, String> map, int target, String joiner, StringBuilder sb) {

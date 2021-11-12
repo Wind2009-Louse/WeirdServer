@@ -820,7 +820,7 @@ public class ChatRollHandler implements ChatHandler {
         try {
             CardPreviewModel preview = cardPreviewService.selectPreviewByName(cardName);
             if (preview != null) {
-                return CardPreviewUtil.getPreview(preview);
+                return CardPreviewUtil.getPreview(preview, false);
             }
         } catch (Exception e) {
             log.error("查询卡片出错：", e);

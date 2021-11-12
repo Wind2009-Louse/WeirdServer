@@ -242,11 +242,18 @@
         order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 
-    <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="true">
+    <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="false">
         select sum(user_card_list.count)
         from user_card_list
         inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
         where card_pk = #{cardPk}
+    </select>
+
+    <select id="selectCardOwnCountByUser" resultType="java.lang.Integer" useCache="false">
+        select sum(user_card_list.count)
+        from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
+        where card_pk = #{cardPk} and user_card_list.user_id = #{userId}
     </select>
 
     <select id="selectCardOwnCountByName" resultType="java.lang.Integer" useCache="false">
