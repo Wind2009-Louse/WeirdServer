@@ -10,8 +10,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.List;
 
 import static com.weird.utils.BroadcastUtil.MESSAGE;
@@ -34,8 +39,11 @@ public class ChatController {
     BroadcastFacade broadcastFacade;
 
     @RequestMapping("/ping")
-    public void ping(@RequestBody JSONObject o) {
-        log.info(o.toJSONString());
+    @ResponseBody
+    public void ping(HttpServletRequest request) throws IOException {
+        String str = (new BufferedReader( new InputStreamReader(request.getInputStream(), "UTF-8"))).readLine();
+        log.info(str);
+        JSONObject o = JSONObject.parseObject(str);
         try {
             if (o.containsKey(MESSAGE)) {
                 String rawMessage = o.getString(MESSAGE);
