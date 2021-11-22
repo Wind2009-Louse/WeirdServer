@@ -1,10 +1,11 @@
-package com.weird.config;
+package com.weird.config.data;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -21,30 +22,32 @@ import javax.sql.DataSource;
  * @date 2016/11/25
  */
 @Configuration
-@MapperScan(basePackages = "com.weird.mapper.record", sqlSessionTemplateRef = "recordSqlSessionTemplate")
-public class RecordDataConfig {
+@MapperScan(basePackages = "com.weird.mapper.card", sqlSessionTemplateRef = "cardSqlSessionTemplate")
+public class CardDataConfig {
+    @Value("${mapperLocate.card}")
+    String mapperLocate;
 
-    @Bean(name = "recordDataSource")
-    @ConfigurationProperties(prefix = "spring.datasource.record")
-    public DataSource recordDataSource() {
+    @Bean(name = "cardDataSource")
+    @ConfigurationProperties(prefix = "spring.datasource.card")
+    public DataSource cardDataSource() {
         return DataSourceBuilder.create().build();
     }
 
-    @Bean(name = "recordSqlSessionFactory")
-    public SqlSessionFactory recordSqlSessionFactory(@Qualifier("recordDataSource") DataSource dataSource) throws Exception {
+    @Bean(name = "cardSqlSessionFactory")
+    public SqlSessionFactory cardSqlSessionFactory(@Qualifier("cardDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/record/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperLocate));
         return bean.getObject();
     }
 
-    @Bean(name = "recordTransactionManager")
-    public DataSourceTransactionManager recordTransactionManager(@Qualifier("recordDataSource") DataSource dataSource) {
+    @Bean(name = "cardTransactionManager")
+    public DataSourceTransactionManager cardTransactionManager(@Qualifier("cardDataSource") DataSource dataSource) {
         return new DataSourceTransactionManager(dataSource);
     }
 
-    @Bean(name = "recordSqlSessionTemplate")
-    public SqlSessionTemplate recordSqlSessionTemplate(@Qualifier("recordSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
+    @Bean(name = "cardSqlSessionTemplate")
+    public SqlSessionTemplate cardSqlSessionTemplate(@Qualifier("cardSqlSessionFactory") SqlSessionFactory sqlSessionFactory) {
         return new SqlSessionTemplate(sqlSessionFactory);
     }
 

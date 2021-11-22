@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.record.RecordMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="256"
+           eviction="LRU"
+           readOnly="false"/>
+    <insert id="insert" parameterType="com.weird.model.RecordModel">
+        insert into record (operator, detail)
+        values (#{operator}, #{detail})
+    </insert>
+
+    <sql id="param">
+        <where>
+            <if test="operator != null and operator != ''">
+                operator like concat("%",#{operator},"%")
+            </if>
+            <if test="detailList != null and detailList.size() > 0">
+                <foreach collection="detailList" index="index" item="word" separator="and">
+                    detail like concat("%",#{word},"%")
+                </foreach>
+            </if>
+            <if test="startTimeStr != null and startTimeStr != ''">
+                and db_created_time &gt;= #{startTimeStr}
+            </if>
+            <if test="endTimeStr != null and endTimeStr != ''">
+                and db_created_time &lt;= #{endTimeStr}
+            </if>
+        </where>
+    </sql>
+
+    <select id="count" parameterType="com.weird.model.param.RecordParam" resultType="java.lang.Integer">
+        select count(*)
+        from record
+        <include refid="param"/>
+    </select>
+
+    <select id="searchList" parameterType="com.weird.model.param.RecordParam" resultType="com.weird.model.RecordModel">
+        select
+            record_id recordId,
+            operator operator,
+            detail detail,
+            db_created_time time
+        from record
+        <include refid="param"/>
+        order by record_id desc
+    </select>
+</mapper>

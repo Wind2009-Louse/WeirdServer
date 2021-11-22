@@ -1,0 +1,278 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.UserCardListMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="1024"
+           eviction="LRU"
+           readOnly="false"/>
+    <resultMap id="BaseResultMap" type="com.weird.model.UserCardListModel">
+        <result column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="com.weird.model.UserCardListModel" flushCache="true">
+        insert into user_card_list (user_id, card_pk, count
+        )
+        values (#{userId,jdbcType=INTEGER}, #{cardPk,jdbcType=INTEGER}, #{count,jdbcType=INTEGER}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.UserCardListModel" flushCache="true">
+        insert into user_card_list
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="cardPk != null">
+                card_pk,
+            </if>
+            <if test="count != null">
+                count,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="cardPk != null">
+                #{cardPk,jdbcType=INTEGER},
+            </if>
+            <if test="count != null">
+                #{count,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 自定义 -->
+    <select id="selectByUserCard" resultMap="BaseResultMap" useCache="true">
+        select user_id, card_pk, count
+        from user_card_list
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </select>
+
+    <update id="update" parameterType="com.weird.model.UserCardListModel" flushCache="true">
+        update user_card_list
+        set count = #{count}
+        where user_id = #{userId} and card_pk = #{cardPk}
+    </update>
+
+
+    <resultMap id="CardListDTO" type="com.weird.model.dto.CardListDTO">
+        <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="need_coin" jdbcType="INTEGER" property="needCoin"/>
+    </resultMap>
+
+    <select id="selectCardListAdmin" resultMap="CardListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.need_coin,
+        package_card.rare,
+        3 count
+        from package_info inner join package_card on package_info.package_id = package_card.package_id
+        <where>
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                and package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (card_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                <if test="originName != null and originName != ''">
+                    or card_name like concat("%",#{originName},"%")
+                </if>
+                )
+            </if>
+            <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+                and card_name like concat("%",#{originName},"%")
+            </if>
+            <if test="rareList != null and rareList.size() > 0">
+                and rare in
+                <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by package_info.order_num, package_card.rare, package_card.card_name
+    </select>
+
+    <select id="selectCardListUser" resultMap="CardListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.rare,
+        user_card_list.count,
+        package_card.need_coin,
+        collection.card_pk inCollection
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        left join user_data on user_data.user_name = #{name} and user_data.disabled = 0
+        left  join user_card_list on user_card_list.card_pk = package_card.card_pk and user_card_list.user_id = user_data.user_id
+        left  join collection on collection.user_id = user_data.user_id and collection.card_pk = package_card.card_pk
+        <where>
+            (
+                package_card.rare = "HR"
+                or package_card.card_pk in (select distinct card_pk from user_card_list)
+                or package_card.need_coin > 0
+            )
+            <if test="packageNameList != null and packageNameList.size() > 0">
+                and package_info.package_name in
+                <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (package_card.card_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                <if test="originName != null and originName != ''">
+                    or package_card.card_name like concat("%",#{originName},"%")
+                </if>
+                )
+            </if>
+            <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+                and package_card.card_name like concat("%",#{originName},"%")
+            </if>
+            <if test="rareList != null and rareList.size() > 0">
+                and package_card.rare in
+                <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="cardPkList != null and cardPkList.size() > 0">
+                and package_card.card_pk in
+                <foreach collection="cardPkList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by package_info.order_num, package_card.rare, package_card.card_name
+    </select>
+
+    <select id="selectCardListCollection" resultMap="CardListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.rare,
+        uc.count
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        left join
+        (select user_card_list.card_pk card_pk, user_card_list.count count from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.user_name = #{name} and user_data.disabled = 0) uc
+        on uc.card_pk = package_card.card_pk
+        <where>
+            package_card.card_pk in
+            <foreach collection="cardPkList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+        order by package_info.order_num, package_card.rare, package_card.card_name
+    </select>
+
+    <select id="getVisibleCardPkList" resultType="java.lang.Integer">
+        select package_card.card_pk
+        from package_info
+        inner join package_card on package_info.package_id = package_card.package_id
+        where
+            package_card.rare = "HR"
+        or
+            package_card.card_pk in (select distinct card_pk from user_card_list)
+        or
+            package_card.need_coin > 0
+    </select>
+
+    <resultMap id="CardOwnListDTO" type="com.weird.model.dto.CardOwnListDTO">
+        <result column="package_name" jdbcType="VARCHAR" property="packageName"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+        <result column="need_coin" jdbcType="INTEGER" property="needCoin"/>
+    </resultMap>
+
+    <select id="selectCardOwnList" resultMap="CardOwnListDTO" useCache="false">
+        select package_info.package_name,
+        package_card.card_name,
+        package_card.rare,
+        package_card.need_coin,
+        user_data.user_name,
+        user_card_list.count
+        from package_info inner join package_card on package_info.package_id = package_card.package_id
+        inner join user_card_list on package_card.card_pk = user_card_list.card_pk
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
+        where
+        user_data.is_admin = 0 and user_card_list.count > 0
+        <if test="packageNameList != null and packageNameList.size() > 0">
+            and package_name in
+            <foreach collection="packageNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="cardNameList != null and cardNameList.size() > 0">
+            and (card_name in
+            <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            <if test="originName != null and originName != ''">
+                or card_name like concat("%",#{originName},"%")
+            </if>
+            )
+        </if>
+        <if test="(cardNameList == null or cardNameList.size() == 0) and originName != null and originName != ''">
+            and card_name like concat("%",#{originName},"%")
+        </if>
+        <if test="rareList != null and rareList.size() > 0">
+            and rare in
+            <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="userNameList != null and userNameList.size() > 0">
+            and user_name in
+            <foreach collection="userNameList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name
+    </select>
+
+    <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="false">
+        select sum(user_card_list.count)
+        from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
+        where card_pk = #{cardPk}
+    </select>
+
+    <select id="selectCardOwnCountByUser" resultType="java.lang.Integer" useCache="false">
+        select sum(user_card_list.count)
+        from user_card_list
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
+        where card_pk = #{cardPk} and user_card_list.user_id = #{userId}
+    </select>
+
+    <select id="selectCardOwnCountByName" resultType="java.lang.Integer" useCache="false">
+        select sum(user_card_list.count)
+        from user_card_list
+        inner join package_card on package_card.card_pk = user_card_list.card_pk
+        inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0
+        where package_card.card_name = #{cardName}
+    </select>
+
+    <insert id="insertBatch">
+        insert into user_card_list (user_id, card_pk, count)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (
+            #{item.userId},
+            #{item.cardPk},
+            #{item.count}
+            )
+        </foreach>
+    </insert>
+</mapper>

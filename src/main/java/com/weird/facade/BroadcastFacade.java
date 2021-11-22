@@ -2,6 +2,7 @@ package com.weird.facade;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.BroadcastConfig;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -11,7 +12,7 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -29,26 +30,8 @@ import static com.weird.utils.BroadcastUtil.GROUP_ID;
 @Component
 @Slf4j
 public class BroadcastFacade {
-    @Value("${broadcast.enable}")
-    private boolean enable;
-
-    /**
-     * HTTP接口URL
-     */
-    @Value("${broadcast.url}")
-    private String APIUrl;
-
-    /**
-     * 发送群ID
-     */
-    @Value("${broadcast.group}")
-    private String groupID;
-
-    @Value("${broadcast.retry.times:3}")
-    private int retryTimes;
-
-    @Value("${broadcast.retry.second:5}")
-    private int retrySecond;
+    @Autowired
+    BroadcastConfig broadcastConfig;
 
     private final static String HEADER_JSON = "application/json";
 
@@ -79,16 +62,17 @@ public class BroadcastFacade {
      * @param sleepMill 延迟时间
      */
     private void sendMsg(String msg, int sleepMill) {
-        if (!enable) {
+        if (!broadcastConfig.isEnable()) {
             return;
         }
-        if (StringUtils.isEmpty(APIUrl) || StringUtils.isEmpty(groupID)) {
+        String groupIdStr = broadcastConfig.getGroupIdStr();
+        if (StringUtils.isEmpty(broadcastConfig.getUrl()) || StringUtils.isEmpty(groupIdStr)) {
             log.error("未配置广播信息！");
             return;
         }
 
         // 延迟
-        int retryTimes = this.retryTimes;
+        int retryTimes = broadcastConfig.getRetryTimes();
         try {
             if (sleepMill > 0) {
                 Thread.sleep(sleepMill);
@@ -96,7 +80,7 @@ public class BroadcastFacade {
         } catch (InterruptedException e) {
         }
 
-        String[] groupList = groupID.split(",");
+        String[] groupList = groupIdStr.split(",");
         for (String id : groupList) {
             if (StringUtils.isEmpty(id)) {
                 continue;
@@ -105,7 +89,7 @@ public class BroadcastFacade {
             sendObject.put(GROUP_ID, id);
             sendObject.put("message", msg);
             while (retryTimes >= 0) {
-                if (retryTimes < this.retryTimes) {
+                if (retryTimes < broadcastConfig.getRetryTimes()) {
                     sendObject.put("message", "(R)" + msg);
                 }
                 JSONObject responseObject = sendMsg(sendObject);
@@ -118,7 +102,7 @@ public class BroadcastFacade {
                 if (retryTimes >= 0) {
                     try {
                         if (sleepMill > 0) {
-                            Thread.sleep(retrySecond);
+                            Thread.sleep(broadcastConfig.getRetrySecond());
                         }
                     } catch (InterruptedException e) {
                     }
@@ -134,17 +118,18 @@ public class BroadcastFacade {
      * @param sleepMill  延迟时间
      */
     private void sendMsg(JSONObject sendObject, int sleepMill) {
-        if (!enable || sendObject == null) {
+        if (!broadcastConfig.isEnable() || sendObject == null) {
             return;
         }
-        if (StringUtils.isEmpty(APIUrl) || StringUtils.isEmpty(groupID)) {
+        String groupIdStr = broadcastConfig.getGroupIdStr();
+        if (StringUtils.isEmpty(broadcastConfig.getUrl()) || StringUtils.isEmpty(groupIdStr)) {
             log.error("未配置广播信息！");
             return;
         }
         String msg = sendObject.getString("message");
 
         // 延迟
-        int retryTimes = this.retryTimes;
+        int retryTimes = broadcastConfig.getRetryTimes();
         try {
             if (sleepMill > 0) {
                 Thread.sleep(sleepMill);
@@ -153,7 +138,7 @@ public class BroadcastFacade {
         }
 
         while (retryTimes >= 0) {
-            if (retryTimes < this.retryTimes) {
+            if (retryTimes < broadcastConfig.getRetryTimes()) {
                 sendObject.put("message", "(R)" + msg);
             }
             JSONObject responseObject = sendMsg(sendObject);
@@ -166,7 +151,7 @@ public class BroadcastFacade {
             if (retryTimes >= 0) {
                 try {
                     if (sleepMill > 0) {
-                        Thread.sleep(retrySecond);
+                        Thread.sleep(broadcastConfig.getRetrySecond());
                     }
                 } catch (InterruptedException e) {
                 }
@@ -183,7 +168,7 @@ public class BroadcastFacade {
     private JSONObject sendMsg(JSONObject jsonObject) {
         CloseableHttpClient httpClient = null;
         try {
-            HttpPost postRequest = new HttpPost(APIUrl);
+            HttpPost postRequest = new HttpPost(broadcastConfig.getUrl());
             postRequest.addHeader(HTTP.CONTENT_TYPE, HEADER_JSON);
             StringEntity param = new StringEntity(jsonObject.toJSONString(), StandardCharsets.UTF_8);
             param.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, HEADER_JSON));

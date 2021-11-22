@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.ForbiddenMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="2048"
+           eviction="LRU"
+           readOnly="false"/>
+    <resultMap id="BaseResultMap" type="com.weird.model.ForbiddenModel">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="code" jdbcType="INTEGER" property="code"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="count" jdbcType="INTEGER" property="count"/>
+    </resultMap>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        select code, name, count from forbidden;
+    </select>
+
+    <insert id="batchInsert" flushCache="true">
+        insert into forbidden (`code`, `name`, `count`)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.code}, #{item.name}, #{item.count})
+        </foreach>
+    </insert>
+
+    <delete id="clearAll" flushCache="true">
+        delete from forbidden;
+    </delete>
+</mapper>

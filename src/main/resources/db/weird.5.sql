@@ -30,7 +30,8 @@ CREATE TABLE `card_history` (
   `new_name` varchar(45) NOT NULL DEFAULT '' COMMENT '现卡名',
   `rare` varchar(45) NOT NULL,
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡片更改历史';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -81,6 +82,8 @@ DROP TABLE IF EXISTS `package_info`;
 CREATE TABLE `package_info` (
   `package_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '卡包ID',
   `package_name` varchar(45) NOT NULL DEFAULT '' COMMENT '卡包名称',
+  `order_num` int(11) NOT NULL DEFAULT 0 COMMENT '排序号',
+  `detail` text NOT NULL COMMENT '卡包说明',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
   `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
   PRIMARY KEY (`package_id`)
@@ -104,13 +107,14 @@ DROP TABLE IF EXISTS `roll_detail`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `roll_detail` (
-  `roll_id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT '抽卡记录ID',
+  `roll_id` bigint(20) NOT NULL COMMENT '抽卡记录ID',
   `card_pk` int(11) NOT NULL COMMENT '抽卡PK',
   `is_dust` tinyint(4) NOT NULL COMMENT '是否转化为尘',
   `card_name` varchar(200) NOT NULL DEFAULT '' COMMENT '卡名',
   `rare` varchar(45) NOT NULL DEFAULT 'N' COMMENT '稀有度',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  KEY `idx_roll_id` (`roll_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='抽卡详细记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -158,11 +162,13 @@ DROP TABLE IF EXISTS `user_card_list`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `user_card_list` (
-  `user_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
+  `user_id` int(11) NOT NULL COMMENT '用户ID',
   `card_pk` int(11) NOT NULL DEFAULT '0' COMMENT '卡片PK',
   `count` int(11) NOT NULL DEFAULT '0' COMMENT '持有数量',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_card_pk` (`card_pk`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户持有的卡片';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -184,10 +190,11 @@ DROP TABLE IF EXISTS `record`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `record` (
   `record_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '日志ID',
-  `operator` varchat(45) NOT NULL DEFAULT '' COMMENT '日志操作者',
+  `operator` varchar(45) NOT NULL DEFAULT '' COMMENT '日志操作者',
   `detail` text NOT NULL DEFAULT '' COMMENT '日志内容',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`record_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='操作日志记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -209,10 +216,11 @@ DROP TABLE IF EXISTS `collection`;
  SET character_set_client = utf8mb4 ;
 CREATE TABLE `collection` (
   `collection_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '收藏ID',
-  `user_id` int(11) NOT NULL DEFAULT '' COMMENT '收藏用户ID',
-  `card_pk` int(11) NOT NULL DEFAULT '' COMMENT '收藏卡片ID',
+  `user_id` int(11) NOT NULL DEFAULT 0 COMMENT '收藏用户ID',
+  `card_pk` int(11) NOT NULL DEFAULT 0 COMMENT '收藏卡片ID',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`collection_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡片收藏记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -264,7 +272,7 @@ CREATE TABLE `user_data` (
 
 LOCK TABLES `user_data` WRITE;
 /*!40000 ALTER TABLE `user_data` DISABLE KEYS */;
-INSERT INTO `user_data` (`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`) VALUES ("admin","E10ADC3949BA59ABBE56E057F20F883E",1,0,0,0);
+INSERT INTO `user_data` (`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 /*!40000 ALTER TABLE `user_data` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -282,7 +290,8 @@ CREATE TABLE `deck_list` (
   `last_modify_time` bigint(20) NOT NULL DEFAULT 0 COMMENT '最后更新时间',
   `share` int(11) NOT NULL DEFAULT 0 COMMENT '是否分享（0=不分享，1=分享）',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`deck_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡组列表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -309,7 +318,9 @@ CREATE TABLE `deck_detail` (
   `count` int(11) NOT NULL DEFAULT 0 COMMENT '数量',
   `type` int(11) NOT NULL DEFAULT 0 COMMENT '类型（1=主卡组，2=额外卡组，3=副卡组）',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`detail_id`),
+  KEY `idx_deck_id` (`deck_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卡组卡片信息';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -333,9 +344,10 @@ CREATE TABLE `roulette_config` (
   `config_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '配置ID',
   `detail` text NOT NULL DEFAULT '' COMMENT '配置内容',
   `rate` int NOT NULL DEFAULT '0' COMMENT '配置比率',
-  `detail` text NOT NULL DEFAULT '' COMMENT '配置项颜色',
+  `color` text NOT NULL DEFAULT '' COMMENT '配置项颜色',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`config_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转盘配置表';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -360,7 +372,8 @@ CREATE TABLE `roulette_history` (
   `user_name` varchar(45) NOT NULL DEFAULT '' COMMENT '转盘用户',
   `detail` text NOT NULL DEFAULT '' COMMENT '转盘结果',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`history_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='转盘历史记录';
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -386,7 +399,8 @@ CREATE TABLE `forbidden` (
   `name` text NOT NULL DEFAULT '' COMMENT '卡片名称',
   `count` int NOT NULL DEFAULT '0' COMMENT '限制数量',
   `db_created_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
-  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间'
+  `db_updated_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='禁限卡表配置';
 /*!40101 SET character_set_client = @saved_cs_client */;
 

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.RouletteMapper">
+    <resultMap id="ConfigMap" type="com.weird.model.RouletteConfigModel">
+        <id column="config_id" jdbcType="BIGINT" property="configId"/>
+        <result column="detail" jdbcType="VARCHAR" property="detail"/>
+        <result column="rate" jdbcType="INTEGER" property="rate"/>
+        <result column="color" jdbcType="VARCHAR" property="color"/>
+    </resultMap>
+    <select id="selectConfigList" resultType="com.weird.model.dto.RouletteConfigDTO">
+        select
+            detail, rate, color
+        from roulette_config
+        order by config_id
+    </select>
+    <delete id="clearConfig">
+        delete from roulette_config
+    </delete>
+    <insert id="batchInsertConfig">
+        insert into roulette_config (`detail`, `rate`, `color`)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.detail}, #{item.rate}, #{item.color})
+        </foreach>
+    </insert>
+
+    <insert id="addHistory">
+        insert into roulette_history (`user_name`, `detail`)
+        values
+        (#{userName}, #{detail})
+    </insert>
+    <select id="countHistory" resultType="java.lang.Integer">
+        select count(1) from roulette_history
+    </select>
+    <select id="searchHistory" resultType="com.weird.model.dto.RouletteHistoryDTO">
+        select
+            user_name userName,
+            detail detail,
+            db_created_time time
+        from roulette_history
+        order by history_id desc
+    </select>
+
+</mapper>

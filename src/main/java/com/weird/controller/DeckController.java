@@ -3,6 +3,7 @@ package com.weird.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
+import com.weird.config.DeckCheckConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.ForbiddenModel;
 import com.weird.model.dto.CardListDTO;
@@ -57,8 +58,8 @@ public class DeckController {
     @Autowired
     ForbiddenService forbiddenService;
 
-    @Value("${deckcheck.arg:{}}")
-    private String deckCheckArg;
+    @Autowired
+    DeckCheckConfig deckCheckConfig;
 
     /**
      * 【ALL】搜索卡组列表
@@ -356,7 +357,7 @@ public class DeckController {
     }
 
     private void checkDeck(List<DeckCardDTO> allCardList) throws OperationException {
-        JSONObject deckCheckMap = JSONObject.parseObject(deckCheckArg);
+        Map<String, Map<String, Object>> deckCheckMap = deckCheckConfig.getArg();
         if (CollectionUtils.isEmpty(deckCheckMap)) {
             log.warn("卡组检查未配置");
             return;
@@ -370,9 +371,9 @@ public class DeckController {
         int shouldCount = 0;
 
         // 遍历所有卡组配置
-        for (Map.Entry<String, Object> entry : deckCheckMap.entrySet()) {
+        for (Map.Entry<String, Map<String, Object>> entry : deckCheckMap.entrySet()) {
             DeckInfoDTO dbDeck = deckService.getDeckById(Integer.parseInt(entry.getKey()));
-            JSONObject detailMap = (JSONObject) entry.getValue();
+            Map<String, Object> detailMap = entry.getValue();
             for (Map.Entry<String, Object> detailEntry : detailMap.entrySet()) {
                 int type = Integer.parseInt(detailEntry.getKey());
                 int detailCount = Integer.parseInt((String) detailEntry.getValue());

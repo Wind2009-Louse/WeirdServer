@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.RollDetailMapper">
+    <resultMap id="BaseResultMap" type="com.weird.model.RollDetailModel">
+        <result column="roll_id" jdbcType="BIGINT" property="rollId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="is_dust" jdbcType="TINYINT" property="isDust"/>
+        <result column="card_name" jdbcType="VARCHAR" property="cardName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+    </resultMap>
+    <insert id="insert" parameterType="com.weird.model.RollDetailModel">
+        insert into roll_detail (roll_id, card_pk, is_dust, card_name, rare
+        )
+        values (#{rollId,jdbcType=BIGINT}, #{cardPk,jdbcType=INTEGER}, #{isDust,jdbcType=TINYINT}, #{cardName}, #{rare}
+        )
+    </insert>
+    <insert id="insertSelective" parameterType="com.weird.model.RollDetailModel">
+        insert into roll_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                roll_id,
+            </if>
+            <if test="cardPk != null">
+                card_pk,
+            </if>
+            <if test="isDust != null">
+                is_dust,
+            </if>
+            <if test="cardName != null">
+                card_name,
+            </if>
+            <if test="rare != null">
+                rare,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="rollId != null">
+                #{rollId,jdbcType=BIGINT},
+            </if>
+            <if test="cardPk != null">
+                #{cardPk,jdbcType=INTEGER},
+            </if>
+            <if test="isDust != null">
+                #{isDust,jdbcType=TINYINT},
+            </if>
+            <if test="cardName != null">
+                #{cardName},
+            </if>
+            <if test="rare != null">
+                #{rare},
+            </if>
+        </trim>
+    </insert>
+
+    <!-- 自定义 -->
+    <select id="selectCardPkById" resultMap="BaseResultMap">
+        select roll_id, card_pk, is_dust, card_name, rare from roll_detail where roll_id = #{roll_id}
+    </select>
+</mapper>

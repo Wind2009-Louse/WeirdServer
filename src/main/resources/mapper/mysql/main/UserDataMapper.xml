@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.UserDataMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="256"
+           eviction="LRU"
+           readOnly="false"/>
+    <resultMap id="BaseResultMap" type="com.weird.model.UserDataModel">
+        <id column="user_id" jdbcType="INTEGER" property="userId"/>
+        <result column="user_name" jdbcType="VARCHAR" property="userName"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="qq" jdbcType="VARCHAR" property="qq"/>
+        <result column="is_admin" jdbcType="TINYINT" property="isAdmin"/>
+        <result column="nonaward_count" jdbcType="INTEGER" property="nonawardCount"/>
+        <result column="dust_count" jdbcType="INTEGER" property="dustCount"/>
+        <result column="duel_point" jdbcType="INTEGER" property="duelPoint"/>
+        <result column="daily_win" jdbcType="INTEGER" property="dailyWin"/>
+        <result column="daily_lost" jdbcType="INTEGER" property="dailyLost"/>
+        <result column="daily_award" jdbcType="INTEGER" property="dailyAward"/>
+        <result column="weekly_dust_change_n" jdbcType="INTEGER" property="weeklyDustChangeN"/>
+        <result column="weekly_dust_change_r" jdbcType="INTEGER" property="weeklyDustChangeR"/>
+        <result column="weekly_dust_change_alter" jdbcType="INTEGER" property="weeklyDustChangeAlter"/>
+        <result column="coin" jdbcType="INTEGER" property="coin"/>
+        <result column="roulette" jdbcType="INTEGER" property="roulette"/>
+        <result column="roll_count" jdbcType="INTEGER" property="rollCount"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point, daily_win,
+        daily_lost, daily_award, weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter, coin,
+        roulette, roll_count, qq
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_id = #{userId,jdbcType=INTEGER} and disabled = 0
+    </select>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+        delete from user_data
+        where user_id = #{userId,jdbcType=INTEGER}
+    </delete>
+    <insert id="insertSelective" parameterType="com.weird.model.UserDataModel">
+        insert into user_data
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="password != null">
+                password,
+            </if>
+            <if test="isAdmin != null">
+                is_admin,
+            </if>
+            <if test="nonawardCount != null">
+                nonaward_count,
+            </if>
+            <if test="dustCount != null">
+                dust_count,
+            </if>
+            <if test="duelPoint != null">
+                duel_point,
+            </if>
+            <if test="dailyWin != null">
+                daily_win,
+            </if>
+            <if test="dailyLost != null">
+                daily_lost,
+            </if>
+            <if test="dailyAward != null">
+                daily_award,
+            </if>
+            <if test="weeklyDustChangeN != null">
+                weekly_dust_change_n,
+            </if>
+            <if test="weeklyDustChangeR != null">
+                weekly_dust_change_r,
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                weekly_dust_change_alter,
+            </if>
+            <if test="coin != null">
+                coin,
+            </if>
+            <if test="roulette != null">
+                roulette,
+            </if>
+            <if test="rollCount != null">
+                roll_count,
+            </if>
+            <if test="qq != null">
+                qq,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">
+                #{userId,jdbcType=INTEGER},
+            </if>
+            <if test="userName != null">
+                #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="isAdmin != null">
+                #{isAdmin,jdbcType=TINYINT},
+            </if>
+            <if test="nonawardCount != null">
+                #{nonawardCount,jdbcType=INTEGER},
+            </if>
+            <if test="dustCount != null">
+                #{dustCount,jdbcType=INTEGER},
+            </if>
+            <if test="duelPoint != null">
+                #{duelPoint,jdbcType=INTEGER},
+            </if>
+            <if test="dailyWin != null">
+                #{dailyWin,jdbcType=INTEGER},
+            </if>
+            <if test="dailyLost != null">
+                #{dailyLost,jdbcType=INTEGER},
+            </if>
+            <if test="dailyAward != null">
+                #{dailyAward,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeN != null">
+                #{weeklyDustChangeN,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeR != null">
+                #{weeklyDustChangeR,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                #{weeklyDustChangeAlter,jdbcType=INTEGER},
+            </if>
+            <if test="coin != null">
+                #{coin,jdbcType=INTEGER},
+            </if>
+            <if test="roulette != null">
+                #{roulette,jdbcType=INTEGER},
+            </if>
+            <if test="rollCount != null">
+                #{roll_count,jdbcType=INTEGER},
+            </if>
+            <if test="qq != null">
+                #{qq,jdbcType=VARCHAR},
+            </if>
+        </trim>
+    </insert>
+    <update id="updateByPrimaryKeySelective" parameterType="com.weird.model.UserDataModel">
+        update user_data
+        <set>
+            <if test="userName != null">
+                user_name = #{userName,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="isAdmin != null">
+                is_admin = #{isAdmin,jdbcType=TINYINT},
+            </if>
+            <if test="nonawardCount != null">
+                nonaward_count = #{nonawardCount,jdbcType=INTEGER},
+            </if>
+            <if test="dustCount != null">
+                dust_count = #{dustCount,jdbcType=INTEGER},
+            </if>
+            <if test="duelPoint != null">
+                duel_point = #{duelPoint,jdbcType=INTEGER},
+            </if>
+            <if test="dailyWin != null">
+                daily_win = #{dailyWin,jdbcType=INTEGER},
+            </if>
+            <if test="dailyLost != null">
+                daily_lost = #{dailyLost,jdbcType=INTEGER},
+            </if>
+            <if test="dailyAward != null">
+                daily_award = #{dailyAward,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeN != null">
+                weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeR != null">
+                weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
+            </if>
+            <if test="weeklyDustChangeAlter != null">
+                weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
+            </if>
+            <if test="coin != null">
+                coin = #{coin,jdbcType=INTEGER},
+            </if>
+            <if test="roulette != null">
+                roulette = #{roulette,jdbcType=INTEGER},
+            </if>
+            <if test="rollCount != null">
+                roll_count = #{rollCount,jdbcType=INTEGER},
+            </if>
+            <if test="qq != null">
+                qq = #{qq,jdbcType=VARCHAR},
+            </if>
+        </set>
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+    <update id="updateByPrimaryKey" parameterType="com.weird.model.UserDataModel">
+        update user_data
+        set user_name = #{userName,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
+        is_admin = #{isAdmin,jdbcType=TINYINT},
+        nonaward_count = #{nonawardCount,jdbcType=INTEGER},
+        dust_count = #{dustCount,jdbcType=INTEGER},
+        duel_point = #{duelPoint,jdbcType=INTEGER},
+        daily_win = #{dailyWin,jdbcType=INTEGER},
+        daily_lost = #{dailyLost,jdbcType=INTEGER},
+        daily_award = #{dailyAward,jdbcType=INTEGER},
+        weekly_dust_change_n = #{weeklyDustChangeN,jdbcType=INTEGER},
+        weekly_dust_change_r = #{weeklyDustChangeR,jdbcType=INTEGER},
+        weekly_dust_change_alter = #{weeklyDustChangeAlter,jdbcType=INTEGER},
+        coin = #{coin,jdbcType=INTEGER},
+        roulette = #{roulette,jdbcType=INTEGER},
+        roll_count = #{rollCount,jdbcType=INTEGER},
+        qq = #{qq,jdbcType=VARCHAR}
+        where user_id = #{userId,jdbcType=INTEGER}
+    </update>
+
+    <!-- 自定义 -->
+    <select id="selectByNamePassword" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name} and password = #{password} and disabled = 0
+    </select>
+
+    <select id="selectByName" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name like concat("%",#{name},"%") and is_admin = 0 and disabled = 0
+        order by user_id desc
+    </select>
+
+    <select id="selectByNameDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name} and is_admin = 0 and disabled = 0
+    </select>
+
+    <select id="selectByNameInAllDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where user_name = #{name}
+    </select>
+
+    <select id="selectByQQInAllDistinct" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from user_data
+        where qq = #{qq}
+    </select>
+
+    <update id="clearQQ">
+        update user_data
+        set qq = ""
+        where qq = #{qq}
+    </update>
+
+    <insert id="insert" parameterType="com.weird.model.UserDataModel"
+            useGeneratedKeys="true" keyProperty="userId">
+        insert into user_data (user_name, password,
+        is_admin, nonaward_count, dust_count,
+        duel_point, daily_win, daily_lost,
+        daily_award, weekly_dust_change_n, weekly_dust_change_r,
+        weekly_dust_change_alter, coin,
+        roulette, roll_count, qq)
+        values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
+        #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER},
+        #{duelPoint,jdbcType=INTEGER}, #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER},
+        #{dailyAward,jdbcType=INTEGER}, #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER},
+        #{weeklyDustChangeAlter,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER},
+        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR})
+    </insert>
+
+    <update id="updateDaily">
+        update user_data
+        set daily_win = 0,
+            daily_lost = 0,
+            daily_award = 0
+    </update>
+
+    <update id="updateWeekly">
+        update user_data
+        set weekly_dust_change_n = 0,
+            weekly_dust_change_r = 0,
+            weekly_dust_change_alter = 0,
+            double_rare_count = 0,
+            roulette = 1
+    </update>
+
+    <update id="updateDisabled">
+        update user_data
+        set disabled = #{disabled}
+        where user_name = #{target} and is_admin = 0
+    </update>
+
+    <select id="showDisabled" resultType="string">
+        select user_name from user_data where disabled != 0
+    </select>
+
+    <select id="selectDoubleRareCount" resultType="int">
+        select double_rare_count from user_data where disabled = 0 and user_name = #{name}
+    </select>
+
+    <update id="updateDoubleRareCount">
+        update user_data
+        set double_rare_count = #{count}
+        where disabled = 0 and user_name = #{name}
+    </update>
+
+    <update id="resetDoubleRareCount">
+        update user_data
+        set double_rare_count = #{count}
+    </update>
+</mapper>

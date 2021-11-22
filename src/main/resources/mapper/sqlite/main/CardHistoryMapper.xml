@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.CardHistoryMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="2048"
+           eviction="LRU"
+           readOnly="false"/>
+    <resultMap id="BaseResultMap" type="com.weird.model.CardHistoryModel">
+        <result column="package_id" jdbcType="INTEGER" property="packageId"/>
+        <result column="card_pk" jdbcType="INTEGER" property="cardPk"/>
+        <result column="old_name" jdbcType="VARCHAR" property="oldName"/>
+        <result column="new_name" jdbcType="VARCHAR" property="newName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+        package_id, card_pk, old_name, new_name, rare, db_created_time
+    </sql>
+
+    <insert id="insert" parameterType="com.weird.model.CardHistoryModel">
+        insert into card_history (package_id, card_pk, old_name, new_name, rare)
+        values (#{packageId}, #{cardPk}, #{oldName}, #{newName}, #{rare})
+    </insert>
+
+    <select id="selectCardPk" resultType="java.lang.Integer">
+        select card_pk
+        from card_history
+        <where>
+            <if test="rareList != null and rareList.size() > 0">
+                rare in
+                <foreach collection="rareList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="packages != null">
+                and package_id in
+                <foreach collection="packages" item="packageId" open="(" close=")" separator=",">
+                    #{packageId}
+                </foreach>
+            </if>
+            <if test="cardNameList != null and cardNameList.size() > 0">
+                and (
+                    old_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                or
+                    new_name in
+                <foreach collection="cardNameList" index="index" item="item" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                )
+
+            </if>
+
+        </where>
+        order by id desc
+    </select>
+
+    <resultMap id="ResultMap" type="com.weird.model.dto.CardHistoryDTO">
+        <result column="package_name" jdbcType="INTEGER" property="packageName"/>
+        <result column="old_name" jdbcType="VARCHAR" property="oldName"/>
+        <result column="new_name" jdbcType="VARCHAR" property="newName"/>
+        <result column="rare" jdbcType="VARCHAR" property="rare"/>
+        <result column="db_created_time" jdbcType="TIMESTAMP" property="createdTime"/>
+    </resultMap>
+    <select id="selectByCardPk" resultMap="ResultMap">
+        select pack.package_name package_name,
+            his.card_pk cardPk,
+            his.old_name old_name,
+            his.new_name new_name,
+            his.rare rare,
+            his.db_created_time db_created_time
+        from card_history his inner join package_info pack
+            on pack.package_id = his.package_id
+        where
+            his.card_pk in
+            <foreach collection="cards" item="cardPk" open="(" close=")" separator=",">
+                #{cardPk}
+            </foreach>
+        order by his.id desc
+    </select>
+</mapper>

@@ -1,10 +1,11 @@
-package com.weird.config;
+package com.weird.config.data;
 
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -24,6 +25,8 @@ import javax.sql.DataSource;
 @Configuration
 @MapperScan(basePackages = "com.weird.mapper.main", sqlSessionTemplateRef = "mainSqlSessionTemplate")
 public class MainDataConfig {
+    @Value("${mapperLocate.main}")
+    String mapperLocate;
 
     @Bean(name = "mainDataSource")
     @ConfigurationProperties(prefix = "spring.datasource.main")
@@ -37,7 +40,7 @@ public class MainDataConfig {
     public SqlSessionFactory mainSqlSessionFactory(@Qualifier("mainDataSource") DataSource dataSource) throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
-        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources("classpath:mapper/main/*.xml"));
+        bean.setMapperLocations(new PathMatchingResourcePatternResolver().getResources(mapperLocate));
         return bean.getObject();
     }
 

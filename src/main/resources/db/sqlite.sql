@@ -20,6 +20,8 @@ CREATE TABLE package_card (
 CREATE TABLE package_info (
   package_id INTEGER PRIMARY KEY AUTOINCREMENT,
   package_name varchar(45) NOT NULL DEFAULT '' ,
+  order_num INTEGER NOT NULL DEFAULT 0,
+  detail text NOT NULL DEFAULT '',
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE TABLE roll_detail (
@@ -114,8 +116,9 @@ CREATE TABLE forbidden (
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
 CREATE INDEX idx_deck_id on deck_detail (deck_id);
-CREATE INDEX roll_id_idx ON roll_detail (roll_id);
+CREATE INDEX idx_roll_id ON roll_detail (roll_id);
 CREATE INDEX idx_user_id ON user_card_list (user_id);
+CREATE INDEX idx_card_pk ON user_card_list (card_pk);
 INSERT INTO user_data (user_name,password,is_admin,nonaward_count,dust_count,duel_point) VALUES ("admin","e10adc3949ba59abbe56e057f20f883e",1,0,0,0);
 DELETE FROM sqlite_sequence;
 INSERT INTO sqlite_sequence VALUES('user_data',1);

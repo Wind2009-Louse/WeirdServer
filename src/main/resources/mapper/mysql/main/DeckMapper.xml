@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.DeckMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="256"
+           eviction="LRU"
+           readOnly="false"/>
+
+    <select id="selectDeckList" resultType="com.weird.model.dto.DeckListDTO">
+        select
+            d_l.deck_id deckId,
+            d_l.deck_name deckName,
+            u.user_name userName,
+            d_l.last_modify_time lastModifyTime,
+            d_l.share share
+        from deck_list d_l
+        inner join user_data u on u.user_id = d_l.user_id and u.disabled = 0
+        where deck_id > 0
+        <if test="param.share &lt;= 0">
+            and u.user_name = #{param.name} and u.password = #{param.password}
+        </if>
+        <include refid="selectDeckListParam"/>
+        <if test="param.sortType == 1 or param.sortType == 2">
+            order by
+            <if test="param.sortType == 1">
+                d_l.deck_name
+            </if>
+            <if test="param.sortType == 2">
+                d_l.last_modify_time
+            </if>
+            <if test="param.sortWay == 1">
+                desc
+            </if>
+        </if>
+    </select>
+
+    <select id="selectDeckListAdmin" resultType="com.weird.model.dto.DeckListDTO">
+        select
+            d_l.deck_id deckId,
+            d_l.deck_name deckName,
+            u.user_name userName,
+            d_l.last_modify_time lastModifyTime,
+            d_l.share share
+        from deck_list d_l
+        inner join user_data u on u.user_id = d_l.user_id and u.disabled = 0
+        where deck_id > 0
+        <include refid="selectDeckListParam"/>
+        <if test="param.sortType == 1 or param.sortType == 2">
+            order by
+            <if test="param.sortType == 1">
+                d_l.deck_name
+            </if>
+            <if test="param.sortType == 2">
+                d_l.last_modify_time
+            </if>
+            <if test="param.sortWay == 1">
+                desc
+            </if>
+        </if>
+    </select>
+
+    <sql id="selectDeckListParam">
+        <if test="param.deckName != null and param.deckName != ''">
+            and d_l.deck_name like concat("%",#{param.deckName},"%")
+        </if>
+        <if test="param.targetUser != null and param.targetUser != ''">
+            and u.user_name like concat("%",#{param.targetUser},"%")
+        </if>
+        <if test="param.share > 0">
+            and d_l.share > 0
+        </if>
+    </sql>
+
+    <insert id="addDeck" parameterType="com.weird.model.dto.DeckInfoDTO"
+            useGeneratedKeys="true" keyProperty="deckId">
+        insert into deck_list (user_id, deck_name, last_modify_time, share)
+        values
+        (#{param.userId}, #{param.deckName}, #{param.lastModifyTime}, #{param.share})
+    </insert>
+
+    <update id="updateDeck" parameterType="com.weird.model.dto.DeckInfoDTO">
+        update deck_list
+        <set>
+            <if test="param.deckName != null and param.deckName != ''">
+                deck_name = #{param.deckName},
+            </if>
+            <if test="param.lastModifyTime > 0">
+                last_modify_time = #{param.lastModifyTime}
+            </if>
+        </set>
+        where deck_id = #{param.deckId}
+    </update>
+
+    <update id="updateDeckShare">
+        update deck_list
+        set share = #{share}
+        where deck_id = #{deckId}
+    </update>
+
+    <insert id="batchAddDeckCard">
+        insert into deck_detail (deck_id, code, count, type)
+        values
+        <foreach collection="list" item="item" separator=",">
+            (#{item.deckId}, #{item.code}, #{item.count}, #{item.type})
+        </foreach>
+    </insert>
+
+    <select id="getDeckListInfoByDeckId" resultType="com.weird.model.DeckListModel">
+        select
+            deck_id deckId,
+            user_id userId,
+            deck_name deckName,
+            last_modify_time lastModifyTime,
+            share share
+        from deck_list
+        where deck_id = #{deckId}
+        limit 1
+    </select>
+
+    <delete id="deleteDeckByDeckId">
+        delete from deck_list
+        where deck_id = #{deckId}
+    </delete>
+
+    <delete id="deleteCardByDeckId">
+        delete from deck_detail
+        where deck_id = #{deckId}
+    </delete>
+
+    <select id="getDeckDetailByDeckId" resultType="com.weird.model.DeckDetailModel">
+        select
+            detail_id detailId,
+            deck_id deckId,
+            code code,
+            count count,
+            type type
+        from deck_detail
+        where deck_id = #{deckId}
+    </select>
+
+    <update id="updateDeckCodeStepA">
+        update deck_detail
+        set code = #{newCode}, type = #{newType}
+        where code = #{oldCode} and type in (1, 2)
+    </update>
+
+    <update id="updateDeckCodeStepB">
+        update deck_detail
+        set code = #{newCode}
+        where code = #{oldCode} and type = 3
+    </update>
+
+    <select id="getDetailWhenChangeCount" resultType="com.weird.model.DeckDetailModel">
+        select
+            d_d.detail_id detailId,
+            d_d.deck_id deckId,
+            d_d.code code,
+            d_d.count count,
+            d_d.type type
+        from deck_detail d_d
+        inner join deck_list d_l on d_l.deck_id = d_d.deck_id
+        where d_l.user_id = #{userId} and d_d.code = #{code} and d_d.count > #{count}
+    </select>
+
+    <update id="updateDeckCardCount">
+        update deck_detail
+        set count = #{count}
+        where detail_id in
+        <foreach collection="pkList" index="index" item="pk" open="(" separator="," close=")">
+            #{pk}
+        </foreach>
+    </update>
+
+    <delete id="deleteDeckCardCount">
+        delete from deck_detail
+        where detail_id in
+        <foreach collection="pkList" index="index" item="pk" open="(" separator="," close=")">
+            #{pk}
+        </foreach>
+    </delete>
+</mapper>
