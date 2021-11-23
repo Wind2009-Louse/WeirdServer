@@ -16,6 +16,7 @@
                 operator like "%"||#{operator}||"%"
             </if>
             <if test="detailList != null and detailList.size() > 0">
+                and
                 <foreach collection="detailList" index="index" item="word" separator="and">
                     detail like "%"||#{word}||"%"
                 </foreach>
