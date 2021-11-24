@@ -266,4 +266,17 @@ public interface UserService {
      * @return
      */
     boolean resetDoubleRareCount(int count);
+
+    /**
+     * 收到决斗战报后，修改用户DP
+     *
+     * @param duelId    决斗历史ID
+     * @param userName  用户名
+     * @param winCount  胜利次数
+     * @param lostCount 失败次数
+     * @param winDp     胜利DP
+     * @param lostDp    失败DP
+     * @return
+     */
+    boolean handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp);
 }

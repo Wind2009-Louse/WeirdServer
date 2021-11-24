@@ -115,6 +115,20 @@ CREATE TABLE forbidden (
   count int not null default 3,
   db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
 );
+CREATE TABLE duel_history (
+  duel_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  player_a varchar(45) NOT NULL DEFAULT '',
+  player_b varchar(45) NOT NULL DEFAULT '',
+  player_c varchar(45) NULL DEFAULT '',
+  player_d varchar(45) NULL DEFAULT '',
+  score_a int NOT NULL DEFAULT 0,
+  score_b int NOT NULL DEFAULT 0,
+  score_c int NULL DEFAULT 0,
+  score_d int NULL DEFAULT 0,
+  start_time bigint(20) NOT NULL DEFAULT 0,
+  end_time bigint(20) NOT NULL DEFAULT 0,
+  db_created_time timestamp default (strftime('%Y-%m-%d %H:%M:%f','now','localtime'))
+);
 CREATE INDEX idx_deck_id on deck_detail (deck_id);
 CREATE INDEX idx_roll_id ON roll_detail (roll_id);
 CREATE INDEX idx_user_id ON user_card_list (user_id);

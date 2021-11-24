@@ -981,4 +981,52 @@ public class UserServiceImpl implements UserService {
     public boolean resetDoubleRareCount(int count) {
         return userDataMapper.resetDoubleRareCount(count) > 0;
     }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public boolean handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp) {
+        UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
+        if (userModel == null || winCount + lostCount == 0) {
+            return false;
+        }
+        int oldWinCount = userModel.getDailyWin();
+        int oldLostCount = userModel.getDailyLost();
+        int newWinCount = oldWinCount + winCount;
+        int newLostCount = oldLostCount + lostCount;
+        int oldDp = userModel.getDuelPoint();
+
+        int increaseDp = winCount * winDp + lostCount * lostDp;
+        boolean triggerWin = (!isDailyWinEnough(oldWinCount, oldLostCount) && isDailyWinEnough(newWinCount, newLostCount));
+        boolean triggerLost = (!isDailyLostEnough(oldLostCount) && isDailyLostEnough(newLostCount));
+        int newDp = oldDp + increaseDp + (triggerWin ? 10 : 0) + (triggerLost ? 5 : 0);
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("决斗ID:").append(duelId).append(",比分=").append(winCount).append(":").append(lostCount).append(",DP=").append(oldDp).append("+").append(increaseDp);
+        if (triggerWin) {
+            sb.append("+10");
+        }
+        if (triggerLost) {
+            sb.append("+5");
+        }
+        sb.append("=").append(newDp);
+
+        UserDataModel updateModel = new UserDataModel();
+        updateModel.setUserId(userModel.getUserId());
+        updateModel.setDailyWin(newWinCount);
+        updateModel.setDailyLost(newLostCount);
+        updateModel.setDuelPoint(newDp);
+        if (userDataMapper.updateByPrimaryKeySelective(updateModel) > 0) {
+            recordFacade.setRecord(userName, sb.toString());
+            return true;
+        }
+        return false;
+    }
+
+    private boolean isDailyWinEnough(int winCount, int lostCount) {
+        return (winCount >= 3 || (winCount + lostCount >= 6));
+    }
+
+    private boolean isDailyLostEnough(int lostCount) {
+        return (lostCount >= 3);
+    }
 }

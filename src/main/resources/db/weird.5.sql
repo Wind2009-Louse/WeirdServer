@@ -412,6 +412,40 @@ LOCK TABLES `forbidden` WRITE;
 /*!40000 ALTER TABLE `forbidden` DISABLE KEYS */;
 /*!40000 ALTER TABLE `forbidden` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `duel_history`
+--
+
+DROP TABLE IF EXISTS `duel_history`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+ SET character_set_client = utf8mb4 ;
+CREATE TABLE `duel_history` (
+  `duel_id` INT NOT NULL AUTO_INCREMENT COMMENT '主键ID',
+  `player_a` VARCHAR(45) NOT NULL DEFAULT '' COMMENT '用户a',
+  `player_b` VARCHAR(45) NOT NULL DEFAULT '' COMMENT '用户b',
+  `player_c` VARCHAR(45) NULL DEFAULT '' COMMENT '用户c',
+  `player_d` VARCHAR(45) NULL DEFAULT '' COMMENT '用户d',
+  `score_a` INT NOT NULL DEFAULT 0 COMMENT '用户a分数',
+  `score_b` INT NOT NULL DEFAULT 0 COMMENT '用户b分数',
+  `score_c` INT NULL DEFAULT 0 COMMENT '用户c分数',
+  `score_d` INT NULL DEFAULT 0 COMMENT '用户d分数',
+  `start_time` BIGINT(11) NOT NULL DEFAULT 0 COMMENT '决斗开始时间',
+  `end_time` BIGINT(11) NOT NULL DEFAULT 0 COMMENT '决斗结束时间',
+  `db_created_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '数据库创建时间',
+  `db_updated_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '数据库更新时间',
+  PRIMARY KEY (`duel_id`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='决斗记录';
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `duel_history`
+--
+
+LOCK TABLES `duel_history` WRITE;
+/*!40000 ALTER TABLE `duel_history` DISABLE KEYS */;
+/*!40000 ALTER TABLE `duel_history` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;

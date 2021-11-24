@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.weird.mapper.main.DuelHistoryMapper">
+    <cache type="org.apache.ibatis.cache.impl.PerpetualCache"
+           size="256"
+           eviction="LRU"
+           readOnly="false"/>
+
+    <resultMap id="BaseResultMap" type="com.weird.model.DuelHistoryModel">
+        <id column="duel_id" jdbcType="BIGINT" property="duelId"/>
+        <result column="player_a" jdbcType="VARCHAR" property="playerA"/>
+        <result column="player_b" jdbcType="VARCHAR" property="playerB"/>
+        <result column="player_c" jdbcType="VARCHAR" property="playerC"/>
+        <result column="player_d" jdbcType="VARCHAR" property="playerD"/>
+        <result column="score_a" jdbcType="INTEGER" property="scoreA"/>
+        <result column="score_b" jdbcType="INTEGER" property="scoreB"/>
+        <result column="score_c" jdbcType="INTEGER" property="scoreC"/>
+        <result column="score_d" jdbcType="INTEGER" property="scoreD"/>
+        <result column="start_time" jdbcType="BIGINT" property="startTime"/>
+        <result column="end_time" jdbcType="BIGINT" property="endTime"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        duel_id,
+        player_a, player_b, player_c, player_d,
+        score_a, score_b, score_c, score_d,
+        start_time, end_time
+    </sql>
+
+    <insert id="insertSelective" parameterType="com.weird.model.DuelHistoryModel"
+            useGeneratedKeys="true" keyProperty="duelId">
+        insert into duel_history
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="playerA != null">
+                player_a,
+            </if>
+            <if test="playerB != null">
+                player_b,
+            </if>
+            <if test="playerC != null">
+                player_c,
+            </if>
+            <if test="playerD != null">
+                player_d,
+            </if>
+            score_a,
+            score_b,
+            score_c,
+            score_d,
+            start_time,
+            end_time
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="playerA != null">
+                #{playerA},
+            </if>
+            <if test="playerB != null">
+                #{playerB},
+            </if>
+            <if test="playerC != null">
+                #{playerC},
+            </if>
+            <if test="playerD != null">
+                #{playerD},
+            </if>
+            #{scoreA},
+            #{scoreB},
+            #{scoreC},
+            #{scoreD},
+            #{startTime},
+            #{endTime}
+        </trim>
+    </insert>
+
+    <select id="getById" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from duel_history
+        where duel_id = #{id}
+    </select>
+
+    <select id="getByParam" resultMap="BaseResultMap">
+        select <include refid="Base_Column_List"/>
+        from duel_history
+        <where>
+            <if test="param.player != null and param.player != ''">
+                (
+                    player_a like "%"||#{param.player}||"%"
+                    or player_b like "%"||#{param.player}||"%"
+                    or player_c like "%"||#{param.player}||"%"
+                    or player_d like "%"||#{param.player}||"%"
+                )
+            </if>
+            <if test="param.startTime > 0">
+                and end_time &gt;= #{param.startTime}
+            </if>
+            <if test="param.endTime > 0">
+                and start_time &lt;= #{param.endTime}
+            </if>
+        </where>
+    </select>
+
+</mapper>
