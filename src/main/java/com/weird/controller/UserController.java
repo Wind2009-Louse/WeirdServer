@@ -1,28 +1,24 @@
 package com.weird.controller;
 
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.TrimArgs;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
-import com.weird.model.param.UserCheckParam;
 import com.weird.service.CardPreviewService;
 import com.weird.service.CardService;
 import com.weird.service.DeckService;
 import com.weird.service.UserService;
-import com.weird.utils.CacheUtil;
-import com.weird.utils.OperationException;
-import com.weird.utils.PackageUtil;
-import com.weird.utils.PageResult;
+import com.weird.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.DigestUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -75,10 +71,12 @@ public class UserController {
                                       @RequestParam(value = "password") String password) {
         return userService.checkLogin(name, password);
     }
+
     @PostMapping("/weird_project/user/checkPost")
-    public LoginTypeEnum getLoginTypePost(HttpServletRequest request) {
-        String name = request.getParameter("name");
-        String password = request.getParameter("password");
+    public LoginTypeEnum getLoginTypePost(HttpServletRequest request) throws Exception {
+        JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
+        String name = jsonFromRequest.getString("name");
+        String password = jsonFromRequest.getString("password");
         if (name == null) {
             name = "";
         }

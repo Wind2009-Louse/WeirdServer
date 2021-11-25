@@ -14,13 +14,9 @@ import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.*;
 import com.weird.service.*;
-import com.weird.utils.BeanConverter;
-import com.weird.utils.CardPreviewUtil;
-import com.weird.utils.OperationException;
-import com.weird.utils.PageResult;
+import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.management.openmbean.OpenDataException;
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -423,12 +420,15 @@ public class DeckController {
     /**
      * 判断卡组是否可用
      *
-     * @param param 卡组参数
      * @return 结果
      */
     @RequestMapping("/weird_project/deck/usable")
-    public boolean checkUsable(@RequestBody DeckUsableParam param) throws OperationException {
-        LoginTypeEnum loginTypeEnum = userService.checkLogin(param.getName(), param.getPassword());
+    public boolean checkUsable(HttpServletRequest request) throws Exception {
+        JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
+        String userName = jsonFromRequest.getString("name");
+        String password = jsonFromRequest.getString("password");
+
+        LoginTypeEnum loginTypeEnum = userService.checkLogin(userName, password);
         if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
             throw new OperationException("未登录！");
         }
@@ -436,7 +436,7 @@ public class DeckController {
 
         // 读取卡组信息
         DeckInfoDTO deck = new DeckInfoDTO();
-        deck.setYdk(param.getYdk());
+        deck.setYdk(jsonFromRequest.getString("ydk"));
         deck.buildDeckList();
         if (!deck.checkDeckWithoutName(40)) {
             throw new OperationException("卡组数量不符合规定！");
@@ -458,7 +458,7 @@ public class DeckController {
 
         // 获取用户持有数量
         List<String> nameList = allCardList.stream().map(DeckCardDTO::getCardName).collect(Collectors.toList());
-        List<CardListDTO> cardCountList = getCardCountList(param.getName(), nameList, isAdmin);
+        List<CardListDTO> cardCountList = getCardCountList(userName, nameList, isAdmin);
         Map<String, Integer> cardCountMap = cardCountList.stream().collect(Collectors.toMap(CardListDTO::getCardName, CardListDTO::getCount));
 
         // 根据禁限卡表调整可以投入的数量

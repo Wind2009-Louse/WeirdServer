@@ -54,7 +54,7 @@ public class DuelController {
 
     @RequestMapping("/duel/message")
     @ResponseBody
-    public boolean receiveMessage(HttpServletRequest request) throws IOException, OperationException {
+    public boolean receiveMessage(HttpServletRequest request) throws Exception {
         if (request == null) {
             return false;
         }
