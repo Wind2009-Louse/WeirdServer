@@ -84,7 +84,7 @@ public interface UserService {
      * @param operator 操作人
      * @return 是否更改成功
      */
-    String updateDust(String name, int newCount, String operator) throws Exception;
+    String updateDust(String name, int newCount, String operator) throws OperationException;
 
     /**
      * 将尘转换成卡片
@@ -137,7 +137,7 @@ public interface UserService {
      * @param operator 操作人
      * @return 是否更改成功
      */
-    String updateAward(String name, int newCount, String operator) throws Exception;
+    String updateAward(String name, int newCount, String operator) throws OperationException;
 
     /**
      * 修改DP
@@ -146,7 +146,8 @@ public interface UserService {
      * @param newCount 新DP
      * @return 是否更改成功
      */
-    String updateDuelPoint(String name, int newCount, String operator) throws Exception;
+    String updateDuelPoint(String name, int newCount, String operator) throws OperationException;
+    String decDuelPoint(String name, int count, String operator) throws OperationException;
 
     /**
      * 修改硬币数量
@@ -155,7 +156,7 @@ public interface UserService {
      * @param newCount 新硬币数量
      * @param operator 操作人
      */
-    String updateCoin(String name, int newCount, String operator) throws Exception;
+    String updateCoin(String name, int newCount, String operator) throws OperationException;
 
     /**
      * 修改转盘次数
@@ -164,7 +165,7 @@ public interface UserService {
      * @param newCount 新硬币数量
      * @param operator 操作人
      */
-    String updateRoulette(String name, int newCount, String operator) throws Exception;
+    String updateRoulette(String name, int newCount, String operator) throws OperationException;
 
     /**
      * 修改转盘次数
@@ -173,7 +174,7 @@ public interface UserService {
      * @param newCount 新硬币数量
      * @param operator 操作人
      */
-    String updateRollCount(String name, int newCount, String operator) throws Exception;
+    String updateRollCount(String name, int newCount, String operator) throws OperationException;
 
     /**
      * 交换两个用户持有的卡片

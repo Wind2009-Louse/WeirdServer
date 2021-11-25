@@ -206,7 +206,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String updateDust(String name, int newCount, String operator) throws Exception {
+    public String updateDust(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
@@ -641,7 +641,7 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String updateAward(String name, int newCount, String operator) throws Exception {
+    public String updateAward(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
@@ -667,13 +667,32 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String updateDuelPoint(String name, int newCount, String operator) throws Exception {
+    public String updateDuelPoint(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
         }
 
-        String successHint = String.format("%s的月见黑被修改：%d->%d", name, model.getDuelPoint(), newCount);
+        String successHint = String.format("%s的DP被修改：%d->%d", name, model.getDuelPoint(), newCount);
+        model.setDuelPoint(newCount);
+        int updateCount = userDataMapper.updateByPrimaryKey(model);
+        if (updateCount > 0) {
+            recordFacade.setRecord(operator, successHint);
+            return successHint;
+        } else {
+            throw new OperationException("修改失败！");
+        }
+    }
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public String decDuelPoint(String name, int count, String operator) throws OperationException {
+        UserDataModel model = userDataMapper.selectByNameDistinct(name);
+        if (model == null) {
+            throw new OperationException("找不到用户：[%s]！", name);
+        }
+        int newCount = model.getDuelPoint() - count;
+
+        String successHint = String.format("%s的DP被修改：%d->%d", name, model.getDuelPoint(), newCount);
         model.setDuelPoint(newCount);
         int updateCount = userDataMapper.updateByPrimaryKey(model);
         if (updateCount > 0) {
@@ -686,7 +705,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String updateCoin(String name, int newCount, String operator) throws Exception {
+    public String updateCoin(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
@@ -704,7 +723,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateRoulette(String name, int newCount, String operator) throws Exception {
+    public String updateRoulette(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
@@ -722,7 +741,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateRollCount(String name, int newCount, String operator) throws Exception {
+    public String updateRollCount(String name, int newCount, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);

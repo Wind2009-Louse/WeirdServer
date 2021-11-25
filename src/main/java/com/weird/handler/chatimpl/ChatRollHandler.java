@@ -1,6 +1,7 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.DuelConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
@@ -52,6 +53,9 @@ public class ChatRollHandler implements ChatHandler {
 
     @Autowired
     CardPreviewService cardPreviewService;
+
+    @Autowired
+    DuelConfig duelConfig;
 
     static Map<String, RollRequestBO> rollMap = new HashMap<>();
 
@@ -192,9 +196,21 @@ public class ChatRollHandler implements ChatHandler {
             requestBO.setShowAll(true);
         }
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
-        rollMap.put(hash, requestBO);
-        broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽取%d包[%s]%s，管理员可用以下指令进行同意：\n>抽卡 %s",
-                rollCount, pack.getPackageName(), remark, hash), o));
+
+        if (duelConfig.isDp()) {
+            int duelPoint = userData.getDuelPoint();
+            int needDp = rollCount * 5;
+            if (duelPoint < needDp) {
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("需要%dDP方可进行抽卡，你当前只有%dDP！", needDp, duelPoint), o));
+                return;
+            }
+            rollMap.put(hash, requestBO);
+            handleDrawRequest(hash, userData, o);
+        } else {
+            rollMap.put(hash, requestBO);
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽取%d包[%s]%s，管理员可用以下指令进行同意：\n>抽卡 %s",
+                    rollCount, pack.getPackageName(), remark, hash), o));
+        }
     }
 
     /**
@@ -269,12 +285,24 @@ public class ChatRollHandler implements ChatHandler {
         RollRequestBO requestBO = new RollRequestBO(userName, null, 0, o, RollRequestTypeEnum.LEGEND);
         requestBO.setReRollCardName(currentLegendName);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
-        rollMap.put(hash, requestBO);
-        if (StringUtils.isEmpty(currentLegendName)) {
-            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽传说卡，管理员可用以下指令进行同意：\n>抽卡 %s", hash), o));
+
+        if (duelConfig.isDp()) {
+            int duelPoint = userData.getDuelPoint();
+            int needDp = 100;
+            if (duelPoint < needDp) {
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("需要%dDP方可抽传说，你当前只有%dDP！", needDp, duelPoint), o));
+                return;
+            }
+            rollMap.put(hash, requestBO);
+            handleLegendRequest(hash, userData, o);
         } else {
-            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请重抽传说卡(当前为[%s])，管理员可用以下指令进行同意：\n>抽卡 %s",
-                    currentLegendName, hash), o));
+            rollMap.put(hash, requestBO);
+            if (StringUtils.isEmpty(currentLegendName)) {
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请抽传说卡，管理员可用以下指令进行同意：\n>抽卡 %s", hash), o));
+            } else {
+                broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请重抽传说卡(当前为[%s])，管理员可用以下指令进行同意：\n>抽卡 %s",
+                        currentLegendName, hash), o));
+            }
         }
     }
 
@@ -456,6 +484,14 @@ public class ChatRollHandler implements ChatHandler {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 
+        if (duelConfig.isDp()) {
+            try {
+                resultBuilder.append("\n").append(userService.decDuelPoint(requestUserName, (int) (totalRollCount * 5), operator.getUserName()));
+            } catch (OperationException oe) {
+                exceptBuilder.append("\n").append(oe.getMessage());
+            }
+        }
+
         if (resultBuilder.length() > 0) {
             broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
         }
@@ -588,6 +624,17 @@ public class ChatRollHandler implements ChatHandler {
             resultBuilder += "\n你当前的传说卡为[" + currentLegendName + "]，若确认替换，请执行以下抽卡操作，否则请取消该抽卡操作：\n>抽卡 " + newHash;
         }
 
+        if (duelConfig.isDp()) {
+            try {
+                resultBuilder += "\n" + userService.decDuelPoint(requestUserName, 100, operator.getUserName());
+            } catch (OperationException oe) {
+                broadcastFacade.sendMsgAsync(buildResponse(oe.getMessage(), request.getRequest(), true));
+            } catch (Exception e) {
+                log.error("扣除dp失败：", e);
+                broadcastFacade.sendMsgAsync(buildResponse("出现未知错误，请联系管理员", request.getRequest(), true));
+            }
+        }
+
         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));
         return true;
     }
@@ -602,6 +649,7 @@ public class ChatRollHandler implements ChatHandler {
      */
     private boolean handleLegendConfirm(String hash, UserDataDTO operator, JSONObject response) throws ResponseException {
         RollRequestBO request = rollMap.getOrDefault(hash, null);
+        rollMap.remove(hash);
         if (request == null) {
             throw new ResponseException("确认传说请求[%s]不存在！", hash);
         }

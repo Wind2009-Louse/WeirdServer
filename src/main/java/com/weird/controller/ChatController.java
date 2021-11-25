@@ -5,18 +5,15 @@ import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
+import com.weird.utils.RequestUtil;
 import com.weird.utils.ResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import static com.weird.utils.BroadcastUtil.MESSAGE;
@@ -40,10 +37,8 @@ public class ChatController {
 
     @RequestMapping("/ping")
     @ResponseBody
-    public void ping(HttpServletRequest request) throws IOException {
-        String str = (new BufferedReader( new InputStreamReader(request.getInputStream(), "UTF-8"))).readLine();
-        log.info(str);
-        JSONObject o = JSONObject.parseObject(str);
+    public void ping(HttpServletRequest request) throws Exception {
+        JSONObject o = RequestUtil.getJsonFromRequest(request);
         try {
             if (o.containsKey(MESSAGE)) {
                 String rawMessage = o.getString(MESSAGE);
