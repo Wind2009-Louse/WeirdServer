@@ -1,11 +1,16 @@
 package com.weird.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.weird.config.AutoConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.facade.RecordFacade;
+import com.weird.mapper.main.PackageCardMapper;
 import com.weird.mapper.main.RouletteMapper;
+import com.weird.mapper.main.UserCardListMapper;
 import com.weird.mapper.main.UserDataMapper;
+import com.weird.model.PackageCardModel;
 import com.weird.model.RouletteConfigModel;
+import com.weird.model.UserCardListModel;
 import com.weird.model.UserDataModel;
 import com.weird.model.dto.RouletteConfigDTO;
 import com.weird.model.dto.RouletteHistoryDTO;
@@ -24,7 +29,10 @@ import org.springframework.util.CollectionUtils;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 
 /**
  * 转盘服务实现
@@ -42,12 +50,20 @@ public class RouletteServiceImpl implements RouletteService {
     UserDataMapper userDataMapper;
 
     @Autowired
+    PackageCardMapper packageCardMapper;
+
+    @Autowired
+    UserCardListMapper userCardListMapper;
+
+    @Autowired
     RecordFacade recordFacade;
 
     @Autowired
     BroadcastFacade broadcastFacade;
 
     static final Pattern colorPattern = Pattern.compile("^#[0-9a-fA-F]{6}$");
+
+    static final Pattern DpPattern = Pattern.compile("^(\\d+)[\\s]*[Dd][Pp]");
 
     @Override
     public List<RouletteConfigDTO> listConfig() {
@@ -116,25 +132,57 @@ public class RouletteServiceImpl implements RouletteService {
                 continue;
             }
 
+            // 生成结果
             RouletteResultDTO result = new RouletteResultDTO();
             result.setIndex(index);
             result.setResult(String.format("抽奖结果：%s", config.getDetail()));
+            try {
+                rouletteMapper.addHistory(userName, config.getDetail());
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
 
+            // 更新用户转盘数据
             if (user.getIsAdmin() <= 0) {
                 user.setRoulette(rouletteCount - 1);
+                Matcher matcher = DpPattern.matcher(config.getDetail());
+                if (matcher.matches()) {
+                    if (AutoConfig.fetchDp()) {
+                        String dpStr = matcher.group(1);
+                        int incDp = Integer.parseInt(dpStr);
+                        user.setDuelPoint(user.getDuelPoint() + incDp);
+                    }
+                } else {
+                    PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(config.getDetail());
+                    if (cardModel != null) {
+                        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(user.getUserId(), cardModel.getCardPk());
+                        if (cardListModel == null) {
+                            cardListModel = new UserCardListModel();
+                            cardListModel.setUserId(user.getUserId());
+                            cardListModel.setCardPk(cardModel.getCardPk());
+                            cardListModel.setCount(1);
+                            if (userCardListMapper.insert(cardListModel) <= 0) {
+                                log.error("插入转盘卡片：{}时失败", config.getDetail());
+                            }
+                        } else {
+                            cardListModel.setCount(cardListModel.getCount() + 1);
+                            if (userCardListMapper.update(cardListModel) <= 0) {
+                                log.error("更新转盘卡片：{}时失败", config.getDetail());
+                            }
+                        }
+                        clearCardOwnListCache();
+                    }
+                }
+
                 int updateCount = userDataMapper.updateByPrimaryKey(user);
                 if (updateCount <= 0) {
                     throw new OperationException("用户数据更新失败！");
                 }
             }
 
-            recordFacade.setRecord(userName, "转盘抽奖结果:%s(%d),当前次数:%d",
-                    config.getDetail(), randRate, rouletteCount);
-            try {
-                rouletteMapper.addHistory(userName, config.getDetail());
-            } catch (Exception e) {
-                log.error(e.getMessage());
-            }
+            // 发送广播
+            recordFacade.setRecord(userName, "转盘抽奖结果:%s(%d),当前次数:%d->%d",
+                    config.getDetail(), randRate, rouletteCount, rouletteCount - 1);
             try {
                 String concatStr = "";
                 if (rateSum / config.getRate() >= 20) {

@@ -1,8 +1,10 @@
 package com.weird.utils;
 
+import com.weird.config.AlterEffectConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.enums.CardTypeEnum;
 import com.weird.model.param.BlurSearchParam;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.LinkedHashMap;
@@ -96,14 +98,39 @@ public class CardPreviewUtil {
     }};
 
     public static String getPreview(CardPreviewModel model) {
-        return getPreview(model, true);
+        return getPreview(model, true, true);
     }
 
     public static String getPreview(CardPreviewModel model, boolean useName) {
+        return getPreview(model, useName, true);
+    }
+
+    public static String getPreview(CardPreviewModel model, boolean useName, boolean isAlterEffect) {
         if (model == null) {
             return "";
         }
-        String result = CacheUtil.PreviewCache.get(model.getName());
+        final String cardName = model.getName();
+
+        String result = CacheUtil.PreviewCache.get(cardName);
+        // 检查自定义效果
+        if (result == null && isAlterEffect) {
+            String alterKey = cardName + "_alter";
+            result = CacheUtil.PreviewCache.get(alterKey);
+            if (result == null) {
+                List<List<String>> list = AlterEffectConfig.getList();
+                if (!CollectionUtils.isEmpty(list)) {
+                    for (List<String> strings : list) {
+                        final String alterName = strings.get(0);
+                        final String alterEffect = strings.get(1);
+                        if (alterName.equals(cardName)) {
+                            CacheUtil.PreviewCache.put(alterKey, alterEffect);
+                            result = alterEffect;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
         if (result == null) {
             StringBuilder sb = new StringBuilder();
 
@@ -154,7 +181,7 @@ public class CardPreviewUtil {
             sb.append(model.getDesc());
 
             result = sb.toString();
-            CacheUtil.PreviewCache.put(model.getName(), result);
+            CacheUtil.PreviewCache.put(cardName, result);
         }
 
         String prefix;

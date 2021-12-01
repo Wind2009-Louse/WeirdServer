@@ -80,7 +80,7 @@ public class ChatSearchCardHandler implements ChatHandler {
         if (cardData == null) {
             broadcastFacade.sendMsgAsync(buildResponse(String.format("查询到卡片[%s]，但在获取效果时出错。", cardName), request));
         } else {
-            broadcastFacade.sendMsgAsync(buildResponse(CardPreviewUtil.getPreview(cardData), request));
+            broadcastFacade.sendMsgAsync(buildResponse(CardPreviewUtil.getPreview(cardData, true, false), request));
         }
     }
 }
