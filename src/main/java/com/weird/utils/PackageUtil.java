@@ -1,5 +1,6 @@
 package com.weird.utils;
 
+import com.weird.config.AutoConfig;
 import com.weird.model.dto.CardListDTO;
 
 import java.util.Arrays;
@@ -52,5 +53,12 @@ public class PackageUtil {
         } else {
             return String.format("【%s】%s", card.getRare(), card.getCardName());
         }
+    }
+
+    static public boolean onlyByRoll(String cardName) {
+        return cardName == null
+                || cardName.equals(AutoConfig.fetchReRollCard())
+                || cardName.equals(AutoConfig.fetchExchangeCard())
+                || cardName.equals(AutoConfig.fetchAwardCard());
     }
 }

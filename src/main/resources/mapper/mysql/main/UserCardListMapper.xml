@@ -242,7 +242,7 @@
         order by package_info.order_num, package_card.rare, package_card.card_name, user_data.user_name
     </select>
 
-    <select id="selectCardOwnCount" resultType="java.lang.Integer" useCache="false">
+    <select id="selectCardOwnCount" resultType="int" useCache="false">
         select sum(user_card_list.count)
         from user_card_list
         inner join user_data on user_data.user_id = user_card_list.user_id and user_data.disabled = 0

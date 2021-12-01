@@ -1,6 +1,7 @@
 package com.weird.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
+import com.weird.config.AutoConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.*;
@@ -19,9 +20,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static com.weird.utils.CacheUtil.clearCardOwnListCache;
 import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
@@ -59,8 +62,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     BroadcastFacade broadcastFacade;
 
-    final String DEFAULT_PASSWORD = "123456";
-    final String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
+    final static String DEFAULT_PASSWORD = "123456";
+    final static String DEFAULT_PASSWORD_MD5 = "e10adc3949ba59abbe56e057f20f883e";
+
+    final static int ROLL_BY_NONE  = 0;
+    final static int ROLL_BY_DUST  = 1;
+    final static int ROLL_BY_AWARD = 2;
+    final static int ROLL_BY_CARD  = 3;
 
     /**
      * 根据用户名查找用户列表
@@ -273,7 +281,7 @@ public class UserServiceImpl implements UserService {
             needDust = DustEnum.TO_ALTER.getCount();
         }
 
-        if (onlyCoin && needCoin == 0) {
+        if ((onlyCoin && needCoin == 0) || PackageUtil.onlyByRoll(cardName)) {
             throw new OperationException("无法合成[%s]！", cardName);
         }
 
@@ -390,15 +398,55 @@ public class UserServiceImpl implements UserService {
         if (userModel == null) {
             throw new OperationException("登录失败！");
         }
-
         int dustCount = userModel.getDustCount();
-        if (userModel.getNonawardCount() < 100) {
-            if (userModel.getDustCount() < DustEnum.TO_RANDOM.getCount()) {
-                throw new OperationException("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, dustCount);
+        int nonAwardCount = userModel.getNonawardCount();
+
+
+        int rollWay = ROLL_BY_NONE;
+        String lastException = "未知错误，选择随机合成方式失败。";
+        String awardConditionName = AutoConfig.fetchAwardCard();
+        UserCardListModel cutoffModel = null;
+        List<Integer> rollWayCheckList;
+        if (dustFirst > 0) {
+            rollWayCheckList = Arrays.asList(ROLL_BY_DUST, ROLL_BY_CARD, ROLL_BY_AWARD);
+        } else {
+            rollWayCheckList = Arrays.asList(ROLL_BY_CARD, ROLL_BY_AWARD, ROLL_BY_DUST);
+        }
+        for (int checkWay : rollWayCheckList) {
+            switch (checkWay) {
+                case ROLL_BY_DUST:
+                    if (userModel.getDustCount() < DustEnum.TO_RANDOM.getCount()) {
+                        lastException = String.format("随机合成需要150尘，当前[%s]拥有[%d]尘！", userName, dustCount);
+                    } else if (userModel.getWeeklyDustChangeR() > 0) {
+                        lastException = String.format("[%s]本周的随机合成次数已用完！", userName);
+                    } else {
+                        rollWay = ROLL_BY_DUST;
+                    }
+                    break;
+                case ROLL_BY_AWARD:
+                    if (nonAwardCount >= 100) {
+                        rollWay = ROLL_BY_AWARD;
+                    }
+                    break;
+                case ROLL_BY_CARD:
+                    PackageCardModel awardConditionCard = packageCardMapper.selectByNameDistinct(awardConditionName);
+                    if (awardConditionCard != null) {
+                        cutoffModel = userCardListMapper.selectByUserCard(userModel.getUserId(), awardConditionCard.getCardPk());
+                        if (cutoffModel != null && cutoffModel.getCount() > 0) {
+                            cutoffModel.setCount(cutoffModel.getCount() - 1);
+                            rollWay = ROLL_BY_CARD;
+                        }
+                    }
+                    break;
+                default:
+                    throw new OperationException("非法操作！");
             }
-            if (userModel.getWeeklyDustChangeR() > 0) {
-                throw new OperationException("[%s]本周的随机合成次数已用完！", userName);
+            if (rollWay != ROLL_BY_NONE) {
+                break;
             }
+        }
+        if (rollWay == ROLL_BY_NONE) {
+            throw new OperationException(lastException);
         }
 
         // 随机指定卡片
@@ -407,6 +455,9 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("找不到卡包：[%s]！", packageName);
         }
         List<PackageCardModel> rareList = packageCardMapper.selectRare(packageModel.getPackageId());
+        if (rareList != null) {
+            rareList = rareList.stream().filter(c -> !PackageUtil.onlyByRoll(c.getCardName())).collect(Collectors.toList());
+        }
         if (rareList == null || rareList.size() == 0) {
             throw new OperationException("当前卡包没有可以抽的卡！");
         }
@@ -431,25 +482,27 @@ public class UserServiceImpl implements UserService {
 
         // 更新
         dustCount -= DustEnum.TO_RANDOM.getCount();
-        if (dustFirst > 0) {
-            if (dustCount >= 0) {
+        switch (rollWay) {
+            case ROLL_BY_DUST:
                 userModel.setDustCount(dustCount);
                 userModel.setWeeklyDustChangeR(1);
                 recordFacade.setRecord(userName, "[%s]使用150尘roll闪，剩余尘：%d。", userName, dustCount);
-            } else {
-                userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordFacade.setRecord(userName, "[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, userModel.getNonawardCount());
-            }
-        } else {
-            if (userModel.getNonawardCount() >= 100) {
-                userModel.setNonawardCount(userModel.getNonawardCount() - 100);
-                recordFacade.setRecord(userName, "[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, userModel.getNonawardCount());
-            } else {
-                userModel.setDustCount(dustCount);
-                userModel.setWeeklyDustChangeR(1);
-                recordFacade.setRecord(userName, "[%s]使用150尘roll闪，剩余尘：%d。", userName, dustCount);
-            }
+                break;
+            case ROLL_BY_AWARD:
+                userModel.setNonawardCount(nonAwardCount - 100);
+                recordFacade.setRecord(userName, "[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, nonAwardCount);
+                break;
+            case ROLL_BY_CARD:
+                if (userCardListMapper.update(cutoffModel) > 0) {
+                    recordFacade.setRecord(userName, "[%s]使用[%s]roll闪，剩余数量：%d。", userName, awardConditionName, cutoffModel.getCount());
+                } else {
+                    throw new OperationException("扣除[%s]失败！", awardConditionName);
+                }
+                break;
+            default:
+                throw new OperationException("扣除抽卡费用失败。");
         }
+
         if (userDataMapper.updateByPrimaryKey(userModel) <= 0) {
             throw new OperationException("更新用户数据错误！");
         }
@@ -1047,5 +1100,26 @@ public class UserServiceImpl implements UserService {
 
     private boolean isDailyLostEnough(int lostCount) {
         return (lostCount >= 3);
+    }
+
+    @Override
+    public int getUserOwnCardCount(String userName, String cardName) throws OperationException {
+        if (StringUtils.isEmpty(cardName)) {
+            return 0;
+        }
+        UserDataModel targetUser = userDataMapper.selectByNameDistinct(userName);
+        if (targetUser == null) {
+            throw new OperationException("找不到用户：[%s]！", userName);
+        }
+        PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
+        if (cardModel == null) {
+            throw new OperationException("找不到卡片：[%s]！", cardName);
+        }
+        UserCardListModel cardListModel = userCardListMapper.selectByUserCard(targetUser.getUserId(), cardModel.getCardPk());
+        if (cardListModel == null) {
+            return 0;
+        }
+
+        return cardListModel.getCount();
     }
 }

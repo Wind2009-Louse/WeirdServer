@@ -1,6 +1,7 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.AutoConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.bo.ExchangeRequestBO;
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -201,6 +203,21 @@ public class ChatExchangeHandler implements ChatHandler {
         if (selfCardName.equals(targetCardName)) {
             throw new ResponseException("双方交换的卡片相同！");
         }
+        if (PackageUtil.onlyByRoll(selfCardName) || PackageUtil.onlyByRoll(targetCardName)) {
+            throw new ResponseException("不能交换特殊卡片！");
+        }
+
+        try {
+            String exchangeCondition = AutoConfig.fetchExchangeCard();
+            if (!StringUtils.isEmpty(exchangeCondition)) {
+                int exchange = userService.getUserOwnCardCount(currentUserName, exchangeCondition);
+                if (exchange == 0) {
+                    throw new ResponseException("你的[%s]不足！", exchangeCondition);
+                }
+            }
+        } catch (OperationException oe) {
+            throw new ResponseException(oe.getMessage());
+        }
 
         ExchangeRequestBO requestBO = new ExchangeRequestBO(currentUserName, targetUserName, selfCardName, targetCardName, o);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
@@ -239,32 +256,44 @@ public class ChatExchangeHandler implements ChatHandler {
 
         // 同意
         if (operationEnum == ExchangeRequestEnum.AGREE) {
-            // 管理员同意交换
             if (requestBO.getStatus() == ExchangeRequestEnum.WAITING_ADMIN) {
+                // 管理员同意交换
                 if (!isAdmin) {
                     throw new ResponseException("非管理员无法同意！");
                 }
-                try {
-                    exchangeMap.remove(hash);
-                    CardSwapDTO swapParam = new CardSwapDTO();
-                    swapParam.setUserA(requestBO.getUserName());
-                    swapParam.setUserB(requestBO.getTargetName());
-                    swapParam.setCardA(requestBO.getSelfCardName());
-                    swapParam.setCardB(requestBO.getTargetCardName());
-                    swapParam.setName(currentUserName);
-                    broadcastFacade.sendMsgAsync(buildResponse(userService.swapCard(swapParam, currentUserName), o, true));
-                } catch (OperationException e) {
-                    throw new ResponseException(e.getMessage());
-                }
-                // 对方同意交换
+                solveExchange(requestBO, hash, currentUserName, o);
+
             } else if (requestBO.getStatus() == ExchangeRequestEnum.WAITING_TARGET) {
+                // 对方同意交换
                 if (requestBO.getUserName().equals(currentUserName)) {
                     throw new ResponseException("请由对方同意！");
                 } else if (!isAdmin && !requestBO.getTargetName().equals(currentUserName)) {
                     throw new ResponseException("你无权同意！");
                 }
-                requestBO.setStatus(ExchangeRequestEnum.WAITING_ADMIN);
-                broadcastFacade.sendMsgAsync(buildResponse("你已同意交换，请等待管理员进行交换：\n>交换 同意 " + hash, o, true));
+                int cutoffCount = -1;
+                String exchangeCondition = AutoConfig.fetchExchangeCard();
+                try {
+                    if (!StringUtils.isEmpty(exchangeCondition)) {
+                        cutoffCount = userService.getUserOwnCardCount(requestBO.getUserName(), exchangeCondition);
+                        if (cutoffCount == 0) {
+                            throw new ResponseException("[%s]的[%s]不足，无法处理交换！", requestBO.getUserName(), exchangeCondition);
+                        }
+                        cutoffCount -= 1;
+                    }
+                } catch (OperationException oe) {
+                    throw new ResponseException(oe.getMessage());
+                }
+                if (cutoffCount >= 0) {
+                    solveExchange(requestBO, hash, currentUserName, o);
+                    try {
+                        cardService.updateCardCount(requestBO.getUserName(), exchangeCondition, cutoffCount, requestBO.getUserName());
+                    } catch (OperationException e) {
+                        broadcastFacade.sendMsgAsync(buildResponse(String.format("[%s]的[%s]扣除失败，请检查。", requestBO.getUserName(), exchangeCondition), o, true));
+                    }
+                } else {
+                    requestBO.setStatus(ExchangeRequestEnum.WAITING_ADMIN);
+                    broadcastFacade.sendMsgAsync(buildResponse("你已同意交换，请等待管理员进行交换：\n>交换 同意 " + hash, o, true));
+                }
             }
             // 拒绝
         } else {
@@ -274,6 +303,21 @@ public class ChatExchangeHandler implements ChatHandler {
             } else {
                 throw new ResponseException("你无权拒绝！");
             }
+        }
+    }
+
+    private void solveExchange(ExchangeRequestBO requestBO, String hash, String currentUserName, JSONObject o) throws ResponseException {
+        try {
+            exchangeMap.remove(hash);
+            CardSwapDTO swapParam = new CardSwapDTO();
+            swapParam.setUserA(requestBO.getUserName());
+            swapParam.setUserB(requestBO.getTargetName());
+            swapParam.setCardA(requestBO.getSelfCardName());
+            swapParam.setCardB(requestBO.getTargetCardName());
+            swapParam.setName(currentUserName);
+            broadcastFacade.sendMsgAsync(buildResponse(userService.swapCard(swapParam, currentUserName), o, true));
+        } catch (OperationException e) {
+            throw new ResponseException(e.getMessage());
         }
     }
 

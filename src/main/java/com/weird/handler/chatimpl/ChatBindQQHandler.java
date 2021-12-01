@@ -1,6 +1,7 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.AutoConfig;
 import com.weird.config.DuelConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
@@ -132,7 +133,7 @@ public class ChatBindQQHandler implements ChatHandler {
                     userData.getCoin(),
                     userData.getNonawardCount());
 
-            if (duelConfig.isDp()) {
+            if (AutoConfig.fetchDp()) {
                 result += String.format("\nDP：%d", userData.getDuelPoint());
             }
 

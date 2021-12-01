@@ -20,11 +20,6 @@ public class DuelConfig {
     int minSecond = 180;
 
     /**
-     * 是否使用DP
-     */
-    boolean dp = false;
-
-    /**
      * 校验密钥
      */
     String key = "WS";

@@ -19,7 +19,7 @@ public interface CardService {
      * @param count    新的卡片数量
      * @return 是否修改成功
      */
-    String updateCardCount(String userName, String cardName, int count, String operator) throws Exception;
+    String updateCardCount(String userName, String cardName, int count, String operator) throws OperationException;
 
     /**
      * 批量修改用户持有的卡片数量

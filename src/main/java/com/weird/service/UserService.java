@@ -280,4 +280,13 @@ public interface UserService {
      * @return
      */
     boolean handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp);
+
+    /**
+     * 获取用户持有的某张卡片的数量
+     *
+     * @param userName 用户名
+     * @param cardName 卡名
+     * @return
+     */
+    int getUserOwnCardCount(String userName, String cardName) throws OperationException;
 }

@@ -1,7 +1,7 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.weird.config.DuelConfig;
+import com.weird.config.AutoConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
@@ -53,9 +53,6 @@ public class ChatRollHandler implements ChatHandler {
 
     @Autowired
     CardPreviewService cardPreviewService;
-
-    @Autowired
-    DuelConfig duelConfig;
 
     static Map<String, RollRequestBO> rollMap = new HashMap<>();
 
@@ -197,7 +194,7 @@ public class ChatRollHandler implements ChatHandler {
         }
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
 
-        if (duelConfig.isDp()) {
+        if (AutoConfig.fetchDp()) {
             int duelPoint = userData.getDuelPoint();
             int needDp = rollCount * 5;
             if (duelPoint < needDp) {
@@ -245,13 +242,31 @@ public class ChatRollHandler implements ChatHandler {
             }
         }
 
+        if (PackageUtil.onlyByRoll(targetCard.getCardName())) {
+            throw new ResponseException("不能重抽特殊卡片！");
+        }
+
+        String reRollCondition = AutoConfig.fetchReRollCard();
+        boolean solveDirect = false;
+        if (!StringUtils.isEmpty(reRollCondition)) {
+            int reRollCount = userService.getUserOwnCardCount(userName, reRollCondition);
+            if (reRollCount == 0) {
+                throw new ResponseException("你的[%s]不足！", reRollCondition);
+            }
+            solveDirect = true;
+        }
+
         // 发起重抽
         RollRequestBO requestBO = new RollRequestBO(userName, pack, 0, o, RollRequestTypeEnum.REROLL);
         requestBO.setReRollCardName(targetCard.getCardName());
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
         rollMap.put(hash, requestBO);
-        broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请重抽[%s]的[%s]，管理员可用以下指令进行同意：\n>抽卡 %s",
-                pack.getPackageName(), targetCard.getCardName(), hash), o));
+        if (solveDirect) {
+            handleReRollRequest(hash, userData, o);
+        } else {
+            broadcastFacade.sendMsgAsync(buildResponse(String.format("已成功申请重抽[%s]的[%s]，管理员可用以下指令进行同意：\n>抽卡 %s",
+                    pack.getPackageName(), targetCard.getCardName(), hash), o));
+        }
     }
 
     /**
@@ -286,7 +301,7 @@ public class ChatRollHandler implements ChatHandler {
         requestBO.setReRollCardName(currentLegendName);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
 
-        if (duelConfig.isDp()) {
+        if (AutoConfig.fetchDp()) {
             int duelPoint = userData.getDuelPoint();
             int needDp = 100;
             if (duelPoint < needDp) {
@@ -484,7 +499,7 @@ public class ChatRollHandler implements ChatHandler {
             resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
         }
 
-        if (duelConfig.isDp()) {
+        if (AutoConfig.fetchDp()) {
             try {
                 resultBuilder.append("\n").append(userService.decDuelPoint(requestUserName, (int) (totalRollCount * 5), operator.getUserName()));
             } catch (OperationException oe) {
@@ -530,11 +545,25 @@ public class ChatRollHandler implements ChatHandler {
         // 查询卡包卡片内容
         RollPackageBO packageInfo = fetchPackageCardList(packageName);
         List<CardListDTO> destCardList = packageInfo.getAwardList().stream()
-                .filter(c -> !c.getCardName().equals(request.getReRollCardName()))
+                .filter(c -> !c.getCardName().equals(request.getReRollCardName()) && !PackageUtil.onlyByRoll(c.getCardName()))
                 .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(destCardList)) {
             throw new ResponseException("[%s]无法重抽，请联系管理员！", packageName);
+        }
+
+        int cutOffReRollCount = -1;
+        String reRollCondition = AutoConfig.fetchReRollCard();
+        try {
+            if (!StringUtils.isEmpty(reRollCondition)) {
+                cutOffReRollCount = userService.getUserOwnCardCount(requestUserName, reRollCondition);
+                if (cutOffReRollCount == 0) {
+                    throw new ResponseException("你的[%s]不足！", reRollCondition);
+                }
+                cutOffReRollCount -= 1;
+            }
+        } catch (OperationException oe) {
+            throw new ResponseException(oe.getMessage());
         }
 
         CardListDTO destCard = destCardList.get(rd.nextInt(destCardList.size()));
@@ -554,6 +583,13 @@ public class ChatRollHandler implements ChatHandler {
 
         String resultBuilder = requestUserName + "对" + request.getReRollCardName() + "的重抽结果：\n" +
                 PackageUtil.printCard(destCard) + "\n" + getPreviewByName(destCard.getCardName());
+
+        try {
+            cardService.updateCardCount(requestUserName, reRollCondition, cutOffReRollCount, operator.getUserName());
+        } catch (OperationException e) {
+            resultBuilder += "\n" + e.getMessage();
+        }
+
         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));
         return true;
     }
@@ -624,7 +660,7 @@ public class ChatRollHandler implements ChatHandler {
             resultBuilder += "\n你当前的传说卡为[" + currentLegendName + "]，若确认替换，请执行以下抽卡操作，否则请取消该抽卡操作：\n>抽卡 " + newHash;
         }
 
-        if (duelConfig.isDp()) {
+        if (AutoConfig.fetchDp()) {
             try {
                 resultBuilder += "\n" + userService.decDuelPoint(requestUserName, 100, operator.getUserName());
             } catch (OperationException oe) {

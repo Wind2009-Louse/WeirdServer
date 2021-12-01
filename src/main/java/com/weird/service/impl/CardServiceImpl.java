@@ -65,7 +65,7 @@ public class CardServiceImpl implements CardService {
      */
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String updateCardCount(String userName, String cardName, int count, String operator) throws Exception {
+    public String updateCardCount(String userName, String cardName, int count, String operator) throws OperationException {
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null) {
             throw new OperationException("找不到该用户:[%s]！", userName);

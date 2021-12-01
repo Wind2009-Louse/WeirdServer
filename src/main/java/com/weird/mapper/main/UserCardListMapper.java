@@ -98,7 +98,7 @@ public interface UserCardListMapper {
      * @param cardPk 卡片Pk
      * @return 卡片拥有数量
      */
-    int selectCardOwnCountByUser(@Param("cardPk") int cardPk, @Param("userId") int userId);
+    Integer selectCardOwnCountByUser(@Param("cardPk") int cardPk, @Param("userId") int userId);
 
     Integer selectCardOwnCountByName(@Param("cardName") String cardName);
 
