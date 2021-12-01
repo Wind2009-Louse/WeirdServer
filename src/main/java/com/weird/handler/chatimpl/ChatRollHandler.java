@@ -584,10 +584,12 @@ public class ChatRollHandler implements ChatHandler {
         String resultBuilder = requestUserName + "对" + request.getReRollCardName() + "的重抽结果：\n" +
                 PackageUtil.printCard(destCard) + "\n" + getPreviewByName(destCard.getCardName());
 
-        try {
-            cardService.updateCardCount(requestUserName, reRollCondition, cutOffReRollCount, operator.getUserName());
-        } catch (OperationException e) {
-            resultBuilder += "\n" + e.getMessage();
+        if (cutOffReRollCount >= 0) {
+            try {
+                cardService.updateCardCount(requestUserName, reRollCondition, cutOffReRollCount, operator.getUserName());
+            } catch (OperationException e) {
+                resultBuilder += "\n" + e.getMessage();
+            }
         }
 
         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder, request.getRequest(), true));

@@ -97,6 +97,7 @@
                 and start_time &lt;= #{param.endTime}
             </if>
         </where>
+        order by duel_id desc
     </select>
 
 </mapper>
