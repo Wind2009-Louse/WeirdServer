@@ -49,8 +49,8 @@ public class ChatAdventureHandler implements ChatHandler {
                     currentSpace = AdventureEnum.getDistinctByName(argList.get(0));
                     if (argList.size() > 1) {
                         step = Integer.parseInt(argList.get(1));
-                        if (step > 6 || step < 0) {
-                            throw new OperationException("前进格数必须为1-6！");
+                        if (step > 6 || step < -6) {
+                            throw new OperationException("前进格数必须为-6~6！");
                         }
                     }
                 } catch (OperationException oe) {

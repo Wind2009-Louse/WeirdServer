@@ -9,6 +9,7 @@ import com.weird.model.PackageInfoModel;
 import com.weird.model.bo.RollPackageBO;
 import com.weird.model.bo.RollRequestBO;
 import com.weird.model.dto.CardListDTO;
+import com.weird.model.dto.CardOwnListDTO;
 import com.weird.model.dto.UserDataDTO;
 import com.weird.model.enums.RollRequestTypeEnum;
 import com.weird.model.param.ReplaceCardParam;
@@ -581,8 +582,30 @@ public class ChatRollHandler implements ChatHandler {
             throw new ResponseException("出现未知错误，请联系管理员");
         }
 
-        String resultBuilder = requestUserName + "对" + request.getReRollCardName() + "的重抽结果：\n" +
-                PackageUtil.printCard(destCard) + "\n" + getPreviewByName(destCard.getCardName());
+        int totalOwnCount = 0;
+        int selfOwnCount = 0;
+        try {
+            SearchCardParam searchCountParam = new SearchCardParam();
+            String cardName = destCard.getCardName();
+            searchCountParam.setCardName(cardName);
+            List<CardOwnListDTO> cardOwnList = cardService.selectList(searchCountParam, Collections.singletonList(cardName));
+            for (CardOwnListDTO ownData : cardOwnList) {
+                if (!cardName.equals(ownData.getCardName())) {
+                    continue;
+                }
+                totalOwnCount += ownData.getCount();
+                if (ownData.getUserName().equals(requestUserName)) {
+                    selfOwnCount += ownData.getCount();
+                }
+            }
+        } catch (Exception e) {
+            log.error("获取卡片数量出错：", e);
+        }
+
+        String resultBuilder = String.format("%s对%s的重抽结果：\n(%d/%d)%s\n%s",
+                requestUserName, request.getReRollCardName(),
+                selfOwnCount, totalOwnCount, PackageUtil.printCard(destCard),
+                getPreviewByName(destCard.getCardName()));
 
         if (cutOffReRollCount >= 0) {
             try {
