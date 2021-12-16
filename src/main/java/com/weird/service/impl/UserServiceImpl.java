@@ -2,6 +2,7 @@ package com.weird.service.impl;
 
 import com.alibaba.druid.util.StringUtils;
 import com.weird.config.AutoConfig;
+import com.weird.config.WeirdConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.*;
@@ -424,7 +425,7 @@ public class UserServiceImpl implements UserService {
                     }
                     break;
                 case ROLL_BY_AWARD:
-                    if (nonAwardCount >= 100) {
+                    if (nonAwardCount >= WeirdConfig.fetchNonAwardLimit()) {
                         rollWay = ROLL_BY_AWARD;
                     }
                     break;
@@ -489,7 +490,7 @@ public class UserServiceImpl implements UserService {
                 recordFacade.setRecord(userName, "[%s]使用150尘roll闪，剩余尘：%d。", userName, dustCount);
                 break;
             case ROLL_BY_AWARD:
-                userModel.setNonawardCount(nonAwardCount - 100);
+                userModel.setNonawardCount(nonAwardCount - WeirdConfig.fetchNonAwardLimit());
                 recordFacade.setRecord(userName, "[%s]使用月见黑roll闪，剩余月见黑：%d。", userName, nonAwardCount);
                 break;
             case ROLL_BY_CARD:
@@ -738,7 +739,7 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
-    public String decDuelPoint(String name, int count, String operator) throws OperationException {
+    public int decDuelPoint(String name, int count, String operator) throws OperationException {
         UserDataModel model = userDataMapper.selectByNameDistinct(name);
         if (model == null) {
             throw new OperationException("找不到用户：[%s]！", name);
@@ -750,7 +751,7 @@ public class UserServiceImpl implements UserService {
         int updateCount = userDataMapper.updateByPrimaryKey(model);
         if (updateCount > 0) {
             recordFacade.setRecord(operator, successHint);
-            return successHint;
+            return newCount;
         } else {
             throw new OperationException("修改失败！");
         }

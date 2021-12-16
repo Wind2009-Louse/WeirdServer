@@ -69,6 +69,11 @@ public class RollRequestBO implements Serializable {
      */
     String reRollDescName;
 
+    /**
+     * 请求时用户的DP
+     */
+    int originDp;
+
     public RollRequestBO() {
         requestTime = System.currentTimeMillis();
         userName = "";

@@ -73,6 +73,11 @@ public class UserDataModel implements Serializable {
     private int dailyAward;
 
     /**
+     * 当天抽卡次数
+     */
+    private int dailyRoll;
+
+    /**
      * 每周换NR的次数
      */
     private int weeklyDustChangeN;
@@ -86,6 +91,11 @@ public class UserDataModel implements Serializable {
      * 每周换自选闪的次数
      */
     private int weeklyDustChangeAlter;
+
+    /**
+     * 每周完成任务的次数
+     */
+    private int weeklyMission;
 
     /**
      * 转盘次数

@@ -1,6 +1,8 @@
 package com.weird.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.weird.config.AutoConfig;
+import com.weird.config.WeirdConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.facade.RecordFacade;
 import com.weird.mapper.main.*;
@@ -140,10 +142,12 @@ public class RollServiceImpl implements RollService {
         if (!isNormalRoll) {
             firstAwardHint = "";
         } else {
+            boolean firstRare = false;
             if (!CollectionUtils.isEmpty(rareCardList)) {
                 int nonawardCount = userModel.getNonawardCount();
-                userModel.setNonawardCount(nonawardCount - nonawardCount % 100);
+                userModel.setNonawardCount(nonawardCount - nonawardCount % WeirdConfig.fetchNonAwardLimit());
                 if (userModel.getDailyAward() <= 0) {
+                    firstRare = true;
                     userModel.setDailyAward(1);
                     firstAwardHint = String.format("，这也是%s今天的第一张闪卡", userModel.getUserName());
                 } else {
@@ -157,15 +161,31 @@ public class RollServiceImpl implements RollService {
             // 更新抽卡计数和转盘次数
             int roulette = userModel.getRoulette();
             int rollCount = userModel.getRollCount();
+            int dailyRoll = userModel.getDailyRoll();
             rollCount += 1;
-            if (rollCount >= 50) {
-                final int newRouletteCount = rollCount / 50;
+            dailyRoll += 1;
+            final int rollCountToRoulette = WeirdConfig.fetchRollCountToRoulette();
+            if (rollCount >= rollCountToRoulette) {
+                final int newRouletteCount = rollCount / rollCountToRoulette;
                 roulette += newRouletteCount;
-                rollCount %= 50;
+                rollCount %= rollCountToRoulette;
                 broadcastFacade.sendMsgAsync(String.format("【广播】%s 获得了 %d 次转盘的机会！", userModel.getUserName(), newRouletteCount));
             }
             userModel.setRoulette(roulette);
             userModel.setRollCount(rollCount);
+            userModel.setDailyRoll(dailyRoll);
+
+            // 判断dp变化
+            if (AutoConfig.fetchDp()) {
+                int duelPoint = userModel.getDuelPoint();
+                if (dailyRoll == AutoConfig.fetchDailyRollCondition()) {
+                    duelPoint += AutoConfig.fetchDailyRollDp();
+                }
+                if (firstRare) {
+                    duelPoint += AutoConfig.fetchDailyRareDp();
+                }
+                userModel.setDuelPoint(duelPoint);
+            }
         }
 
         // 更新用户数据
@@ -179,7 +199,7 @@ public class RollServiceImpl implements RollService {
         // 月见黑提示
         int currentNonawardCount = userModel.getNonawardCount();
         if (currentNonawardCount > 0) {
-            switch (currentNonawardCount % 100) {
+            switch (currentNonawardCount % WeirdConfig.fetchNonAwardLimit()) {
                 case 90:
                     info = String.format("【广播】%s 的月见黑已经达到了 %d，再接再厉！", userModel.getUserName(), currentNonawardCount);
                     break;

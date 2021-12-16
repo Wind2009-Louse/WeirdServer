@@ -57,4 +57,37 @@ public class AutoConfig {
     public void setAwardCard(String awardCard) {
         AutoConfig.awardCard = awardCard;
     }
+
+    /**
+     * 每日抽卡获取DP的次数
+     */
+    static int dailyRollCondition = 4;
+    public static int fetchDailyRollCondition() {
+        return dailyRollCondition;
+    }
+    public void setDailyRollCondition(int dailyRollCondition) {
+        AutoConfig.dailyRollCondition = dailyRollCondition;
+    }
+
+    /**
+     * 每日抽卡获取DP的数量
+     */
+    static int dailyRollDp = 10;
+    public static int fetchDailyRollDp() {
+        return dailyRollDp;
+    }
+    public void setDailyRollDp(int dailyRollDp) {
+        AutoConfig.dailyRollDp = dailyRollDp;
+    }
+
+    /**
+     * 每日抽卡出闪时获取DP的数量
+     */
+    static int dailyRareDp = 10;
+    public static int fetchDailyRareDp() {
+        return dailyRareDp;
+    }
+    public void setDailyRareDp(int dailyRareDp) {
+        AutoConfig.dailyRareDp = dailyRareDp;
+    }
 }

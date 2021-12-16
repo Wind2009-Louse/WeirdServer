@@ -28,7 +28,7 @@ raw_text = raw_text.replace("INSERT INTO roulette_history", "INSERT INTO roulett
 raw_text = raw_text.replace("INSERT INTO roulette_config", "INSERT INTO roulette_config(`config_id`,`detail`,`rate`,`color`,`db_created_time`)")
 raw_text = raw_text.replace("INSERT INTO card_history", "INSERT INTO card_history(`id`,`package_id`,`card_pk`,`old_name`,`new_name`,`rare`,`db_created_time`)")
 raw_text = raw_text.replace("INSERT INTO forbidden", "INSERT INTO forbidden(`id`,`code`,`name`,`count`,`db_created_time`)")
-raw_text = raw_text.replace("INSERT INTO user_data", "INSERT INTO user_data(`user_id`,`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`,`coin`,`daily_win`,`daily_lost`,`daily_award`,`weekly_dust_change_n`,`weekly_dust_change_r`,`weekly_dust_change_alter`,`roulette`,`roll_count`,`qq`,`disabled`,`double_rare_count`,`db_created_time`)")
+raw_text = raw_text.replace("INSERT INTO user_data", "INSERT INTO user_data(`user_id`,`user_name`,`password`,`is_admin`,`nonaward_count`,`dust_count`,`duel_point`,`coin`,`daily_win`,`daily_lost`,`daily_award`,`weekly_dust_change_n`,`weekly_dust_change_r`,`weekly_dust_change_alter`,`roulette`,`roll_count`,`qq`,`disabled`,`double_rare_count`,`db_created_time`, `daily_roll`, `weekly_mission`)")
 raw_text = raw_text.replace("INSERT INTO record", "INSERT INTO record(`record_id`,`operator`,`detail`,`db_created_time`)")
 
 with open(dest_name, "w", encoding="utf-8") as wf:

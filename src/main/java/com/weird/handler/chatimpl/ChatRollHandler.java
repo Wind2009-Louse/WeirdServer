@@ -185,6 +185,7 @@ public class ChatRollHandler implements ChatHandler {
         PackageInfoModel pack = fetchPackageInfo(packageArg);
 
         RollRequestBO requestBO = new RollRequestBO(userName, pack, rollCount, o);
+        requestBO.setOriginDp(userData.getDuelPoint());
         String remark = "";
         if (otherArgList.contains(ARG_RARE_TO_STOP)) {
             requestBO.setRareToStop(true);
@@ -299,6 +300,7 @@ public class ChatRollHandler implements ChatHandler {
 
         // 发起抽传说
         RollRequestBO requestBO = new RollRequestBO(userName, null, 0, o, RollRequestTypeEnum.LEGEND);
+        requestBO.setOriginDp(userData.getDuelPoint());
         requestBO.setReRollCardName(currentLegendName);
         String hash = DigestUtils.md5DigestAsHex(requestBO.toString().getBytes()).substring(0, 4);
 
@@ -502,7 +504,9 @@ public class ChatRollHandler implements ChatHandler {
 
         if (AutoConfig.fetchDp()) {
             try {
-                resultBuilder.append("\n").append(userService.decDuelPoint(requestUserName, (int) (totalRollCount * 5), operator.getUserName()));
+                int originDp = request.getOriginDp();
+                int currentDp = userService.decDuelPoint(requestUserName, (int) (totalRollCount * 5), operator.getUserName());
+                resultBuilder.append(String.format("\n%s的DP变化：%d->%d", requestUserName, originDp, currentDp));
             } catch (OperationException oe) {
                 exceptBuilder.append("\n").append(oe.getMessage());
             }
@@ -687,7 +691,9 @@ public class ChatRollHandler implements ChatHandler {
 
         if (AutoConfig.fetchDp()) {
             try {
-                resultBuilder += "\n" + userService.decDuelPoint(requestUserName, 100, operator.getUserName());
+                int originDp = request.getOriginDp();
+                int currentDp = userService.decDuelPoint(requestUserName, 100, operator.getUserName());
+                resultBuilder += String.format("\n%s的DP变化：%d->%d", requestUserName, originDp, currentDp);
             } catch (OperationException oe) {
                 broadcastFacade.sendMsgAsync(buildResponse(oe.getMessage(), request.getRequest(), true));
             } catch (Exception e) {

@@ -147,7 +147,7 @@ public interface UserService {
      * @return 是否更改成功
      */
     String updateDuelPoint(String name, int newCount, String operator) throws OperationException;
-    String decDuelPoint(String name, int count, String operator) throws OperationException;
+    int decDuelPoint(String name, int count, String operator) throws OperationException;
 
     /**
      * 修改硬币数量

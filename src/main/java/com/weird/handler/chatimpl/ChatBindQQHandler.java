@@ -3,6 +3,7 @@ package com.weird.handler.chatimpl;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.config.AutoConfig;
 import com.weird.config.DuelConfig;
+import com.weird.config.WeirdConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.dto.UserDataDTO;
@@ -137,9 +138,10 @@ public class ChatBindQQHandler implements ChatHandler {
                 result += String.format("\nDP：%d", userData.getDuelPoint());
             }
 
-            result += String.format("\n转盘次数：%d\n抽卡计数：%d/50",
+            result += String.format("\n转盘次数：%d\n抽卡计数：%d/%d",
                     userData.getRoulette(),
-                    userData.getRollCount());
+                    userData.getRollCount(),
+                    WeirdConfig.fetchRollCountToRoulette());
 
             return result;
         }
