@@ -90,4 +90,15 @@ public class AutoConfig {
     public void setDailyRareDp(int dailyRareDp) {
         AutoConfig.dailyRareDp = dailyRareDp;
     }
+
+    /**
+     * 每周获取交换券需要完成的日常数量
+     */
+    static int weeklyMissionToExchange = 5;
+    public static int fetchWeeklyMissionToExchange() {
+        return weeklyMissionToExchange;
+    }
+    public void setWeeklyMissionToExchange(int weeklyMissionToExchange) {
+        AutoConfig.weeklyMissionToExchange = weeklyMissionToExchange;
+    }
 }

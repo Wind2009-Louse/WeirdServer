@@ -1058,15 +1058,17 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp) {
+        boolean result = false;
         UserDataModel userModel = userDataMapper.selectByNameDistinct(userName);
         if (userModel == null || winCount + lostCount == 0) {
-            return false;
+            return result;
         }
         int oldWinCount = userModel.getDailyWin();
         int oldLostCount = userModel.getDailyLost();
         int newWinCount = oldWinCount + winCount;
         int newLostCount = oldLostCount + lostCount;
         int oldDp = userModel.getDuelPoint();
+        int missionCount = userModel.getWeeklyMission();
 
         int increaseDp = winCount * winDp + lostCount * lostDp;
         boolean triggerWin = (!isDailyWinEnough(oldWinCount, oldLostCount) && isDailyWinEnough(newWinCount, newLostCount));
@@ -1074,9 +1076,13 @@ public class UserServiceImpl implements UserService {
         int newDp = oldDp + increaseDp + (triggerWin ? 10 : 0) + (triggerLost ? 5 : 0);
 
         StringBuilder sb = new StringBuilder();
-        sb.append("决斗ID:").append(duelId).append(",比分=").append(winCount).append(":").append(lostCount).append(",DP=").append(oldDp).append("+").append(increaseDp);
+        sb.append(userName).append(":").append("决斗ID:").append(duelId).append(",比分=").append(winCount).append(":").append(lostCount).append(",DP=").append(oldDp).append("+").append(increaseDp);
         if (triggerWin) {
             sb.append("+10");
+            missionCount ++;
+            if (missionCount == AutoConfig.fetchWeeklyMissionToExchange()) {
+                result = true;
+            }
         }
         if (triggerLost) {
             sb.append("+5");
@@ -1085,14 +1091,14 @@ public class UserServiceImpl implements UserService {
 
         UserDataModel updateModel = new UserDataModel();
         updateModel.setUserId(userModel.getUserId());
+        updateModel.setWeeklyMission(missionCount);
         updateModel.setDailyWin(newWinCount);
         updateModel.setDailyLost(newLostCount);
         updateModel.setDuelPoint(newDp);
         if (userDataMapper.updateByPrimaryKeySelective(updateModel) > 0) {
             recordFacade.setRecord(userName, sb.toString());
-            return true;
         }
-        return false;
+        return result;
     }
 
     private boolean isDailyWinEnough(int winCount, int lostCount) {

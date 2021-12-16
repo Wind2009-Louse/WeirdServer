@@ -277,7 +277,7 @@ public interface UserService {
      * @param lostCount 失败次数
      * @param winDp     胜利DP
      * @param lostDp    失败DP
-     * @return
+     * @return 是否获得交换卡
      */
     boolean handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp);
 

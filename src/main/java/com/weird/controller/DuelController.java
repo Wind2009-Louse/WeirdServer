@@ -3,10 +3,13 @@ package com.weird.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
+import com.weird.config.AutoConfig;
 import com.weird.config.DuelConfig;
+import com.weird.facade.BroadcastFacade;
 import com.weird.model.DuelHistoryModel;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.DuelHistoryParam;
+import com.weird.service.CardService;
 import com.weird.service.DuelService;
 import com.weird.service.UserService;
 import com.weird.utils.RequestUtil;
@@ -45,12 +48,25 @@ public class DuelController {
     UserService userService;
 
     @Autowired
+    CardService cardService;
+
+    @Autowired
+    BroadcastFacade broadcastFacade;
+
+    @Autowired
     DuelConfig duelConfig;
 
     /**
      * 判断入参是秒还是毫秒
      */
     final static long MILL_GAP = 10000000000L;
+
+    final static List<DateFormat> timeFormatList = Arrays.asList(
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
+            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"),
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+    );
 
     @RequestMapping("/duel/message")
     @ResponseBody
@@ -99,10 +115,10 @@ public class DuelController {
                 }
 
                 // 处理每人结果
-                userService.handleDuelResult(duelId, model.getPlayerA(), model.getScoreA(), model.getScoreB(), winDP, lostDP);
-                userService.handleDuelResult(duelId, model.getPlayerB(), model.getScoreB(), model.getScoreA(), winDP, lostDP);
-                userService.handleDuelResult(duelId, model.getPlayerC(), model.getScoreC(), model.getScoreD(), winDP, lostDP);
-                userService.handleDuelResult(duelId, model.getPlayerD(), model.getScoreD(), model.getScoreC(), winDP, lostDP);
+                handleDuelResult(duelId, model.getPlayerA(), model.getScoreA(), model.getScoreB(), winDP, lostDP);
+                handleDuelResult(duelId, model.getPlayerB(), model.getScoreB(), model.getScoreA(), winDP, lostDP);
+                handleDuelResult(duelId, model.getPlayerC(), model.getScoreC(), model.getScoreD(), winDP, lostDP);
+                handleDuelResult(duelId, model.getPlayerD(), model.getScoreD(), model.getScoreC(), winDP, lostDP);
             });
         }
 
@@ -146,13 +162,6 @@ public class DuelController {
         return integer;
     }
 
-    static List<DateFormat> timeFormatList = Arrays.asList(
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ"),
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"),
-            new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS"),
-            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss")
-    );
-
     /**
      * 从报文中获取时间
      *
@@ -182,6 +191,23 @@ public class DuelController {
             return timestamp;
         } catch (NumberFormatException ne) {
             throw new OperationException("时间格式有误！");
+        }
+    }
+
+    private void handleDuelResult(long duelId, String userName, int winCount, int lostCount, int winDp, int lostDp) {
+        boolean getExchangeCard = userService.handleDuelResult(duelId, userName, winCount, lostCount, winDp, lostDp);
+        if (getExchangeCard) {
+            String exchangeCardName = AutoConfig.fetchExchangeCard();
+            if (!StringUtils.isEmpty(exchangeCardName)) {
+                try {
+                    int currentCount = userService.getUserOwnCardCount(userName, exchangeCardName);
+                    int newCount = currentCount + 1;
+                    cardService.updateCardCount(userName, exchangeCardName, newCount, "System");
+                    broadcastFacade.sendMsgAsync(String.format("【广播】%s获得了一张[%s]！", userName, exchangeCardName));
+                } catch (OperationException oe) {
+                    log.error("添加交换卡失败：", oe);
+                }
+            }
         }
     }
 
