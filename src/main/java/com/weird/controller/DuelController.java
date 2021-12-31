@@ -211,6 +211,13 @@ public class DuelController {
         }
     }
 
+    /**
+     * 【管理端】查询决斗历史记录
+     *
+     * @param param 参数
+     * @return 搜索结果
+     */
+    @RequestMapping("/weird_project/duel/list")
     public PageResult<DuelHistoryModel> searchResult(@RequestBody DuelHistoryParam param) throws Exception {
         // 管理权限验证
         if (userService.checkLogin(param.getName(), param.getPassword()) != LoginTypeEnum.ADMIN) {
