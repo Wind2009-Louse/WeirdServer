@@ -31,6 +31,19 @@ public class RollPackageBO implements Serializable {
      */
     List<CardListDTO> awardList;
     /**
+     * SR列表
+     */
+    List<CardListDTO> srList;
+    /**
+     * UR列表
+     */
+    List<CardListDTO> urList;
+    /**
+     * HR列表
+     */
+    List<CardListDTO> hrList;
+
+    /**
      * 特殊卡（GR、SER）列表
      */
     List<CardListDTO> spList;
@@ -38,7 +51,9 @@ public class RollPackageBO implements Serializable {
     public RollPackageBO() {
         normalList = new LinkedList<>();
         rareList = new LinkedList<>();
-        awardList = new LinkedList<>();
+        srList = new LinkedList<>();
+        urList = new LinkedList<>();
+        hrList = new LinkedList<>();
         spList = new LinkedList<>();
     }
 

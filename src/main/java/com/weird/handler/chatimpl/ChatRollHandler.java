@@ -2,6 +2,7 @@ package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.weird.config.AutoConfig;
+import com.weird.config.WeirdConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.CardPreviewModel;
@@ -416,7 +417,11 @@ public class ChatRollHandler implements ChatHandler {
 
         // 查询卡包卡片内容
         RollPackageBO packageInfo = fetchPackageCardList(request.getPackageInfo().getPackageName());
-        if (packageInfo.getNormalList().size() < 2 || packageInfo.getRareList().size() <= 0 || packageInfo.getAwardList().size() <= 0) {
+        if (packageInfo.getNormalList().size() < 2
+                || packageInfo.getRareList().size() <= 0
+                || packageInfo.getSrList().size() <= 0
+                || packageInfo.getUrList().size() <= 0
+                || packageInfo.getHrList().size() <= 0) {
             throw new ResponseException("[%s]的卡包配置有误，请联系管理员", request.getPackageInfo().getPackageName());
         }
 
@@ -440,7 +445,22 @@ public class ChatRollHandler implements ChatHandler {
             boolean currentRare = rd.nextInt(100) < rareRate;
             if (currentRare) {
                 // 0-3 闪卡
-                cardResultList.add(packageInfo.getAwardList().get(rd.nextInt(packageInfo.getAwardList().size())));
+                List<CardListDTO> awardCardList;
+                // HR-UR-SR按照1-2-5比例出现
+                int awardTypeRand = rd.nextInt(8);
+                switch (awardTypeRand) {
+                    case 0:
+                        awardCardList = packageInfo.getHrList();
+                        break;
+                    case 1:
+                    case 2:
+                        awardCardList = packageInfo.getUrList();
+                        break;
+                    default:
+                        awardCardList = packageInfo.getSrList();
+                    break;
+                }
+                cardResultList.add(awardCardList.get(rd.nextInt(awardCardList.size())));
                 totalRateCount++;
             } else {
                 // 其他 R
@@ -925,6 +945,9 @@ public class ChatRollHandler implements ChatHandler {
         result.getAwardList().addAll(cardMap.getOrDefault("SR", Collections.emptyList()));
         result.getAwardList().addAll(cardMap.getOrDefault("UR", Collections.emptyList()));
         result.getAwardList().addAll(cardMap.getOrDefault("HR", Collections.emptyList()));
+        result.getSrList().addAll(cardMap.getOrDefault("SR", Collections.emptyList()));
+        result.getUrList().addAll(cardMap.getOrDefault("UR", Collections.emptyList()));
+        result.getHrList().addAll(cardMap.getOrDefault("HR", Collections.emptyList()));
         result.getSpList().addAll(cardMap.getOrDefault("GR", Collections.emptyList()));
         result.getSpList().addAll(cardMap.getOrDefault("SER", Collections.emptyList()));
 
