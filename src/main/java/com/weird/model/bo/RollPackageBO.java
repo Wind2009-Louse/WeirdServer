@@ -51,6 +51,7 @@ public class RollPackageBO implements Serializable {
     public RollPackageBO() {
         normalList = new LinkedList<>();
         rareList = new LinkedList<>();
+        awardList = new LinkedList<>();
         srList = new LinkedList<>();
         urList = new LinkedList<>();
         hrList = new LinkedList<>();
