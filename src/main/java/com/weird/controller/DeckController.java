@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
 import com.weird.config.DeckCheckConfig;
+import com.weird.config.DuelConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.ForbiddenModel;
 import com.weird.model.dto.CardListDTO;
@@ -57,6 +58,9 @@ public class DeckController {
 
     @Autowired
     DeckCheckConfig deckCheckConfig;
+
+    @Autowired
+    DuelConfig duelConfig;
 
     /**
      * 【ALL】搜索卡组列表
@@ -426,13 +430,12 @@ public class DeckController {
     public boolean checkUsable(HttpServletRequest request) throws Exception {
         JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
         String userName = jsonFromRequest.getString("name");
-        String password = jsonFromRequest.getString("password");
-
-        LoginTypeEnum loginTypeEnum = userService.checkLogin(userName, password);
-        if (loginTypeEnum == LoginTypeEnum.UNLOGIN) {
-            throw new OperationException("未登录！");
+        String key = jsonFromRequest.getString("key");
+        if (key == null || !key.equals(duelConfig.getKey())) {
+            throw new OperationException("校验失败！");
         }
-        boolean isAdmin = loginTypeEnum == LoginTypeEnum.ADMIN;
+
+        boolean isAdmin = userService.adminCheck(userName);
 
         // 读取卡组信息
         DeckInfoDTO deck = new DeckInfoDTO();

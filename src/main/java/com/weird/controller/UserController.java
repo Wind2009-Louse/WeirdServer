@@ -3,6 +3,7 @@ package com.weird.controller;
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.TrimArgs;
+import com.weird.config.DuelConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
@@ -41,6 +42,9 @@ public class UserController {
     @Autowired
     DeckService deckService;
 
+    @Autowired
+    DuelConfig duelConfig;
+
     /**
      * 【ALL】查询用户信息
      *
@@ -77,6 +81,11 @@ public class UserController {
         JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
         String name = jsonFromRequest.getString("name");
         String password = jsonFromRequest.getString("password");
+        String key = jsonFromRequest.getString("key");
+        if (key == null || !key.equals(duelConfig.getKey())) {
+            throw new OperationException("校验失败！");
+        }
+
         if (name == null) {
             name = "";
         }
