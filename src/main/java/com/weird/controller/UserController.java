@@ -7,6 +7,7 @@ import com.weird.config.DuelConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
+import com.weird.model.dto.UserSessionDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.BatchUpdateUserCardParam;
 import com.weird.service.CardPreviewService;
@@ -79,11 +80,47 @@ public class UserController {
     @PostMapping("/weird_project/user/checkPost")
     public LoginTypeEnum getLoginTypePost(HttpServletRequest request) throws Exception {
         JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
-        String name = jsonFromRequest.getString("name");
-        String password = jsonFromRequest.getString("password");
         String key = jsonFromRequest.getString("key");
         if (key == null || !key.equals(duelConfig.getKey())) {
             throw new OperationException("校验失败！");
+        }
+
+        String name = jsonFromRequest.getString("name");
+        String password = jsonFromRequest.getString("password");
+        String session = jsonFromRequest.getString("session");
+
+        UserSessionDTO data = getUserInfoByRequest(name, password, session);
+        if (data != null) {
+            return data.getType();
+        }
+        return LoginTypeEnum.UNLOGIN;
+    }
+
+    @PostMapping("/weird_project/user/session")
+    public UserSessionDTO getSession(HttpServletRequest request) throws Exception {
+        JSONObject jsonFromRequest = RequestUtil.getJsonFromRequest(request);
+        String key = jsonFromRequest.getString("key");
+        if (key == null || !key.equals(duelConfig.getKey())) {
+            throw new OperationException("校验失败！");
+        }
+        String name = jsonFromRequest.getString("name");
+        String password = jsonFromRequest.getString("password");
+        String session = jsonFromRequest.getString("session");
+
+
+        return getUserInfoByRequest(name, password, session);
+    }
+
+    private UserSessionDTO getUserInfoByRequest(String name, String password, String session) throws OperationException {
+        UserSessionDTO data = null;
+        if (!StringUtils.isEmpty(session)) {
+            data = CacheUtil.getUserSessionCache(session);
+            if (data != null) {
+                return data;
+            }
+            if (StringUtils.isEmpty(name) && StringUtils.isEmpty(password)) {
+                throw new OperationException("令牌已过期，请重新获取");
+            }
         }
 
         if (name == null) {
@@ -94,7 +131,8 @@ public class UserController {
         } else if (!password.isEmpty()) {
             password = DigestUtils.md5DigestAsHex(password.getBytes());
         }
-        return userService.checkLogin(name, password);
+
+        return userService.checkLoginAndGetSession(name, password);
     }
 
     /**
@@ -423,6 +461,9 @@ public class UserController {
         }
         if (target.contains(" ")) {
             throw new OperationException("用户名不能包含空格！");
+        }
+        if (target.length() > 10) {
+            throw new OperationException("用户名请控制在10个字符以内！");
         }
         if (userService.addUser(target, name)) {
             return "添加成功！";

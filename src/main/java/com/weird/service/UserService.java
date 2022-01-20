@@ -2,6 +2,7 @@ package com.weird.service;
 
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
+import com.weird.model.dto.UserSessionDTO;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.ReplaceCardParam;
 import com.weird.utils.OperationException;
@@ -47,6 +48,15 @@ public interface UserService {
      * @return 登录类型
      */
     LoginTypeEnum checkLogin(String name, String encryptedPassword);
+
+    /**
+     * 根据用户名和密码检查，获得登录凭证
+     *
+     * @param name              用户名
+     * @param encryptedPassword 密码
+     * @return 登录凭证
+     */
+    UserSessionDTO checkLoginAndGetSession(String name, String encryptedPassword);
 
     /**
      * 添加新用户（默认密码为123456）

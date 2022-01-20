@@ -7,10 +7,7 @@ import com.weird.config.DeckCheckConfig;
 import com.weird.config.DuelConfig;
 import com.weird.model.CardPreviewModel;
 import com.weird.model.ForbiddenModel;
-import com.weird.model.dto.CardListDTO;
-import com.weird.model.dto.DeckCardDTO;
-import com.weird.model.dto.DeckInfoDTO;
-import com.weird.model.dto.DeckListDTO;
+import com.weird.model.dto.*;
 import com.weird.model.enums.DeckCardTypeEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.*;
@@ -435,7 +432,19 @@ public class DeckController {
             throw new OperationException("校验失败！");
         }
 
+        String session = jsonFromRequest.getString("session");
+        if (!StringUtils.isEmpty(session)) {
+            UserSessionDTO userSessionCache = CacheUtil.getUserSessionCache(session);
+            if (userSessionCache == null) {
+                throw new OperationException("令牌已过期，请重新获取");
+            }
+            userName = userSessionCache.getUserName();
+        }
+
         boolean isAdmin = userService.adminCheck(userName);
+        if (isAdmin) {
+             return true;
+        }
 
         // 读取卡组信息
         DeckInfoDTO deck = new DeckInfoDTO();

@@ -9,6 +9,7 @@ import com.weird.mapper.main.*;
 import com.weird.model.*;
 import com.weird.model.dto.CardSwapDTO;
 import com.weird.model.dto.UserDataDTO;
+import com.weird.model.dto.UserSessionDTO;
 import com.weird.model.enums.DustEnum;
 import com.weird.model.enums.LoginTypeEnum;
 import com.weird.model.param.ReplaceCardParam;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.DigestUtils;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -27,8 +29,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-import static com.weird.utils.CacheUtil.clearCardOwnListCache;
-import static com.weird.utils.CacheUtil.clearRollListWithDetailCache;
+import static com.weird.utils.CacheUtil.*;
 
 /**
  * 用户Service实现
@@ -130,6 +131,34 @@ public class UserServiceImpl implements UserService {
         } else {
             return LoginTypeEnum.NORMAL;
         }
+    }
+
+    /**
+     * 根据用户名和密码检查，获得登录凭证
+     *
+     * @param name              用户名
+     * @param encryptedPassword 密码
+     * @return 登录凭证
+     */
+    @Override
+    public UserSessionDTO checkLoginAndGetSession(String name, String encryptedPassword) {
+        UserSessionDTO session = new UserSessionDTO();
+        UserDataModel model = userDataMapper.selectByNamePassword(name, encryptedPassword);
+        if (model != null) {
+            session.setUserName(name);
+            if (model.getIsAdmin() == 1) {
+                session.setType(LoginTypeEnum.ADMIN);
+            } else {
+                session.setType(LoginTypeEnum.NORMAL);
+            }
+            session.setExpireTimestamp(System.currentTimeMillis() + UserSessionExpireTime);
+            String key = DigestUtils.md5DigestAsHex(session.toString().getBytes()).substring(0, 10);
+            session.setSession(key);
+
+            putUserSessionCache(session);
+        }
+
+        return session;
     }
 
     /**
