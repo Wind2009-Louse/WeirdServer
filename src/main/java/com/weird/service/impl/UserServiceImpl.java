@@ -170,7 +170,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public boolean addUser(String name, String operator) throws Exception {
-        UserDataModel modelList = userDataMapper.selectByNameDistinct(name);
+        UserDataModel modelList = userDataMapper.selectByNameInAllDistinct(name);
         if (modelList != null) {
             throw new OperationException("该用户：[%s]已存在！", name);
         }

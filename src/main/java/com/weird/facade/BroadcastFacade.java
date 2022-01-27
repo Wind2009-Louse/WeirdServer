@@ -128,6 +128,10 @@ public class BroadcastFacade {
         }
         String msg = sendObject.getString("message");
 
+        if ("private".equals(sendObject.getString("message_type"))) {
+            return;
+        }
+
         // 延迟
         int retryTimes = broadcastConfig.getRetryTimes();
         try {
