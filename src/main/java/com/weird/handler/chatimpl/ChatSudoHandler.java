@@ -1,6 +1,8 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.AutoConfig;
+import com.weird.config.DuelConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.model.dto.CardListDTO;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.smartcardio.CardNotPresentException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -58,6 +61,7 @@ public class ChatSudoHandler implements ChatHandler {
     static public List<String> DP_OPERATION_LIST = Arrays.asList("DP", "dp", "Dp");
     static public List<String> ROULETTE_OPERATION_LIST = Arrays.asList("转盘", "转盘次数");
     static public List<String> ROLL_COUNT_OPERATION_LIST = Arrays.asList("抽卡", "抽卡次数");
+    static public List<String> GIFT_OPERATION_LIST = Arrays.asList("交换", "交换券", "py", "PY");
 
     @Override
     public void handle(JSONObject o) throws ResponseException {
@@ -137,6 +141,12 @@ public class ChatSudoHandler implements ChatHandler {
                     int newCount = setCount ? number : targetUser.getRollCount() + number;
                     result = userService.updateRollCount(targetUserName, newCount, operator);
                 } else {
+                    if (GIFT_OPERATION_LIST.contains(operation)) {
+                        String exchangeCardName = AutoConfig.fetchExchangeCard();
+                        if (!StringUtils.isEmpty(exchangeCardName)) {
+                            operation = exchangeCardName;
+                        }
+                    }
                     String cardName = fetchCard(operation);
                     int currentCount = userService.getUserOwnCardCount(targetUserName, cardName);
                     int newCount = setCount ? number : currentCount + number;
