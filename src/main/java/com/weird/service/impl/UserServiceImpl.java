@@ -17,6 +17,7 @@ import com.weird.service.UserService;
 import com.weird.utils.BeanConverter;
 import com.weird.utils.OperationException;
 import com.weird.utils.PackageUtil;
+import com.weird.utils.ResponseException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -687,6 +688,9 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("登录失败！");
         }
 
+        if (PackageUtil.onlyByRoll(cardName)) {
+            throw new ResponseException("特殊卡片无法分解！");
+        }
         PackageCardModel cardModel = packageCardMapper.selectByNameDistinct(cardName);
         if (cardModel == null) {
             throw new OperationException("找不到卡片：[%s]！", cardName);
