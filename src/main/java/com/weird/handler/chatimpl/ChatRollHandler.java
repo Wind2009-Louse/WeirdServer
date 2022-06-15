@@ -508,6 +508,9 @@ public class ChatRollHandler implements ChatHandler {
             } else {
                 resultBuilder.append("\n真是可惜，").append(totalRollCount).append("包卡里一张闪都没有！");
             }
+            if (userService.getUserDailyReward(requestUserName) <= 0) {
+                resultBuilder.append("\n你今天仍然没有抽到闪卡，再接再厉！");
+            }
         } else if (totalRateCount == 1 && totalRollCount > totalRateCount) {
             if (!request.isShowAll()) {
                 resultBuilder.append("\n").append(totalRollCount).append("包卡里出了1张闪，不错，很有精神！");

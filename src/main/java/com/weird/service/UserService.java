@@ -299,4 +299,12 @@ public interface UserService {
      * @return
      */
     int getUserOwnCardCount(String userName, String cardName) throws OperationException;
+
+    /**
+     * 获取用户
+     *
+     * @param userName
+     * @return
+     */
+    int getUserDailyReward(String userName);
 }

@@ -1161,4 +1161,13 @@ public class UserServiceImpl implements UserService {
 
         return cardListModel.getCount();
     }
+
+    @Override
+    public int getUserDailyReward(String name) {
+        UserDataModel userDataModel = userDataMapper.selectByNameDistinct(name);
+        if (userDataModel == null) {
+            return 0;
+        }
+        return userDataModel.getDailyAward();
+    }
 }
