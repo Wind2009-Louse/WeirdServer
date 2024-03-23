@@ -23,10 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.DigestUtils;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.weird.utils.CacheUtil.*;
@@ -175,6 +172,10 @@ public class UserServiceImpl implements UserService {
             throw new OperationException("该用户：[%s]已存在！", name);
         }
 
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        boolean isWeekend = calendar.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
+
         UserDataModel newModel = new UserDataModel();
         newModel.setUserName(name);
         newModel.setPassword(DEFAULT_PASSWORD_MD5);
@@ -184,6 +185,9 @@ public class UserServiceImpl implements UserService {
         newModel.setNonawardCount(0);
         newModel.setRoulette(2);
         newModel.setQq("");
+        if (isWeekend) {
+            newModel.setDoubleRareCount(10);
+        }
         userDataMapper.insert(newModel);
         String hint = String.format("添加新用户：[%s]", name);
         recordFacade.setRecord(operator, hint);

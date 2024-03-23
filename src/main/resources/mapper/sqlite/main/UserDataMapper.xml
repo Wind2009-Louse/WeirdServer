@@ -25,6 +25,7 @@
         <result column="coin" jdbcType="INTEGER" property="coin"/>
         <result column="roulette" jdbcType="INTEGER" property="roulette"/>
         <result column="roll_count" jdbcType="INTEGER" property="rollCount"/>
+        <result column="double_rare_count" jdbcType="INTEGER" property="doubleRareCount"/>
     </resultMap>
     <sql id="Base_Column_List">
         user_id, user_name, password, is_admin, nonaward_count, dust_count, duel_point,
@@ -102,6 +103,9 @@
             <if test="qq != null">
                 qq,
             </if>
+            <if test="doubleRareCount != null">
+                double_rare_count,
+            </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="userId != null">
@@ -160,6 +164,9 @@
             </if>
             <if test="qq != null">
                 #{qq,jdbcType=VARCHAR},
+            </if>
+            <if test="doubleRareCount != null">
+                #{double_rare_count,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>

@@ -106,4 +106,9 @@ public class UserDataModel implements Serializable {
      * 抽卡次数
      */
     private int rollCount;
+
+    /**
+     * 百八次数
+     */
+    private int doubleRareCount;
 }
