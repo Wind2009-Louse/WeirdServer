@@ -296,13 +296,13 @@
         daily_win, daily_lost, daily_award, daily_roll,
         weekly_dust_change_n, weekly_dust_change_r, weekly_dust_change_alter,
         weekly_mission, coin,
-        roulette, roll_count, qq)
+        roulette, roll_count, double_rare_count, qq)
         values (#{userName,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR},
         #{isAdmin,jdbcType=TINYINT}, #{nonawardCount,jdbcType=INTEGER}, #{dustCount,jdbcType=INTEGER}, #{duelPoint,jdbcType=INTEGER},
         #{dailyWin,jdbcType=INTEGER}, #{dailyLost,jdbcType=INTEGER}, #{dailyAward,jdbcType=INTEGER}, #{dailyRoll,jdbcType=INTEGER},
         #{weeklyDustChangeN,jdbcType=INTEGER}, #{weeklyDustChangeR,jdbcType=INTEGER}, #{weeklyDustChangeAlter,jdbcType=INTEGER},
         #{weeklyMission,jdbcType=INTEGER}, #{coin,jdbcType=INTEGER},
-        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR})
+        #{roulette,jdbcType=INTEGER}, #{rollCount,jdbcType=INTEGER}, #{doubleRareCount,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR})
     </insert>
 
     <update id="updateDaily">
