@@ -76,6 +76,7 @@ public class CardPreviewUtil {
         put(0x400000, "创造神族");
         put(0x800000, "幻龙族");
         put(0x1000000, "电子界族");
+        put(0x2000000, "幻想魔族");
     }};
     static Map<Integer, String> CARD_ATTRIBUTES = new LinkedHashMap<Integer, String>() {{
         put(0x1, "地");
@@ -286,8 +287,7 @@ public class CardPreviewUtil {
         }
         try {
             result = Long.parseLong(string);
-        } catch (Exception e) {
-
+        } catch (Exception ignored) {
         }
         return result;
     }
