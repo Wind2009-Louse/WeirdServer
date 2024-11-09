@@ -60,7 +60,7 @@ public enum CardRaceEnum {
     WYRM_R("幻龙族", 0x800000),
     CYBERSE("电子界", 0x1000000),
     CYBERSE_R("电子界族", 0x1000000),
-    ILLUSION("幻想魔", 0x1000000),
+    ILLUSION("幻想魔", 0x2000000),
     ILLUSION_R("幻想魔族", 0x2000000);
 
     private final String name;
