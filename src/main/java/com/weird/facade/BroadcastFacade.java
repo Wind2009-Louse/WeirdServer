@@ -38,7 +38,7 @@ public class BroadcastFacade {
     final static JSONObject EMPTY_JSON = new JSONObject();
 
     public void sendMsgAsync(String msg, int sleepMill) {
-        Runnable runnable = () -> sendMsg(msg, sleepMill);
+        Runnable runnable = () -> sendMsg(msg, broadcastConfig.getUrl(), sleepMill);
         CompletableFuture.runAsync(runnable);
     }
 
@@ -46,13 +46,21 @@ public class BroadcastFacade {
         sendMsgAsync(msg, 0);
     }
 
-    public void sendMsgAsync(JSONObject sendObject, int sleepMill) {
-        Runnable runnable = () -> sendMsg(sendObject, sleepMill);
+    public void sendMsgAsync(JSONObject sendObject, String url, int sleepMill) {
+        Runnable runnable = () -> sendMsg(sendObject, url, sleepMill);
         CompletableFuture.runAsync(runnable);
     }
 
     public void sendMsgAsync(JSONObject sendObject) {
-        sendMsgAsync(sendObject, 0);
+        sendMsgAsync(sendObject, broadcastConfig.getUrl(),0);
+    }
+
+    public void sendGroupForwardMsgAsync(JSONObject sendObject) {
+        sendMsgAsync(sendObject, broadcastConfig.getGroupForwardUrl(), 0);
+    }
+
+    public void sendPrivateForwardMsgAsync(JSONObject sendObject) {
+        sendMsgAsync(sendObject, broadcastConfig.getPrivateForwardUrl(), 0);
     }
 
     /**
@@ -61,12 +69,12 @@ public class BroadcastFacade {
      * @param msg       发送信息
      * @param sleepMill 延迟时间
      */
-    private void sendMsg(String msg, int sleepMill) {
+    private void sendMsg(String msg, String url, int sleepMill) {
         if (!broadcastConfig.isEnable()) {
             return;
         }
         String groupIdStr = broadcastConfig.getGroupIdStr();
-        if (StringUtils.isEmpty(broadcastConfig.getUrl()) || StringUtils.isEmpty(groupIdStr)) {
+        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(groupIdStr)) {
             log.error("未配置广播信息！");
             return;
         }
@@ -92,7 +100,7 @@ public class BroadcastFacade {
                 if (retryTimes < broadcastConfig.getRetryTimes()) {
                     sendObject.put("message", "(R)" + msg);
                 }
-                JSONObject responseObject = sendMsg(sendObject);
+                JSONObject responseObject = sendMsg(sendObject, url);
                 if (!"ok".equals(responseObject.get("status"))) {
                     log.warn("发送消息失败：{}。提示信息：{}", msg, responseObject.toJSONString());
                     retryTimes--;
@@ -117,12 +125,12 @@ public class BroadcastFacade {
      * @param sendObject 发送内容
      * @param sleepMill  延迟时间
      */
-    private void sendMsg(JSONObject sendObject, int sleepMill) {
+    private void sendMsg(JSONObject sendObject, String url, int sleepMill) {
         if (!broadcastConfig.isEnable() || sendObject == null) {
             return;
         }
         String groupIdStr = broadcastConfig.getGroupIdStr();
-        if (StringUtils.isEmpty(broadcastConfig.getUrl()) || StringUtils.isEmpty(groupIdStr)) {
+        if (StringUtils.isEmpty(url) || StringUtils.isEmpty(groupIdStr)) {
             log.error("未配置广播信息！");
             return;
         }
@@ -142,10 +150,10 @@ public class BroadcastFacade {
         }
 
         while (retryTimes >= 0) {
-            if (retryTimes < broadcastConfig.getRetryTimes()) {
+            if (retryTimes < broadcastConfig.getRetryTimes() && !StringUtils.isEmpty(msg)) {
                 sendObject.put("message", "(R)" + msg);
             }
-            JSONObject responseObject = sendMsg(sendObject);
+            JSONObject responseObject = sendMsg(sendObject, url);
             if (!"ok".equals(responseObject.getOrDefault("status", ""))) {
                 log.warn("发送消息失败：{}。提示信息：{}", msg, responseObject.toJSONString());
                 retryTimes--;
@@ -169,10 +177,10 @@ public class BroadcastFacade {
      * @param jsonObject 发送内容
      * @return 返回结果
      */
-    private JSONObject sendMsg(JSONObject jsonObject) {
+    private JSONObject sendMsg(JSONObject jsonObject, String url) {
         CloseableHttpClient httpClient = null;
         try {
-            HttpPost postRequest = new HttpPost(broadcastConfig.getUrl());
+            HttpPost postRequest = new HttpPost(url);
             postRequest.addHeader(HTTP.CONTENT_TYPE, HEADER_JSON);
             StringEntity param = new StringEntity(jsonObject.toJSONString(), StandardCharsets.UTF_8);
             param.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE, HEADER_JSON));

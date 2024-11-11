@@ -425,6 +425,9 @@ public class ChatRollHandler implements ChatHandler {
             throw new ResponseException("[%s]的卡包配置有误，请联系管理员", request.getPackageInfo().getPackageName());
         }
 
+        // 合并消息，默认展示全部
+        request.setShowAll(true);
+
         // 记录抽卡结果
         List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
         int totalRateCount = 0;
@@ -477,10 +480,10 @@ public class ChatRollHandler implements ChatHandler {
                 resultBuilder.append("：");
                 resultBuilder.append(cardResultList.stream().map(PackageUtil::printCard).collect(Collectors.joining("、")));
                 printIndex++;
-                if (printIndex % 10 == 0) {
-                    broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
-                    resultBuilder.setLength(0);
-                }
+//                if (printIndex % 10 == 0) {
+//                    broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+//                    resultBuilder.setLength(0);
+//                }
             }
             if (currentRare && request.isRareToStop()) {
                 break;
@@ -536,11 +539,25 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         if (resultBuilder.length() > 0) {
-            broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+            if (request.isShowAll()) {
+                String messageType = request.getRequest().getString("message_type");
+                switch (messageType) {
+                    case "group":
+                        broadcastFacade.sendGroupForwardMsgAsync(buildForwardResponse(resultBuilder.toString(), request.getRequest()));
+                        break;
+                    case "private":
+                        broadcastFacade.sendPrivateForwardMsgAsync(buildForwardResponse(resultBuilder.toString(), request.getRequest()));
+                        break;
+                    default:
+                        broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+                }
+            } else {
+                broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+            }
         }
         String exceptString = exceptBuilder.toString();
         if (!StringUtils.isEmpty(exceptString)) {
-            broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, response, true), 1000);
+            broadcastFacade.sendMsgAsync(buildResponse("出现以下错误，请联系管理员处理：" + exceptString, response, true));
         }
 
         return totalRollCount > 0;

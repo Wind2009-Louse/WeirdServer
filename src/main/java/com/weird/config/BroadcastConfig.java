@@ -20,6 +20,10 @@ public class BroadcastConfig {
 
     private String groupIdStr;
 
+    private String groupForwardUrl;
+
+    private String privateForwardUrl;
+
     private int retryTimes = 3;
 
     private int retrySecond = 5;

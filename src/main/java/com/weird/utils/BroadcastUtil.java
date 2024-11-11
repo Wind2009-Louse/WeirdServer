@@ -1,15 +1,13 @@
 package com.weird.utils;
 
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson2.JSONArray;
 import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -111,6 +109,37 @@ public class BroadcastUtil {
             default:
                 log.warn("无法对{}回复[{}]。", request.toJSONString(), msg);
                 return null;
+        }
+
+        return response;
+    }
+
+    static public JSONObject buildForwardResponse(String msg, JSONObject request) {
+        // 创建最内层的 "data" 对象
+        JSONObject textData = new JSONObject();
+        textData.put("text", msg);
+
+        // 创建包含 "type" 和 "data" 的内部对象
+        JSONObject contentData = new JSONObject();
+        contentData.put("type", "text");
+        contentData.put("data", textData);
+
+        JSONObject nodeData = new JSONObject();
+        nodeData.put("content", Collections.singleton(contentData));
+
+        // 创建最终的 "messages" 数组
+        JSONObject node = new JSONObject();
+        node.put("type", "node");
+        node.put("data", nodeData);
+
+        JSONObject response = new JSONObject();
+        response.put("messages", Collections.singletonList(node));
+
+        if (request.containsKey(GROUP_ID)) {
+            response.put(GROUP_ID, request.get(GROUP_ID));
+        }
+        if (request.containsKey(QQ)) {
+            response.put(QQ, request.get(QQ));
         }
 
         return response;
