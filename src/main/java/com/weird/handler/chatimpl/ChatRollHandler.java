@@ -543,10 +543,10 @@ public class ChatRollHandler implements ChatHandler {
                 String messageType = request.getRequest().getString("message_type");
                 switch (messageType) {
                     case "group":
-                        broadcastFacade.sendGroupForwardMsgAsync(buildForwardResponse(resultBuilder.toString(), request.getRequest()));
+                        broadcastFacade.sendGroupForwardMsgAsync(buildForwardResponse(Collections.singletonList(resultBuilder.toString()), request.getRequest()));
                         break;
                     case "private":
-                        broadcastFacade.sendPrivateForwardMsgAsync(buildForwardResponse(resultBuilder.toString(), request.getRequest()));
+                        broadcastFacade.sendPrivateForwardMsgAsync(buildForwardResponse(Collections.singletonList(resultBuilder.toString()), request.getRequest()));
                         break;
                     default:
                         broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));

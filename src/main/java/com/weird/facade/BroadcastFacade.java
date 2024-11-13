@@ -17,6 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 import static com.weird.utils.BroadcastUtil.GROUP_ID;
@@ -57,6 +60,48 @@ public class BroadcastFacade {
 
     public void sendGroupForwardMsgAsync(JSONObject sendObject) {
         sendMsgAsync(sendObject, broadcastConfig.getGroupForwardUrl(), 0);
+    }
+
+    public void sendGroupForwardMsgAsync(List<String> msgList) {
+        String groupIdStr = broadcastConfig.getGroupIdStr();
+        if (StringUtils.isEmpty(groupIdStr)) {
+            log.error("未配置广播信息！");
+            return;
+        }
+
+        String[] groupList = groupIdStr.split(",");
+        for (String id : groupList) {
+            if (StringUtils.isEmpty(id)) {
+                continue;
+            }
+
+            List<JSONObject> chatData = new ArrayList<>();
+            for (String msg : msgList) {
+                // 创建最内层的 "data" 对象
+                JSONObject textData = new JSONObject();
+                textData.put("text", msg);
+
+                // 创建包含 "type" 和 "data" 的内部对象
+                JSONObject contentData = new JSONObject();
+                contentData.put("type", "text");
+                contentData.put("data", textData);
+
+                chatData.add(contentData);
+            }
+            JSONObject nodeData = new JSONObject();
+            nodeData.put("content", chatData);
+
+            // 创建最终的 "messages" 数组
+            JSONObject node = new JSONObject();
+            node.put("type", "node");
+            node.put("data", nodeData);
+
+            JSONObject response = new JSONObject();
+            response.put("messages", Collections.singletonList(node));
+            response.put(GROUP_ID, id);
+
+            sendMsgAsync(response, broadcastConfig.getGroupForwardUrl(), 0);
+        }
     }
 
     public void sendPrivateForwardMsgAsync(JSONObject sendObject) {

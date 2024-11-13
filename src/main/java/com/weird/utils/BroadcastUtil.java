@@ -1,7 +1,6 @@
 package com.weird.utils;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson2.JSONArray;
 import com.weird.model.bo.RollBroadcastBO;
 import com.weird.model.dto.RollListDTO;
 import lombok.extern.slf4j.Slf4j;
@@ -114,18 +113,22 @@ public class BroadcastUtil {
         return response;
     }
 
-    static public JSONObject buildForwardResponse(String msg, JSONObject request) {
-        // 创建最内层的 "data" 对象
-        JSONObject textData = new JSONObject();
-        textData.put("text", msg);
+    static public JSONObject buildForwardResponse(List<String> msgList, JSONObject request) {
+        List<JSONObject> chatData = new ArrayList<>();
+        for (String msg : msgList) {
+            // 创建最内层的 "data" 对象
+            JSONObject textData = new JSONObject();
+            textData.put("text", msg);
 
-        // 创建包含 "type" 和 "data" 的内部对象
-        JSONObject contentData = new JSONObject();
-        contentData.put("type", "text");
-        contentData.put("data", textData);
+            // 创建包含 "type" 和 "data" 的内部对象
+            JSONObject contentData = new JSONObject();
+            contentData.put("type", "text");
+            contentData.put("data", textData);
 
+            chatData.add(contentData);
+        }
         JSONObject nodeData = new JSONObject();
-        nodeData.put("content", Collections.singleton(contentData));
+        nodeData.put("content", chatData);
 
         // 创建最终的 "messages" 数组
         JSONObject node = new JSONObject();

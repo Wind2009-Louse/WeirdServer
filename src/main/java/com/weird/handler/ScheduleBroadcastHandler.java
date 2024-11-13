@@ -105,7 +105,6 @@ public class ScheduleBroadcastHandler {
         calculateRollResult(totalBO, userBoMap, deckBoMap, dataList);
 
         List<String> broadcastList = new ArrayList<>(10);
-        broadcastList.add(BROADCAST_DAILY_BEGIN);
         broadcastList.add(putDataToFormat(BROADCAST_DAILY_ALL, totalBO));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_MOST_ROLL, userBoMap.values(), RollBroadcastBO::getTotalCount, false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_ROLL, userBoMap.values(), RollBroadcastBO::getRareRate, false));
@@ -114,9 +113,8 @@ public class ScheduleBroadcastHandler {
         broadcastList.add(getStringByMost(BROADCAST_DAILY_HOT_PACKAGE, deckBoMap.values(), RollBroadcastBO::getTotalCount, true));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_BEST_PACKAGE, deckBoMap.values(), RollBroadcastBO::getRareRate, false));
         broadcastList.add(getStringByMost(BROADCAST_DAILY_WORST_PACKAGE, deckBoMap.values(), o -> -o.getRareRate(), false));
-        broadcastList.add(BROADCAST_DAILY_END);
 
-        beginBroadcast(broadcastList);
+        beginBroadcast(BROADCAST_DAILY_BEGIN, broadcastList, BROADCAST_DAILY_END);
     }
 
     /**
@@ -156,15 +154,13 @@ public class ScheduleBroadcastHandler {
         calculateRollResult(totalBO, userBoMap, deckBoMap, dataList);
 
         List<String> broadcastList = new ArrayList<>(7);
-        broadcastList.add(BROADCAST_MONTHLY_BEGIN);
         broadcastList.add(putDataToFormat(BROADCAST_MONTHLY_ALL, totalBO));
         broadcastList.add(BROADCAST_MONTHLY_USER);
         broadcastList.add(buildRollTable(userBoMap.values(), "玩家"));
         broadcastList.add(BROADCAST_MONTHLY_PACKAGE);
         broadcastList.add(buildRollTable(deckBoMap.values(), "卡包"));
-        broadcastList.add(BROADCAST_MONTHLY_END);
 
-        beginBroadcast(broadcastList);
+        beginBroadcast(BROADCAST_MONTHLY_BEGIN, broadcastList, BROADCAST_MONTHLY_END);
     }
 
     /**
@@ -249,16 +245,19 @@ public class ScheduleBroadcastHandler {
      *
      * @param broadcastList 广播内容列表
      */
-    private void beginBroadcast(List<String> broadcastList) {
+    private void beginBroadcast(String beginMsg, List<String> broadcastList, String endMsg) {
         CompletableFuture.runAsync(() -> {
-            for (String broadcast : broadcastList) {
-                broadcastFacade.sendMsgAsync(broadcast);
-                try {
-                    Thread.sleep(5000);
-                } catch (Exception e) {
-
-                }
+            broadcastFacade.sendMsgAsync(beginMsg);
+            try {
+                Thread.sleep(5000);
+            } catch (Exception ignored) {
             }
+            broadcastFacade.sendGroupForwardMsgAsync(broadcastList);
+            try {
+                Thread.sleep(5000);
+            } catch (Exception ignored) {
+            }
+            broadcastFacade.sendMsgAsync(endMsg);
         });
     }
 }
