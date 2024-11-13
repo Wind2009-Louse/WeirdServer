@@ -69,35 +69,35 @@ public class BroadcastFacade {
             return;
         }
 
-        String[] groupList = groupIdStr.split(",");
-        for (String id : groupList) {
-            if (StringUtils.isEmpty(id)) {
-                continue;
-            }
+        List<JSONObject> chatData = new ArrayList<>();
+        for (String msg : msgList) {
+            // 创建最内层的 "data" 对象
+            JSONObject textData = new JSONObject();
+            textData.put("text", msg);
 
-            List<JSONObject> chatData = new ArrayList<>();
-            for (String msg : msgList) {
-                // 创建最内层的 "data" 对象
-                JSONObject textData = new JSONObject();
-                textData.put("text", msg);
+            // 创建包含 "type" 和 "data" 的内部对象
+            JSONObject contentData = new JSONObject();
+            contentData.put("type", "text");
+            contentData.put("data", textData);
 
-                // 创建包含 "type" 和 "data" 的内部对象
-                JSONObject contentData = new JSONObject();
-                contentData.put("type", "text");
-                contentData.put("data", textData);
-
-                chatData.add(contentData);
-            }
             JSONObject nodeData = new JSONObject();
-            nodeData.put("content", chatData);
+            nodeData.put("content", Collections.singletonList(contentData));
 
             // 创建最终的 "messages" 数组
             JSONObject node = new JSONObject();
             node.put("type", "node");
             node.put("data", nodeData);
 
-            JSONObject response = new JSONObject();
-            response.put("messages", Collections.singletonList(node));
+            chatData.add(node);
+        }
+        JSONObject response = new JSONObject();
+        response.put("messages", chatData);
+
+        String[] groupList = groupIdStr.split(",");
+        for (String id : groupList) {
+            if (StringUtils.isEmpty(id)) {
+                continue;
+            }
             response.put(GROUP_ID, id);
 
             sendMsgAsync(response, broadcastConfig.getGroupForwardUrl(), 0);

@@ -18,6 +18,7 @@ import com.weird.model.param.SearchCardParam;
 import com.weird.service.*;
 import com.weird.utils.*;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -430,11 +431,10 @@ public class ChatRollHandler implements ChatHandler {
 
         // 记录抽卡结果
         List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
-        int totalRateCount = 0;
+        int totalRareCount = 0;
         int resultIndex = 1;
-        int printIndex = 0;
-        StringBuilder resultBuilder = new StringBuilder();
-        resultBuilder.append(requestUserName).append("的抽卡结果：");
+        List<String> resultResponseList = new ArrayList<>();
+        resultResponseList.add(requestUserName + "的抽卡结果：");
 
         while (remainRollCount-- > 0) {
             // 生成抽卡内容
@@ -464,7 +464,7 @@ public class ChatRollHandler implements ChatHandler {
                     break;
                 }
                 cardResultList.add(awardCardList.get(rd.nextInt(awardCardList.size())));
-                totalRateCount++;
+                totalRareCount++;
             } else {
                 // 其他 R
                 cardResultList.add(packageInfo.getRareList().get(rd.nextInt(packageInfo.getRareList().size())));
@@ -473,17 +473,13 @@ public class ChatRollHandler implements ChatHandler {
 
             // 生成消息
             if (currentRare || request.isShowAll()) {
-                resultBuilder.append("\n").append(resultIndex);
+                String singleResult = String.valueOf(resultIndex);
                 if (rareRate == PackageUtil.DOUBLE_RARE_RATE) {
-                    resultBuilder.append("[百八]");
+                    singleResult += "[百八]";
                 }
-                resultBuilder.append("：");
-                resultBuilder.append(cardResultList.stream().map(PackageUtil::printCard).collect(Collectors.joining("、")));
-                printIndex++;
-//                if (printIndex % 10 == 0) {
-//                    broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
-//                    resultBuilder.setLength(0);
-//                }
+                singleResult += "：";
+                singleResult += cardResultList.stream().map(PackageUtil::printCard).collect(Collectors.joining("、"));
+                resultResponseList.add(singleResult);
             }
             if (currentRare && request.isRareToStop()) {
                 break;
@@ -504,55 +500,48 @@ public class ChatRollHandler implements ChatHandler {
             userService.updateDoubleRareCount(requestUserName, remainDoubleRareCount, operator.getUserName());
         }
 
+        String rollResult = "";
         long totalRollCount = cardResultAllList.size();
-        if (totalRateCount == 0) {
-            if (request.isShowAll()) {
-                resultBuilder.append("\n真是可惜，并没有出闪！");
-            } else {
-                resultBuilder.append("\n真是可惜，").append(totalRollCount).append("包卡里一张闪都没有！");
-            }
+        if (totalRareCount == 0) {
+            rollResult = "真是可惜，" + totalRollCount + "包卡里一张闪都没有！";
             if (userService.getUserDailyReward(requestUserName) <= 0) {
-                resultBuilder.append("\n你今天仍然没有抽到闪卡，再接再厉！");
+                rollResult += "\n你今天仍然没有抽到闪卡，再接再厉！";
             }
-        } else if (totalRateCount == 1 && totalRollCount > totalRateCount) {
-            if (!request.isShowAll()) {
-                resultBuilder.append("\n").append(totalRollCount).append("包卡里出了1张闪，不错，很有精神！");
-            }
-        } else if (totalRateCount > 1 || totalRollCount == totalRateCount) {
-            resultBuilder.append("\n难道是抽卡机出了什么问题？");
-            if (!request.isShowAll()) {
-                resultBuilder.append(totalRollCount).append("包里可以出").append(totalRateCount).append("张闪的吗？");
-            }
+        } else if (totalRareCount == 1 && totalRollCount > totalRareCount) {
+            rollResult = totalRollCount + "包卡里出了1张闪，不错，很有精神！";
+        } else if (totalRareCount > 1 || totalRollCount == totalRareCount) {
+            rollResult = "难道是抽卡机出了什么问题？" + totalRollCount + "包里可以出" + totalRareCount + "张闪的吗？";
         }
-        if (!request.isShowAll() && totalRollCount > totalRateCount) {
-            resultBuilder.append("\n具体的抽卡结果请前往诡异云查看。");
+        if (!request.isShowAll() && totalRollCount > totalRareCount) {
+            rollResult += "\n具体的抽卡结果请前往诡异云查看。";
         }
+        resultResponseList.add(rollResult);
 
         if (AutoConfig.fetchDp()) {
             try {
                 int originDp = request.getOriginDp();
                 int currentDp = userService.decDuelPoint(requestUserName, (int) (totalRollCount * 5), operator.getUserName());
-                resultBuilder.append(String.format("\n%s的DP变化：%d->%d", requestUserName, originDp, currentDp));
+                resultResponseList.add(String.format("\n%s的DP变化：%d->%d", requestUserName, originDp, currentDp));
             } catch (OperationException oe) {
                 exceptBuilder.append("\n").append(oe.getMessage());
             }
         }
 
-        if (resultBuilder.length() > 0) {
+        if (!resultResponseList.isEmpty()) {
             if (request.isShowAll()) {
                 String messageType = request.getRequest().getString("message_type");
                 switch (messageType) {
                     case "group":
-                        broadcastFacade.sendGroupForwardMsgAsync(buildForwardResponse(Collections.singletonList(resultBuilder.toString()), request.getRequest()));
+                        broadcastFacade.sendGroupForwardMsgAsync(buildForwardResponse(resultResponseList, request.getRequest()));
                         break;
                     case "private":
-                        broadcastFacade.sendPrivateForwardMsgAsync(buildForwardResponse(Collections.singletonList(resultBuilder.toString()), request.getRequest()));
+                        broadcastFacade.sendPrivateForwardMsgAsync(buildForwardResponse(resultResponseList, request.getRequest()));
                         break;
                     default:
-                        broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+                        broadcastFacade.sendMsgAsync(buildResponse(String.join("\n", resultResponseList), request.getRequest(), true));
                 }
             } else {
-                broadcastFacade.sendMsgAsync(buildResponse(resultBuilder.toString(), request.getRequest(), true));
+                broadcastFacade.sendMsgAsync(buildResponse(String.join("\n", resultResponseList), request.getRequest(), true));
             }
         }
         String exceptString = exceptBuilder.toString();

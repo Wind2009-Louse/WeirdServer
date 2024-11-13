@@ -125,18 +125,19 @@ public class BroadcastUtil {
             contentData.put("type", "text");
             contentData.put("data", textData);
 
-            chatData.add(contentData);
-        }
-        JSONObject nodeData = new JSONObject();
-        nodeData.put("content", chatData);
+            JSONObject nodeData = new JSONObject();
+            nodeData.put("content", Collections.singletonList(contentData));
 
-        // 创建最终的 "messages" 数组
-        JSONObject node = new JSONObject();
-        node.put("type", "node");
-        node.put("data", nodeData);
+            // 创建最终的 "messages" 数组
+            JSONObject node = new JSONObject();
+            node.put("type", "node");
+            node.put("data", nodeData);
+
+            chatData.add(node);
+        }
 
         JSONObject response = new JSONObject();
-        response.put("messages", Collections.singletonList(node));
+        response.put("messages", chatData);
 
         if (request.containsKey(GROUP_ID)) {
             response.put(GROUP_ID, request.get(GROUP_ID));
