@@ -53,6 +53,8 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
     final static String SPLIT_STR = ">查诡异 ";
 
+    final static int PAGE_SIZE = 50;
+
     @Override
     public void handle(JSONObject o) {
         String message = o.getString(MESSAGE);
@@ -83,7 +85,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 param.setName("");
             }
             param.setPage(1);
-            param.setPageSize(10);
+            param.setPageSize(PAGE_SIZE);
             List<String> argList = StringExtendUtil.split(cardArgs, " ");
             List<String> searchArgList = new LinkedList<>();
             for (String arg : argList) {
@@ -103,7 +105,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 return;
             }
             List<String> cardNameList = cardPreviewService.blurSearch(finalCardArgs);
-            if (cardNameList != null && cardNameList.size() == 0) {
+            if (CollectionUtils.isEmpty(cardNameList)) {
                 broadcastFacade.sendMsgAsync(buildResponse(String.format("以下条件查不到卡：%s", originArgs), o));
                 return;
             }
@@ -126,14 +128,14 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示10条)，再次搜索：", listSize));
-            int totalPage = listSize / 10 + 1;
-            pageCount = (Math.min(totalPage, pageCount) - 1) * 10;
-            for (int i = 0; i < 10 && i + pageCount < listSize; ++i) {
+            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, PAGE_SIZE));
+            int totalPage = listSize / PAGE_SIZE + 1;
+            pageCount = (Math.min(totalPage, pageCount) - 1) * PAGE_SIZE;
+            for (int i = 0; i < PAGE_SIZE && i + pageCount < listSize; ++i) {
                 final CardListDTO data = dbCardList.get(i + pageCount);
                 sb.append(String.format("\n%d: [%s]%s(%d)", i + pageCount + 1, data.getRare(), data.getCardName(), data.getCount()));
             }
-            broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
+            broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
         }
     }
 

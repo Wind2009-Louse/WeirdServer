@@ -58,6 +58,14 @@ public class BroadcastFacade {
         sendMsgAsync(sendObject, broadcastConfig.getUrl(),0);
     }
 
+    public void sendForwardMsgAsync(JSONObject sendObject) {
+        if (sendObject.containsKey(GROUP_ID)) {
+            sendGroupForwardMsgAsync(sendObject);
+        } else {
+            sendPrivateForwardMsgAsync(sendObject);
+        }
+    }
+
     public void sendGroupForwardMsgAsync(JSONObject sendObject) {
         sendMsgAsync(sendObject, broadcastConfig.getGroupForwardUrl(), 0);
     }

@@ -11,11 +11,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 
-import static com.weird.utils.BroadcastUtil.MESSAGE;
-import static com.weird.utils.BroadcastUtil.buildResponse;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 查卡
@@ -32,6 +32,8 @@ public class ChatSearchCardHandler implements ChatHandler {
     CardPreviewService cardPreviewService;
 
     final static String SPLIT_STR = ">查卡 ";
+
+    final static int PAGE_SIZE = 50;
 
     @Override
     public void handle(JSONObject o) {
@@ -61,13 +63,13 @@ public class ChatSearchCardHandler implements ChatHandler {
                 searchByName(cardArgs, o);
             } else if (listSize > 1) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示10条)，再次搜索：", listSize));
-                int totalPage = listSize / 10 + 1;
-                pageCount = (Math.min(totalPage, pageCount) - 1) * 10;
-                for (int i = 0; i < 10 && i + pageCount < listSize; ++i) {
+                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, PAGE_SIZE));
+                int totalPage = listSize / PAGE_SIZE + 1;
+                pageCount = (Math.min(totalPage, pageCount) - 1) * PAGE_SIZE;
+                for (int i = 0; i < PAGE_SIZE && i + pageCount < listSize; ++i) {
                     sb.append(String.format("\n%d: %s", i + pageCount + 1, cardNameList.get(i + pageCount)));
                 }
-                broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
+                broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
             } else {
                 String cardName = cardNameList.get(0);
                 searchByName(cardName, o);
