@@ -27,7 +27,7 @@ public class ChatHelpHandler implements ChatHandler {
     @Autowired
     RunnerHandler runnerHandler;
 
-    final static List<String> SPLIT_STR_LIST = Arrays.asList(">帮助", ">?", ">h ", ">help");
+    final static List<String> SPLIT_STR_LIST = Arrays.asList(">帮助", ">?", ">？", ">h ", ">help");
 
     @Override
     public void handle(JSONObject o) {
@@ -95,12 +95,12 @@ public class ChatHelpHandler implements ChatHandler {
                     case "重抽":
                     case "抽传说":
                     case "传说":
-                        printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽 卡名\n重抽自己的指定闪卡。" +
+                        printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽/锤 卡名\n重抽自己的指定闪卡。" +
                                 "\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。";
                         break;
                     case "交换":
                     case "交易":
-                        printInfo = "交换/交易：\n>交换 自身卡片名 @对方 对方卡片名\n发起交换请求。\n>交换 同意/拒绝/取消 编号\n同意或者取消交换。\n* 交换需要经过对方以及管理员各一次同意方可生效。\n>交换 [列表]\n查看未处理的交换信息。";
+                        printInfo = "交换/交易：\n>交换 自身卡片名 @对方 对方卡片名\n发起交换请求。\n>交换 同意/拒绝/取消 编号\n同意或者取消交换。\n* 交换需要发起方使用一张「礼物交换」。\n>交换 [列表]\n查看未处理的交换信息。";
                         break;
                     default:
                         String startTime = runnerHandler.getStartTime();

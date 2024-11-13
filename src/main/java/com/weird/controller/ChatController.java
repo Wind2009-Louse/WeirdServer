@@ -47,9 +47,9 @@ public class ChatController {
                 } else if (rawMessage.startsWith("》")) {
                     o.put(MESSAGE, rawMessage.replaceFirst("》", ">"));
                 }
-            }
-            for (ChatHandler chatHandler : chatHandlerList) {
-                chatHandler.handle(o);
+                for (ChatHandler chatHandler : chatHandlerList) {
+                    chatHandler.handle(o);
+                }
             }
         } catch (ResponseException responseException) {
             broadcastFacade.sendMsgAsync(buildResponse(responseException.getMessage(), o));
