@@ -1,5 +1,6 @@
 package com.weird.controller;
 
+import com.alibaba.druid.support.json.JSONUtils;
 import com.alibaba.fastjson.JSONObject;
 import com.weird.aspect.SearchParamFix;
 import com.weird.aspect.TrimArgs;
@@ -41,6 +42,7 @@ public class ChatController {
         JSONObject o = RequestUtil.getJsonFromRequest(request);
         try {
             if (o.containsKey(MESSAGE)) {
+                log.info(o.toJSONString());
                 String rawMessage = o.getString(MESSAGE);
                 if (rawMessage.startsWith("＞")) {
                     o.put(MESSAGE, rawMessage.replaceFirst("＞", ">"));
