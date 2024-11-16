@@ -34,7 +34,7 @@ public class ChatRoomHandler implements ChatHandler {
     @Override
     public void handle(JSONObject o) {
         String message = o.getString(MESSAGE);
-        if (!"group".equals(o.getString("message_type"))) {
+        if (!"group".equals(o.getString(MESSAGE_TYPE))) {
             return;
         }
         String groupId = o.getString(GROUP_ID);

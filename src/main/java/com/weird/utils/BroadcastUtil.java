@@ -26,6 +26,8 @@ public class BroadcastUtil {
     final static public String MESSAGE = "raw_message";
     final static public String QQ = "user_id";
     final static public String GROUP_ID = "group_id";
+    final static public String MESSAGE_TYPE = "message_type";
+    final static public String SUB_TYPE = "sub_type";
 
     /**
      * 根据查询到的抽卡信息，统计抽卡数据
@@ -83,7 +85,7 @@ public class BroadcastUtil {
 
     static public JSONObject buildResponse(String msg, JSONObject request, boolean at) {
         if (at) {
-            boolean inGroup = "group".equals(request.getString("message_type"));
+            boolean inGroup = "group".equals(request.getString(MESSAGE_TYPE));
             if (inGroup) {
                 msg = String.format("[CQ:at,qq=%s] ", request.getString(QQ)) + msg;
             }
@@ -91,7 +93,7 @@ public class BroadcastUtil {
         JSONObject response = new JSONObject();
         response.put("message", msg);
 
-        String messageType = request.getString("message_type");
+        String messageType = request.getString(MESSAGE_TYPE);
         if (request.containsKey(GROUP_ID)) {
             response.put(GROUP_ID, request.get(GROUP_ID));
         }
@@ -100,10 +102,10 @@ public class BroadcastUtil {
         }
         switch (messageType) {
             case "group":
-                response.put("message_type", "group");
+                response.put(MESSAGE_TYPE, "group");
                 break;
             case "private":
-                response.put("message_type", "private");
+                response.put(MESSAGE_TYPE, "private");
                 break;
             default:
                 log.warn("无法对{}回复[{}]。", request.toJSONString(), msg);
@@ -138,6 +140,13 @@ public class BroadcastUtil {
 
         JSONObject response = new JSONObject();
         response.put("messages", chatData);
+
+        // 判断是否为群临时会话。若是，组装message
+        String messageType = request.getString(MESSAGE_TYPE);
+        String subType = request.getString(SUB_TYPE);
+        if ("private".equals(messageType) && "group".equals(subType)) {
+            response.put("message", String.join("\n", msgList));
+        }
 
         if (request.containsKey(GROUP_ID)) {
             response.put(GROUP_ID, request.get(GROUP_ID));

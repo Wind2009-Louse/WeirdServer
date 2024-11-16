@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
-import static com.weird.utils.BroadcastUtil.GROUP_ID;
+import static com.weird.utils.BroadcastUtil.*;
 
 /**
  * 通过http接口发送QQ信息
@@ -59,6 +59,13 @@ public class BroadcastFacade {
     }
 
     public void sendForwardMsgAsync(JSONObject sendObject) {
+        // 判断是否为群临时会话。若是，只发送普通消息。
+        if (sendObject.containsKey("message")) {
+            sendObject.remove("messages");
+            sendMsgAsync(sendObject);
+            return;
+        }
+
         if (sendObject.containsKey(GROUP_ID)) {
             sendGroupForwardMsgAsync(sendObject);
         } else {
