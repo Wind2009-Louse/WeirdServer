@@ -6,6 +6,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -179,6 +180,13 @@ public class DeckInfoDTO implements Serializable {
         String mainString = getMobileString(mainList);
         String exString = getMobileString(exList);
         String sideString = getMobileString(sideList);
+        if (StringUtils.hasText(deckName)) {
+            try {
+                sb2.append("name=").append(URLEncoder.encode(deckName, "utf-8")).append("&");
+            } catch (Exception e) {
+                sb2.append("name=").append(deckName).append("&");
+            }
+        }
         sb2.append("main=").append(mainString);
         sb2.append("&extra=").append(exString);
         sb2.append("&side=").append(sideString);
@@ -206,7 +214,7 @@ public class DeckInfoDTO implements Serializable {
     public String getMobileString(List<DeckCardDTO> cardList) {
         StringBuilder sb = new StringBuilder();
         if (CollectionUtils.isEmpty(cardList)) {
-            return "";
+            return "0";
         }
         boolean inserted = false;
         for (DeckCardDTO card : cardList) {
