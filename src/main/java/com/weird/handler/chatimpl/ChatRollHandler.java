@@ -83,6 +83,10 @@ public class ChatRollHandler implements ChatHandler {
     public void handle(JSONObject o) throws Exception {
         String message = o.getString(MESSAGE);
         String userQQ = o.getString(QQ);
+        // 不处理私聊抽卡请求
+        if (!"group".equals(o.getString(MESSAGE_TYPE))) {
+            return;
+        }
         List<String> argList = null;
         UserDataDTO userData = null;
         if (message.startsWith(SPLIT_STR)) {
