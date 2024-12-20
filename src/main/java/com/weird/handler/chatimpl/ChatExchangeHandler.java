@@ -315,7 +315,15 @@ public class ChatExchangeHandler implements ChatHandler {
             swapParam.setCardA(requestBO.getSelfCardName());
             swapParam.setCardB(requestBO.getTargetCardName());
             swapParam.setName(currentUserName);
-            broadcastFacade.sendMsgAsync(buildResponse(userService.swapCard(swapParam, currentUserName), o, true));
+            String response = userService.swapCard(swapParam, currentUserName);
+
+            String exchangeCardName = AutoConfig.fetchExchangeCard();
+            if (!StringUtils.isEmpty(exchangeCardName)) {
+                int userExchangeCount = userService.getUserOwnCardCount(requestBO.getUserName(), exchangeCardName);
+                response += String.format("\n%s的[%s]: %d->%d", requestBO.getUserName(), exchangeCardName, userExchangeCount + 1, userExchangeCount);
+            }
+
+            broadcastFacade.sendMsgAsync(buildResponse(response, o, true));
         } catch (OperationException e) {
             throw new ResponseException(e.getMessage());
         }

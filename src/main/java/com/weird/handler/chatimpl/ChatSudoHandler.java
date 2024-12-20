@@ -62,6 +62,7 @@ public class ChatSudoHandler implements ChatHandler {
     static public List<String> ROULETTE_OPERATION_LIST = Arrays.asList("转盘", "转盘次数");
     static public List<String> ROLL_COUNT_OPERATION_LIST = Arrays.asList("抽卡", "抽卡次数");
     static public List<String> GIFT_OPERATION_LIST = Arrays.asList("交换", "交换券", "py", "PY");
+    static public List<String> REROLL_OPERATION_LIST = Arrays.asList("锤");
 
     @Override
     public void handle(JSONObject o) throws ResponseException {
@@ -145,6 +146,11 @@ public class ChatSudoHandler implements ChatHandler {
                         String exchangeCardName = AutoConfig.fetchExchangeCard();
                         if (!StringUtils.isEmpty(exchangeCardName)) {
                             operation = exchangeCardName;
+                        }
+                    } else if (REROLL_OPERATION_LIST.contains(operation)) {
+                        String rerollCardName = AutoConfig.fetchReRollCard();
+                        if (!StringUtils.isEmpty(rerollCardName)) {
+                            operation = rerollCardName;
                         }
                     }
                     String cardName = fetchCard(operation);
