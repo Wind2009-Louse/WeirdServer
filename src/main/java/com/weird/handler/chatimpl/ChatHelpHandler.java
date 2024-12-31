@@ -1,11 +1,13 @@
 package com.weird.handler.chatimpl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.weird.config.AutoConfig;
 import com.weird.facade.BroadcastFacade;
 import com.weird.handler.ChatHandler;
 import com.weird.handler.RunnerHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -95,12 +97,24 @@ public class ChatHelpHandler implements ChatHandler {
                     case "重抽":
                     case "抽传说":
                     case "传说":
-                        printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽/锤 卡名\n重抽自己的指定闪卡。" +
+                        String rerollExplain = "";
+                        String rerollCardName = AutoConfig.fetchReRollCard();
+                        if (!StringUtils.isEmpty(rerollCardName)) {
+                            rerollExplain = String.format("(需要使用1张[%s])", rerollExplain);
+                        }
+                        printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽/锤 卡名\n重抽自己的指定闪卡。" + rerollExplain +
                                 "\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。";
                         break;
                     case "交换":
                     case "交易":
-                        printInfo = "交换/交易：\n>交换 自身卡片名 @对方 对方卡片名\n发起交换请求。\n>交换 同意/拒绝/取消 编号\n同意或者取消交换。\n* 交换需要发起方使用一张「礼物交换」。\n>交换 [列表]\n查看未处理的交换信息。";
+                        String exchangeExplain = "";
+                        String exchangeCardName = AutoConfig.fetchExchangeCard();
+                        if (!StringUtils.isEmpty(exchangeCardName)) {
+                            exchangeExplain = String.format("\n* 发起方需要拥有1张[%s]，交换完成后扣减。", exchangeCardName);
+                        }
+                        printInfo = "交换/交易：\n>交换 自身卡片名 @对方 对方卡片名\n发起交换请求。\n>交换 同意/拒绝/取消 编号\n同意或者取消交换。"
+                                + exchangeExplain
+                                +"\n>交换 [列表]\n查看未处理的交换信息。";
                         break;
                     default:
                         String startTime = runnerHandler.getStartTime();
