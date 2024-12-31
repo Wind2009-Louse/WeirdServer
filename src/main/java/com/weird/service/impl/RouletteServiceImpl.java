@@ -84,7 +84,7 @@ public class RouletteServiceImpl implements RouletteService {
                 throw new OperationException("比例需要大于0！");
             }
             if (!colorPattern.matcher(config.getColor()).matches()) {
-                throw new OperationException("%s不符合颜色要求！", config.getColor());
+                throw new OperationException("[%s]不符合颜色要求！", config.getColor());
             }
         }
         recordFacade.setRecord(operator,

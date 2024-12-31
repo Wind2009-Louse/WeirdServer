@@ -55,7 +55,7 @@ public class TaskHandler {
     }
 
     @Async
-    @Scheduled(cron = "30 0 0 * * ?")
+    @Scheduled(cron = "0 0 4 * * ?")
     public void backupDataBase() throws Exception {
         recordFacade.setRecord("数据库备份", "【数据库备份】开始");
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");

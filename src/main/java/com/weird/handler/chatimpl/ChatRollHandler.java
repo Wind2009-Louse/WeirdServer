@@ -639,7 +639,7 @@ public class ChatRollHandler implements ChatHandler {
             log.error("获取卡片数量出错：", e);
         }
 
-        String resultBuilder = String.format("%s对%s的重抽结果：\n(%d/%d)%s\n%s",
+        String resultBuilder = String.format("[%s]对[%s]的重抽结果：\n(%d/%d)%s\n%s",
                 requestUserName, request.getReRollCardName(),
                 selfOwnCount, totalOwnCount, PackageUtil.printCard(destCard),
                 getPreviewByName(destCard.getCardName()));
@@ -649,7 +649,7 @@ public class ChatRollHandler implements ChatHandler {
                 cardService.updateCardCount(requestUserName, reRollCondition, cutOffReRollCount, operator.getUserName());
                 if (!StringUtils.isEmpty(reRollCondition)) {
                     int userRerollCount = userService.getUserOwnCardCount(requestUserName, reRollCondition);
-                    resultBuilder += String.format("\n%s的[%s]: %d->%d", requestUserName, reRollCondition, userRerollCount + 1, userRerollCount);
+                    resultBuilder += String.format("\n[%s]的[%s]: %d->%d", requestUserName, reRollCondition, userRerollCount + 1, userRerollCount);
                 }
             } catch (OperationException e) {
                 resultBuilder += "\n" + e.getMessage();
