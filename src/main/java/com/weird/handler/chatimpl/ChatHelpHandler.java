@@ -100,7 +100,7 @@ public class ChatHelpHandler implements ChatHandler {
                         String rerollExplain = "";
                         String rerollCardName = AutoConfig.fetchReRollCard();
                         if (!StringUtils.isEmpty(rerollCardName)) {
-                            rerollExplain = String.format("(需要使用1张[%s])", rerollExplain);
+                            rerollExplain = String.format("(需要使用1张[%s])", rerollCardName);
                         }
                         printInfo = "抽卡功能(2/2)：\n>抽卡 重抽 卡名\n>重抽/锤 卡名\n重抽自己的指定闪卡。" + rerollExplain +
                                 "\n>抽卡 抽传说\n>抽传说\n抽传说卡包。用户已有传说卡的场合，则重抽传说卡。";
