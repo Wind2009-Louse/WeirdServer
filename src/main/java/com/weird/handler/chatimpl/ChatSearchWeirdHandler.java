@@ -141,7 +141,8 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 final CardListDTO data = dbCardList.get(i + pageCount);
                 sb.append(String.format("\n%d: [%s]%s(%d)", i + pageCount + 1, data.getRare(), data.getCardName(), data.getCount()));
             }
-            broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
+            broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
+            // broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
         }
     }
 
