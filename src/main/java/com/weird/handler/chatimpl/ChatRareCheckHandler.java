@@ -112,7 +112,8 @@ public class ChatRareCheckHandler implements ChatHandler {
             SimpleDateFormat timeFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             responseString += "\n最后更新时间：" + timeFormat.format(new Date(LAST_SEARCH_TIME));
 
-            broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(responseString), o));
+            broadcastFacade.sendMsgAsync(buildResponse(responseString, o));
+            // broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(responseString), o));
 
         }
     }

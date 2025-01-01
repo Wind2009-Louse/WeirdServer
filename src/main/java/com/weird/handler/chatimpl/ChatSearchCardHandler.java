@@ -33,7 +33,8 @@ public class ChatSearchCardHandler implements ChatHandler {
 
     final static String SPLIT_STR = ">查卡 ";
 
-    final static int PAGE_SIZE = 50;
+    final static int PAGE_SIZE = 10;
+    final static int PAGE_SIZE_PRIVATE = 50;
 
     @Override
     public void handle(JSONObject o) {
@@ -55,6 +56,12 @@ public class ChatSearchCardHandler implements ChatHandler {
             if (StringUtils.isEmpty(cardArgs)) {
                 return;
             }
+
+            int pageSize = PAGE_SIZE;
+            if (!"group".equals(o.getString(MESSAGE_TYPE))) {
+                pageSize = PAGE_SIZE_PRIVATE;
+            }
+
             List<String> cardNameList = cardPreviewService.blurSearch(cardArgs);
             final int listSize = cardNameList.size();
             if (CollectionUtils.isEmpty(cardNameList)) {
@@ -63,13 +70,14 @@ public class ChatSearchCardHandler implements ChatHandler {
                 searchByName(cardArgs, o);
             } else if (listSize > 1) {
                 StringBuilder sb = new StringBuilder();
-                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, PAGE_SIZE));
-                int totalPage = listSize / PAGE_SIZE + 1;
-                pageCount = (Math.min(totalPage, pageCount) - 1) * PAGE_SIZE;
-                for (int i = 0; i < PAGE_SIZE && i + pageCount < listSize; ++i) {
+                sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, pageSize));
+                int totalPage = listSize / pageSize + 1;
+                pageCount = (Math.min(totalPage, pageCount) - 1) * pageSize;
+                for (int i = 0; i < pageSize && i + pageCount < listSize; ++i) {
                     sb.append(String.format("\n%d: %s", i + pageCount + 1, cardNameList.get(i + pageCount)));
                 }
-                broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
+                broadcastFacade.sendMsgAsync(buildResponse(sb.toString(), o));
+                // broadcastFacade.sendForwardMsgAsync(buildForwardResponse(Collections.singletonList(sb.toString()), o));
             } else {
                 String cardName = cardNameList.get(0);
                 searchByName(cardName, o);

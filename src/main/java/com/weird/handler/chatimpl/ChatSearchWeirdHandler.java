@@ -53,7 +53,8 @@ public class ChatSearchWeirdHandler implements ChatHandler {
 
     final static String SPLIT_STR = ">查诡异 ";
 
-    final static int PAGE_SIZE = 50;
+    final static int PAGE_SIZE = 10;
+    final static int PAGE_SIZE_PRIVATE = 50;
 
     @Override
     public void handle(JSONObject o) {
@@ -77,6 +78,11 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             pageCount = Math.max(1, pageCount);
             UserDataDTO userData = userService.getUserByQQ(userQQ);
 
+            int pageSize = PAGE_SIZE;
+            if (!"group".equals(o.getString(MESSAGE_TYPE))) {
+                pageSize = PAGE_SIZE_PRIVATE;
+            }
+
             // 稀有度信息
             SearchCardParam param = new SearchCardParam();
             if (userData != null) {
@@ -85,7 +91,7 @@ public class ChatSearchWeirdHandler implements ChatHandler {
                 param.setName("");
             }
             param.setPage(1);
-            param.setPageSize(PAGE_SIZE);
+            param.setPageSize(pageSize);
             List<String> argList = StringExtendUtil.split(cardArgs, " ");
             List<String> searchArgList = new LinkedList<>();
             for (String arg : argList) {
@@ -128,10 +134,10 @@ public class ChatSearchWeirdHandler implements ChatHandler {
             }
 
             StringBuilder sb = new StringBuilder();
-            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, PAGE_SIZE));
-            int totalPage = listSize / PAGE_SIZE + 1;
-            pageCount = (Math.min(totalPage, pageCount) - 1) * PAGE_SIZE;
-            for (int i = 0; i < PAGE_SIZE && i + pageCount < listSize; ++i) {
+            sb.append(String.format("共有%d个结果，请从以下卡片中选择1张(一次显示%d条)，再次搜索：", listSize, pageSize));
+            int totalPage = listSize / pageSize + 1;
+            pageCount = (Math.min(totalPage, pageCount) - 1) * pageSize;
+            for (int i = 0; i < pageSize && i + pageCount < listSize; ++i) {
                 final CardListDTO data = dbCardList.get(i + pageCount);
                 sb.append(String.format("\n%d: [%s]%s(%d)", i + pageCount + 1, data.getRare(), data.getCardName(), data.getCount()));
             }

@@ -431,7 +431,7 @@ public class ChatRollHandler implements ChatHandler {
         }
 
         // 合并消息，默认展示全部
-        request.setShowAll(true);
+        // request.setShowAll(true);
 
         // 记录抽卡结果
         List<List<CardListDTO>> cardResultAllList = new LinkedList<>();
