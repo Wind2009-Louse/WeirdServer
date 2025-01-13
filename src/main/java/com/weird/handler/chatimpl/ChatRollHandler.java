@@ -648,8 +648,7 @@ public class ChatRollHandler implements ChatHandler {
             try {
                 cardService.updateCardCount(requestUserName, reRollCondition, cutOffReRollCount, operator.getUserName());
                 if (!StringUtils.isEmpty(reRollCondition)) {
-                    int userRerollCount = userService.getUserOwnCardCount(requestUserName, reRollCondition);
-                    resultBuilder += String.format("\n[%s]的[%s]: %d->%d", requestUserName, reRollCondition, userRerollCount + 1, userRerollCount);
+                    resultBuilder += String.format("\n[%s]的[%s]: %d->%d", requestUserName, reRollCondition, cutOffReRollCount + 1, cutOffReRollCount);
                 }
             } catch (OperationException e) {
                 resultBuilder += "\n" + e.getMessage();
